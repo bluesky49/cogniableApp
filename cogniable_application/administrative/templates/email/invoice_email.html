@@ -1,0 +1,127 @@
+<style type="text/css">
+body{
+  background: #E0E0E0;
+  font-family: 'Roboto', sans-serif;
+  background-image: url('');
+  background-repeat: repeat-y;
+  background-size: 100%;
+}
+#invoice{
+  position: relative;
+  top: -290px;
+  margin: 0 auto;
+  width: 700px;
+  background: #FFF;
+}
+
+.logo{
+ 
+    /*height: 100px;*/
+    width: 200px;
+   
+    background-size: 60px 60px;
+}
+.title{
+  float: right;
+  margin-left: 550px;
+
+}
+table{
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+   border-bottom: 1px solid #ddd;
+}
+p
+{
+    padding-top:5px;
+}
+.info{
+  display: block;
+  float:left;
+ 
+}
+.info2{
+	display: block;
+	float:left;
+}
+</style>
+
+{% load app_filters %}
+<div id="invoiceholder">
+
+  <div id="headerimage"></div>
+  <div id="invoice" class="effect2">
+    
+    <div id="invoice-top">
+    
+      <div class="info2">
+         <!-- <img src="global_assets/images/logo.png"   class="logo"> -->
+        <img src="/media/{{invoices.school.logo.name}}" class="logo">
+        <h2>{{invoices.school.school_name}} <br>{{invoices.school.address}}</h2>
+        <h4>Invoice To:</h4>
+        <span>{{invoices.student.firstname}}</span><br>
+        <span>Admission No: {{invoices.student.admission_no}}</span><br>
+        <span>{{invoices.student.current_address}}</span><br>
+        <span>{{invoices.student.email}}</span><br>
+      </div>
+       
+      <div >
+       
+       
+    </div> 
+ 
+    <div id="invoice-mid">
+      
+
+      <div id="project">
+        <h3>Services</h3>
+      </div>   
+
+    </div><!--End Invoice Mid-->
+    
+    <div id="invoice-bot">
+      
+      <div id="table">
+        <table>
+          <tr class="tabletitle">
+            <td class="item"><h2>Hourly Charged</h2></td>
+            <td class="Hours"><h2>Service</h2></td>
+            <td class="Rate"><h2>Rate</h2></td>
+            <td class="subtotal"><h2>Hours</h2></td>
+            <td class="subtotal"><h2>Total</h2></td>
+          </tr>
+
+          {% for x in invoices.invoice_fee.all %}
+            <tr class="service">
+              <td class="tableitem"><p class="itemtext">{% if x.is_hourly_charge %}Yes{% else %}No{% endif %}</p></td>
+                <td class="tableitem">
+                  <p class="itemtext">{{x.school_services.service_name}}</p>
+                </td>
+                <td class="tableitem"><p class="itemtext">${{x.rate}}</p></td>
+                <td class="tableitem"><p class="itemtext">{{x.hours}}</p></td>
+                <td class="tableitem"><p class="itemtext">${{x.total}}</p></td>
+            </tr>
+          {% endfor %}          
+            
+          <tr class="tabletitle">
+            <td></td>
+            <td></td>
+            <td class="Rate"><h2>Total</h2></td>
+            <td class="Rate"><h2>Tax(25%) {{invoices.amount|tax:'true'}}</h2></td>
+            <td class="payment"><h2>${{invoices.amount|floatformat:2}}</h2></td>
+          </tr>
+          
+        </table>
+      </div>
+
+        
+    </div><!--End InvoiceBot-->
+    <br><br>
+    <div style="width: 100px;">  
+      <strong>Authorized By:</strong><br><br>
+       {{invoices.school.school_name}}
+    </div>
+  </div><!--End Invoice-->
+</div><!-- End Invoice Holder-->
