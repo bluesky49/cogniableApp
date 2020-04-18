@@ -1,5 +1,10 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { Form, Input, Button, Select, DatePicker } from 'antd';
+import moment from 'moment';
+import { gql } from "apollo-boost";
+import client from '../../apollo/config'
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -10,9 +15,58 @@ const tailLayout = {
   },
 };
 
-
-
 class EditBasicInformationForm extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      isLoaded: true,
+      clinicLocationList : [],
+      staffNodeList : [],
+      categoryList : [],
+    }
+  }
+
+  componentDidMount() {
+
+    client.query({
+      query: gql`
+        {schoolLocation {
+          edges {
+            node {
+              id,
+              location
+            }
+          }
+        },
+        staffs {
+          edges {
+            node {
+              id,
+              name,
+            }
+          }
+        },
+        category {
+          id,
+          category
+        }
+      }`
+      })
+      .then(result => {
+        this.setState({
+          isLoaded: false,
+          clinicLocationList: result.data.schoolLocation.edges,
+          staffNodeList : result.data.staffs.edges,
+          categoryList: result.data.category
+        });
+  
+      }
+      );
+
+  }
+  
+  
   handleChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value
@@ -35,6 +89,19 @@ class EditBasicInformationForm extends React.Component {
 
     const { userinfo } = this.props;
 
+    const {isLoaded, clinicLocationList, categoryList, staffNodeList} = this.state;
+
+    const selectedStaffList = []
+    userinfo.authStaff.edges.map((item) => selectedStaffList.push(item.node.id))
+
+    console.log(userinfo.currentAddress)
+    // const selectedDiagnosesList = []
+    // userinfo.diagnoses.edges.map((item) => selectedDiagnosesList.push(item.node.id))
+    
+
+    // staffNodeList.map((item) => staffList.push(item.node))
+
+    console.log(isLoaded, selectedStaffList)
     return (
       <Form
         layout={{
@@ -48,7 +115,6 @@ class EditBasicInformationForm extends React.Component {
         <Form.Item
           name="clientId"
           label="Client Id"
-
           rules={[
             {
               required: true,
@@ -56,7 +122,7 @@ class EditBasicInformationForm extends React.Component {
           ]}
           style={itemStyle}
         >
-          <Input value={userinfo ? userinfo.client_id : ""} />
+          <Input value={userinfo ? userinfo.clientId : ""} />
         </Form.Item>
 
         <Form.Item
@@ -102,7 +168,6 @@ class EditBasicInformationForm extends React.Component {
 
 
         <Form.Item
-          name="authStaff"
           label="Authorized Staff"
           rules={[
             {
@@ -112,14 +177,12 @@ class EditBasicInformationForm extends React.Component {
           style={itemStyle}
         >
           <Select
-            placeholder="Select a option and change input text above"
-            onSelect={this.handleChange}
+            mode="multiple"
+            placeholder="Select Therapists"
+            defaultValue={selectedStaffList}
             allowClear
-
           >
-            <Option value="">1</Option>
-            <Option value="">2</Option>
-            <Option value="">3</Option>
+            {staffNodeList.map((item) => <Option value={item.node.id}>{item.node.name}</Option>)}
           </Select>
         </Form.Item>
 
@@ -133,7 +196,7 @@ class EditBasicInformationForm extends React.Component {
           <div>
             <div style={{ margin: '0px' }} />
             <TextArea
-              value={userinfo ? userinfo.current_address : ""}
+              value={userinfo ? userinfo.currentAddress : ""}
               placeholder="Address"
               autoSize={{ minRows: 2, maxRows: 5 }}
             />
@@ -150,9 +213,11 @@ class EditBasicInformationForm extends React.Component {
           ]}
           style={itemStyle}
         >
-          <div>
+          {userinfo.dob ? 
+            <DatePicker defaultValue={moment(userinfo.dob)} />
+          :
             <DatePicker />
-          </div>
+          }
         </Form.Item>
 
 
@@ -172,29 +237,9 @@ class EditBasicInformationForm extends React.Component {
             allowClear
             value={userinfo ? userinfo.gender : ""}
           >
-            <Option value="Male">Male</Option>
-            <Option value="Female">Female</Option>
-            <Option value="Other">Other</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item
-          name="diagnosis"
-          label="Diagnosis"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-          style={itemStyle}
-        >
-          <Select
-            placeholder="Select a option and change input text above"
-            onSelect={this.handleChange}
-            allowClear
-          >
-            <Option value="">1</Option>
-            <Option value="">2</Option>
-            <Option value="">3</Option>
+            <Option value="male">Male</Option>
+            <Option value="female">Female</Option>
+            <Option value="other">Other</Option>
           </Select>
         </Form.Item>
 
@@ -212,11 +257,28 @@ class EditBasicInformationForm extends React.Component {
             placeholder="Select a option and change input text above"
             onSelect={this.handleChange}
             allowClear
-            value={userinfo ? userinfo.clinic_location : ""}
+            value={userinfo.clinicLocation ? userinfo.clinicLocation.id : ""}
           >
-            <Option value="">1</Option>
-            <Option value="">2</Option>
-            <Option value="">3</Option>
+            {clinicLocationList.map((item) => <Option value={item.node.id}>{item.node.location}</Option>)}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          label="Category"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+          style={itemStyle}
+        >
+          <Select
+            placeholder="Select a option"
+            onSelect={this.handleChange}
+            allowClear
+            value={userinfo.category ? userinfo.category.id : ""}
+          >
+            {categoryList.map((item) => <Option value={item.id}>{item.category}</Option>)}
           </Select>
         </Form.Item>
 

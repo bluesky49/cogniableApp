@@ -5,8 +5,8 @@ import { withRouter } from 'react-router-dom'
 import classNames from 'classnames'
 import TopBar from 'components/LayoutComponents/TopBar'
 import Menu from 'components/LayoutComponents/Menu'
-import Footer from 'components/LayoutComponents/Footer'
-import Breadcrumbs from 'components/LayoutComponents/Breadcrumbs'
+// import Footer from 'components/LayoutComponents/Footer'
+// import Breadcrumbs from 'components/LayoutComponents/Breadcrumbs'
 import Settings from 'components/LayoutComponents/Settings'
 
 const mapStateToProps = ({ settings }) => ({
@@ -50,12 +50,12 @@ class MainLayout extends React.PureComponent {
             <TopBar />
           </Layout.Header>
           <Layout.Content style={{ height: '100%', position: 'relative' }}>
-            <Breadcrumbs />
+            {/* <Breadcrumbs /> */}
             <div className="utils__content">{children}</div>
           </Layout.Content>
-          <Layout.Footer>
+          {/* <Layout.Footer>
             <Footer />
-          </Layout.Footer>
+          </Layout.Footer> */}
         </Layout>
       </Layout>
     )

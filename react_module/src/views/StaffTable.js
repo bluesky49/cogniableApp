@@ -4,134 +4,100 @@ import { Table, Button, Collapse,Card, Avatar, Form, Select, DatePicker} from 'a
 
 import Authorize from 'components/LayoutComponents/Authorize'
 
-import EditStaffBasicInfo from 'components/staff/EditStaffBasicInfo'
+import EditStaffBasicInfo from 'components/staff/EditStaffBasicInfo';
+
+import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 // import EditHrDetails from 'components/staff/EditHrDetails'
 // import EditCertificationDetails from 'components/staff/EditCertificationDetails'
 // import EditHealthForm from 'components/learner/EditHealthForm'
-
 import { ContactsOutlined, FileDoneOutlined, AuditOutlined, UserOutlined, FilterOutlined, PlusOutlined, FileExcelOutlined, FilePdfOutlined, PrinterOutlined } from '@ant-design/icons';
+import { gql } from "apollo-boost";
+import client from '../apollo/config'
 
-const API_URL = process.env.REACT_APP_API_URL;
 const { Panel } = Collapse;
 const { Meta } = Card;
-
 const {RangePicker } = DatePicker;
-// const data = [
-//     {
-//       key: '1',
-//       name: 'Arushi Chathly',
-//       email: 'admin@gmail.com',
-//       role: 'TLSAG3047',
-//       workExperience: 'admin@gmail.com',
-//       shift: 'Remote',
-//     },
-//     {
-//       key: '2',
-//       name: 'Arushi Chathly2',
-//       email: 'admin@gmail.com',
-//       role: 'TLSAG3047',
-//       workExperience: 'admin@gmail.com',
-//       shift: 'Remote',
-//     },
-//     {
-//       key: '3',
-//       name: 'Arushi Chathly3',
-//       email: 'admin@gmail.com',
-//       role: 'TLSAG3047',
-//       workExperience: 'admin@gmail.com',
-//       shift: 'Remote',
-//     },
-//     {
-//       key: '4',
-//       name: 'Arushi Chathly4',
-//       email: 'admin@gmail.com',
-//       role: 'TLSAG3047',
-//       workExperience: 'admin@gmail.com',
-//       shift: 'Remote',
-//     },
-//     {
-//       key: '5',
-//       name: 'Arushi Chathly5',
-//       email: 'admin@gmail.com',
-//       role: 'TLSAG3047',
-//       workExperience: 'admin@gmail.com',
-//       shift: 'Remote',
-//     },
-//     {
-//       key: '6',
-//       name: 'Arushi Chathly3',
-//       email: 'admin@gmail.com',
-//       role: 'TLSAG3047',
-//       workExperience: 'admin@gmail.com',
-//       shift: 'Remote',
-//     },
-//     {
-//       key: '7',
-//       name: 'Arushi Chathly4',
-//       email: 'admin@gmail.com',
-//       role: 'TLSAG3047',
-//       workExperience: 'admin@gmail.com',
-//       shift: 'Remote',
-//     },
-//     {
-//       key: '8',
-//       name: 'Arushi Chathly5',
-//       email: 'admin@gmail.com',
-//       role: 'TLSAG3047',
-//       workExperience: 'admin@gmail.com',
-//       shift: 'Remote',
-//     },
-//   ];
 
 class StaffTable extends React.Component {
     state = {
       divShow: false,
-      selectedName: '',
       filterShow: false,
       staffdata:[],
+      realStaffList: [],
       UserProfile:null,
-      isLoaded:false
+      isLoaded:true
     };
 
     componentDidMount() {
-      fetch(`${API_URL}/school/staff/`, {
-        method: "GET",
-        headers: {
-          'Authorization': JSON.parse(localStorage.getItem('token')),
-          'database': JSON.parse(localStorage.getItem('database')),
-        }
-      })
-        .then(res => res.json())
-        .then(
-          (result) => {
-            this.setState({
-              isLoaded:true,
-              staffdata: result.data
-            });
+
+      client.query({
+        query: gql`{staffs {
+          edges {
+            node {
+              id,
+              name,
+              email,
+              gender,
+              localAddress,
+              userRole{
+                id,
+                name
+              }
+              
+            }
           }
-        )
+        }
+      }`
+      })
+      .then(result => {
+        this.setState({
+          isLoaded: false,
+          staffdata: result.data.staffs.edges,
+        });
+  
+      }
+      );
+
     };
 
     info = (e) => {
-      fetch(`${API_URL}/school/staff/${e.id}/`, {
-        method: "GET",
-        headers: {
-          'Authorization': JSON.parse(localStorage.getItem('token')),
-          'database': JSON.parse(localStorage.getItem('database')),
-        }
-      })
-        .then(res => res.json())
-        .then(
-          (result) => {
+      client.query({
+        query: gql`{staff(id:"${e.id}"){
+          id,
+          name,
+          email,
+          gender,
+          localAddress,
+          designation,
+          empType,
+          salutation,
+          dateOfJoining,
+          dob,
+          surname,
+          contactNo,
+          emergencyContact,
+          emergencyName,
+          employeeId,
+          clinicLocation{
+            id,
+            location
+          },
+          userRole{
+            id,
+            name
+          }
+          
+        }}`
+        })
+        .then((result) => {
             this.setState({
-              UserProfile: result.data
+              UserProfile: result.data.staff
             });
-
           }
         )
-      this.setState({
-        divShow: true
-      })
+        this.setState({
+          divShow: true
+        })
     };
 
     handleChange = (pagination, filters, sorter) => {
@@ -142,18 +108,131 @@ class StaffTable extends React.Component {
       this.setState({divShow: true})
     }
 
-    consoleValue = (e, text) => {
-      e.preventDefault();
-      this.setState({
-          selectedName: text,
-          divShow: true
-      });
-    }
     
     onFinish = values => {
         alert()
         console.log('Received values of form: ', values);
     }
+
+    selectActiveStatus = (value) => {
+      if (value === 'all'){
+        client.query({query: gql`{staffs {edges {node {id,name,email,gender,localAddress}}}}`})
+          .then(result => {
+            this.setState({
+              staffdata: result.data.staffs.edges,
+              realStaffList: [],
+            });
+          }
+        );
+      }
+      if (value === 'active'){
+        client.query({query: gql`{staffs(isActive:true) {edges {node {id,name,email,gender,localAddress}}}}`})
+          .then(result => {
+            this.setState({
+              staffdata: result.data.staffs.edges,
+              realStaffList: [],
+            });
+          }
+        );
+      }
+      if (value === 'in-active'){
+        client.query({query: gql`{staffs(isActive:false) {edges {node {id,name,email,gender,localAddress}}}}`})
+          .then(result => {
+            this.setState({
+              staffdata: result.data.staffs.edges,
+              realStaffList: [],
+            });
+          }
+        );
+      }
+  
+    }
+
+    selectCategoryOption = (value) => {
+      this.setState({
+        isLoaded:true
+      })
+      if(value === 'select'){
+        client.query({query: gql`{staffs{edges {node {id,name,email,gender,localAddress,userRole{id,name}}}}}`})
+          .then(result => {
+            this.setState({
+              isLoaded:false,
+              staffdata: result.data.staffs.edges,
+              realStaffList : []
+            });
+          }
+        );
+      }
+      if (value === 'therapist'){
+        client.query({query: gql`{staffs(userRole:"VXNlclJvbGVUeXBlOjE="){edges {node {id,name,email,gender,localAddress,userRole{id,name}}}}}`})
+          .then(result => {
+            this.setState({
+              isLoaded:false,
+              staffdata: result.data.staffs.edges,
+              realStaffList : []
+            });
+          }
+        );
+      } else if(value === 'technician'){
+        client.query({query: gql`{staffs(userRole:"VXNlclJvbGVUeXBlOjI="){edges {node {id,name,email,gender,localAddress,userRole{id,name}}}}}`})
+          .then(result => {
+            this.setState({
+              isLoaded:false,
+              staffdata: result.data.staffs.edges,
+              realStaffList: [],
+            });
+          }
+        );
+      }
+
+    }
+
+    selectGenderOption = (value) => {
+      this.setState({
+        isLoaded:true
+      })
+      if (value === 'male'){
+        client.query({query: gql`{staffs(gender:"male"){edges {node {id,name,email,gender,localAddress,userRole{id,name}}}}}`})
+          .then(result => {
+            this.setState({
+              isLoaded:false,
+              staffdata: result.data.staffs.edges,
+              realStaffList : []
+            });
+          }
+        );
+      } else if(value === 'female'){
+        client.query({query: gql`{staffs(gender:"female"){edges {node {id,name,email,gender,localAddress,userRole{id,name}}}}}`})
+          .then(result => {
+            this.setState({
+              isLoaded:false,
+              staffdata: result.data.staffs.edges,
+              realStaffList: [],
+            });
+          }
+        );
+      }
+
+    }
+
+  selectDateRange = (value) => {
+    this.setState({
+      isLoaded:true
+    });
+    const start = new Date(value[0]).toISOString().slice(0,10);
+    const end = new Date(value[1]).toISOString().slice(0,10);
+
+    client.query({query: gql`{staffs(dateOfJoining_Gte: "${start}",dateOfJoining_Lte: "${end}",) {edges {node {id,name,email,gender,localAddress,userRole{id,name}}}}}`})
+      .then(result => {
+        this.setState({
+          isLoaded:false,
+          staffdata: result.data.staffs.edges,
+          realStaffList: [],
+        });
+      }
+    );
+
+  }
 
     filterToggle(toggle){
         if (toggle){
@@ -187,7 +266,7 @@ class StaffTable extends React.Component {
       },
       {
         title: 'Role',
-        dataIndex: 'designation',
+        dataIndex: 'userRole.name',
         key: 'designation',
         ellipsis: true,
       },
@@ -199,23 +278,27 @@ class StaffTable extends React.Component {
       },
       {
         title: 'Address',
-        dataIndex: 'local_address',
+        dataIndex: 'localAddress',
         key: 'local_address',
         ellipsis: true,
       }, 
     ];
-    const {divShow, filterShow, staffdata, UserProfile, isLoaded} = this.state; 
-    if (!isLoaded) {
+    const {divShow, filterShow, staffdata, UserProfile, isLoaded, realStaffList} = this.state; 
+
+    if (!realStaffList.length > 0){
+      staffdata.map((item) => realStaffList.push(item.node))
+      }
+
+    if (isLoaded) {
       return <div>Loading...</div>;
     }
     const divClass = divShow ? "col-sm-8" : "col-sm-12";
     const detailsDiv = divShow ? {display:'block', paddingLeft:'0'} : {display:'none'} 
     const filterDiv = filterShow ? {display:'block', padding:'0', marginBottom:'0', backgroundColor:'inherit'} : {display:'none'}
     // const {Column} = Table;
-    const {selectedName} = this.state;
     const filterOptionStyle = {display:'inline-block', marginRight:'10px'}
     return (
-      <Authorize roles={[1]} redirect to="/dashboard/beta">
+      <Authorize roles={["school_admin"]} redirect to="/dashboard/beta">
         <Helmet title="Partner" />
         {/* <div className="utils__title utils__title--flat mb-3">
           <strong className="text-uppercase font-size-16">Responsive Tables</strong>
@@ -236,46 +319,42 @@ class StaffTable extends React.Component {
             <div className="card" style={filterDiv}>
               <div className="card-body" style={{padding:'0', marginBottom:'0'}}>  
                 <Form.Item label="" style={filterOptionStyle}>
-                  <Select style={{width:'120px'}} value='select'>
-                    <Select.Option value="select">status</Select.Option>
+                  <Select style={{ width: '120px' }} defaultValue='all' onSelect={this.selectActiveStatus}>
+                    <Select.Option value="all">Status (All)</Select.Option>
                     <Select.Option value="active">Active</Select.Option>
-                    <Select.Option value="inactive">In-active</Select.Option>
+                    <Select.Option value="in-active">In-active</Select.Option>
                   </Select>
                 </Form.Item>
                 <Form.Item label="" style={filterOptionStyle}>
-                  <Select style={{width:'120px'}} value='select'>
-                    <Select.Option value="select">category</Select.Option>
+                  <Select style={{width:'120px'}} defaultValue='select' onSelect={this.selectCategoryOption}>
+                    <Select.Option value="select">Category (All)</Select.Option>
                     <Select.Option value="therapist">Therapist</Select.Option>
-                    <Select.Option value="center">Technician</Select.Option>
+                    <Select.Option value="technician">Technician</Select.Option>
                   </Select>
                 </Form.Item>
                 <Form.Item label="" style={filterOptionStyle}>
-                  <Select style={{width:'140px'}} value='select'>
-                    <Select.Option value="select">role</Select.Option>
-                    <Select.Option value="active">Active</Select.Option>
-                    <Select.Option value="in-active">In-active</Select.Option>
+                  <Select style={{width:'120px'}} defaultValue='select' onSelect={this.selectGenderOption}>
+                    <Select.Option value="select">Gender (All)</Select.Option>
+                    <Select.Option value="male">Male</Select.Option>
+                    <Select.Option value="female">Female</Select.Option>
                   </Select>
                 </Form.Item>
                 <Form.Item label="" style={filterOptionStyle}>
-                  <Select style={{width:'130px'}} value='select'>
-                    <Select.Option value="select">designation</Select.Option>
-                    <Select.Option value="active">Active</Select.Option>
-                    <Select.Option value="in-active">In-active</Select.Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item label="" style={filterOptionStyle}>
-                  <Select style={{width:'150px'}} value='select'>
-                    <Select.Option value="select">show hide field</Select.Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item label="" style={filterOptionStyle}>
-                  <RangePicker style={{marginTop:'3px'}} />
+                  <RangePicker style={{marginTop:'3px'}} onChange={this.selectDateRange} />
                 </Form.Item>
               </div>
             </div>
             <div className="card">
+              <ReactHTMLTableToExcel 
+                id="test-table-xls-button" 
+                className="ant-btn" 
+                table="stafftable"
+                filename="staffs" 
+                sheet="staff" 
+                buttonText="Excel" 
+              />
               <div className="card-body" style={{padding:'0'}}>
-                <Table columns={columns} onRowClick={(e) => this.info(e)} dataSource={staffdata} bordered onChange={this.handleChange} />
+                <Table id="stafftable" columns={columns} onRowClick={(e) => this.info(e)} dataSource={realStaffList} bordered onChange={this.handleChange} />
               </div>
             </div>
           </div>
@@ -294,14 +373,14 @@ class StaffTable extends React.Component {
                       }
                       title={
                         <h5 style={{marginTop:'20px'}}>
-                          {selectedName}
+                          {UserProfile? UserProfile.name : ''}
                           {/* <span style={{float:'right', fontSize:'12px', padding:'5px'}}>delete</span>
                           <span style={{float:'right', fontSize:'12px', padding:'5px'}}>edit</span> */}
                         </h5>
                       }
                       description={
                         <div>
-                          <p style={{fontSize:'13px', marginBottom:'4px'}}>Therapist <span style={{backgroundColor:'#52c41a', color:'white', borderRadius:'3px', padding:'1px 5px'}}>Active</span></p>
+                          <p style={{fontSize:'13px', marginBottom:'4px'}}> Therapist <span style={{backgroundColor:'#52c41a', color:'white', borderRadius:'3px', padding:'1px 5px'}}>Active</span></p>
                           
                         </div>
                       }
@@ -310,7 +389,7 @@ class StaffTable extends React.Component {
                   {UserProfile ?
                     <Collapse defaultActiveKey="1" accordion bordered={false}>
                       <Panel header="Basic Details" key="1">
-                        <EditStaffBasicInfo userinfo={UserProfile} />
+                        <EditStaffBasicInfo key={UserProfile.id} userinfo={UserProfile} />
                       </Panel>
                       {/* <Panel header="HR Details" key="2">
                         <EditHrDetails />

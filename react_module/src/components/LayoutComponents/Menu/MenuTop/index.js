@@ -142,8 +142,8 @@ class MenuTop extends React.Component {
     return (
       <div>
         <div className={styles.logo}>
-          <div className={styles.logoContainer}>
-            <img src="resources/images/logo-inverse1.png" alt="CogniAble" />
+          <div className={styles.logoContainer} style={{backgroundColor:"white", borderBottom:'1px solid #f2f2f2'}}>
+            <img src="resources/images/logo-inverse1.png" alt="CogniAble Logo" />
           </div>
         </div>
         <Menu

@@ -1,14 +1,99 @@
+/* eslint-disable react/no-unused-state */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-lone-blocks */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-self-compare */
 import React from 'react';
-import { Form, Input, Button, Select, DatePicker, InputNumber, TimePicker} from 'antd';
+import { Form, Input, Button, Select, DatePicker} from 'antd';
 import moment from 'moment';
+import { gql } from "apollo-boost";
+import client from '../../apollo/config'
+
+const { TextArea } = Input;
 
 class EditStaffBasicInfo extends React.Component {
+  constructor(props){
+    super(props);
 
-  handleChange = (e) => {
-    this.setState({
-      [e.target.name]: e.target.value
-    })
-  };
+    this.state = {
+      isLoaded: true, 
+      staffId: this.props.userinfo.employeeId,
+      dateOfJoining: this.props.userinfo.dateOfJoining,
+      role:this.props.userinfo.userRole.id,
+      designation:this.props.userinfo.designation,
+      clinicLocation:null,
+      firstname:this.props.userinfo.name,
+      lastname:this.props.userinfo.surname,
+      email:this.props.userinfo.email,
+      gender: this.props.userinfo.gender,
+      contactNumber:this.props.userinfo.contactNo,
+      address:this.props.userinfo.localAddress,
+      maritalStatus:null,
+      dob:this.props.userinfo.dob,
+      emergencyName:this.props.userinfo.emergencyName,
+      emergencyContactNumber:this.props.userinfo.emergencyContact,
+      emergencyRelation:'',
+      qualification:'',
+      workExprience:'',     
+
+      clinicLocationList:[],
+      userRoleList: [],
+      
+    };
+
+  }
+
+  componentDidMount(){
+
+    console.log(this.props.userinfo.clinicLocation)
+    if (!this.props.userinfo.clinicLocation == null){
+      // this.setState({
+      //   clinicLocation:this.props.userinfo.clinicLocation.id
+      // })
+      console.log(typeof this.props.userinfo.clinicLocation)
+      console.log(typeof null)
+    }
+
+    client.query({
+      query: gql`
+        {schoolLocation {
+          edges {
+            node {
+              id,
+              location
+            }
+          }
+        },
+        userRole {
+          id,
+          name,
+        }
+      }`
+      })
+      .then(result => {
+        this.setState({
+          isLoaded: false,
+          clinicLocationList: result.data.schoolLocation.edges,
+          userRoleList: result.data.userRole,
+        });
+      });
+
+  }
+
+  handleChange = (e) => {this.setState({[e.target.name]: e.target.value})};
+
+  setDateOfJoining = (value) => {this.setState({dateOfJoining : (new Date(value)).toISOString().slice(0,10)})}
+
+  selectRole = (value) => {this.setState({role:value})}
+
+  selectClinicLocation = (value) => {this.setState({clinicLocation:value})}
+
+  selectGender = (value) => {this.setState({gender:value})}
+
+  selectMeritalStatus = (value) => {this.setState({maritalStatus:value})}
+
+  setDob = (value) => {this.setState({dob : (new Date(value)).toISOString().slice(0,10)})}
 
   onFinish = values => {
     console.log(values);
@@ -25,6 +110,17 @@ class EditStaffBasicInfo extends React.Component {
     const dateFormat = 'YYYY-MM-DD';
     const timeFormat = 'h:mm A'
 
+    
+
+    const {staffId, designation, firstname, lastname, email, contactNumber, address, emergencyName, emergencyContactNumber, emergencyRelation,
+      qualification, workExprience, isLoaded, clinicLocationList, userRoleList, dateOfJoining, dob, role, clinicLocation } = this.state;
+    
+    console.log(clinicLocation, 1)
+    
+    if (isLoaded){
+      return <div>Loding...</div>;
+    }
+
     return (
       <Form
         layout={{
@@ -35,77 +131,93 @@ class EditStaffBasicInfo extends React.Component {
         name="control-ref"
         onFinish={this.onFinish}
       >
-        
-        <Form.Item name="employee_id" label="Employee ID" rules={[{required: true,}]} style={itemStyle}>
-          <Input value={userinfo ? userinfo.email : ""} />
+
+        <Form.Item style={itemStyle} label="Staff ID">
+          <Input name="staffId" onChange={this.handleChange} value={staffId} />
         </Form.Item>
-        <Form.Item name="designation" label="Designation" style={itemStyle}>
-          <Input value={userinfo ? userinfo.designation : ""} />
+        <Form.Item style={itemStyle} label="Date of Joining">
+          {dateOfJoining ? 
+            <DatePicker onChange={this.setDateOfJoining} defaultValue={moment(dateOfJoining)} />
+          :
+            <DatePicker onChange={this.setDateOfJoining} />
+          }
         </Form.Item>
-        <Form.Item name="emp_type" label="Employee Type" style={itemStyle}>
-          <Input value={userinfo ? userinfo.emp_type : ""} />
-        </Form.Item>
-        <Form.Item name="salutation" label="Salutation" style={itemStyle}>
-          <Input value={userinfo ? userinfo.salutation : ""} />
-        </Form.Item>
-        <Form.Item name="name" label="First Name" style={itemStyle}>
-          <Input value={userinfo ? userinfo.name : ""} />
-        </Form.Item>
-        <Form.Item name="surname" label="Last Name" style={itemStyle}>
-          <Input value={userinfo ? userinfo.surname : ""} />
-        </Form.Item>
-        <Form.Item name="gender" label="Gender" style={itemStyle}>
-          <Select placeholder="Select an option" value={userinfo ? userinfo.gender : ""} allowClear>
-            <Select.Option value="Male">Male</Select.Option>
-            <Select.Option value="Female">Female</Select.Option>
+        <Form.Item style={itemStyle} label="Role">
+          <Select onSelect={this.selectRole} defaultValue={role}>
+            {userRoleList.map((item) => <Select.Option value={item.id}>{item.name}</Select.Option>)}
           </Select>
         </Form.Item>
-        <Form.Item name="local_address" label="Address" style={itemStyle}>
-          <Input value={userinfo ? userinfo.local_address : ""} />
+        <Form.Item style={itemStyle} label="Designation">
+          <Input name="designation" onChange={this.handleChange} value={designation} />
         </Form.Item>
-        <Form.Item name="email" label="Email" style={itemStyle}>
-          <Input value={userinfo ? userinfo.email : ""} />
+        <Form.Item style={itemStyle} label="Clinic Location">
+          <Select onSelect={this.selectClinicLocation} value={clinicLocation}>
+            {clinicLocationList.map((item) => <Select.Option value={item.node.id}>{item.node.location}</Select.Option>)} 
+          </Select>
         </Form.Item>
-        <Form.Item name="clinic_location" label="Clinic Location" style={itemStyle}>
-          <Input value={userinfo ? userinfo.clinic_location : ""} />
+        
+        
+        <Form.Item style={itemStyle} label="First Name">
+          <Input name="firstname" onChange={this.handleChange} value={firstname} />
+        </Form.Item>        
+        <Form.Item style={itemStyle} label="Last Name">
+          <Input name="lastname" onChange={this.handleChange} value={lastname} />
         </Form.Item>
-        <Form.Item name="shift_start" label="Shift start time" style={itemStyle}>
-          <TimePicker use12Hours defaultValue={moment(userinfo ? userinfo.shift_start : "", timeFormat)} style={{ width: 403 }} />
+        <Form.Item style={itemStyle} label="Email">
+          <Input name="email" type="email" onChange={this.handleChange} value={email} />
         </Form.Item>
-        <Form.Item name="shift_end" label="Shift end time" style={itemStyle}>
-          <TimePicker use12Hours defaultValue={moment(userinfo ? userinfo.shift_end : "", timeFormat)} style={{ width: 403 }} />
+        <Form.Item style={itemStyle} label="Gender">
+          <Select onSelect={this.selectGender}>
+            <Select.Option value="male">Male</Select.Option>
+            <Select.Option value="female">Female</Select.Option>
+            <Select.Option value="other">Other</Select.Option>
+          </Select>
         </Form.Item>
-        <Form.Item name="dob" label="D.O.B" style={itemStyle}>
-          <DatePicker defaultValue={moment(userinfo ? userinfo.dob : "", dateFormat)} format={dateFormat} style={{ width: 403 }} />
+        <Form.Item style={itemStyle} label="Contact no.">
+          <Input name="contactNumber" onChange={this.handleChange} value={contactNumber} />
         </Form.Item>
-        <Form.Item name="ssn_aadhar" label="SSN/Adhar" style={itemStyle}>
-          <InputNumber value={userinfo ? userinfo.ssn_aadhar : ""} style={{ width: 403 }} />
+        
+        <Form.Item style={itemStyle} label="Address">
+          <TextArea
+            placeholder="Address"
+            name="address"
+            onChange={this.handleChange}
+            value={address}
+            autoSize={{ minRows: 2, maxRows: 5 }}
+          />
         </Form.Item>
-        <Form.Item name="qualification" label="Qualification" style={itemStyle}>
-          <Input value={userinfo ? userinfo.qualification : ""} />
+        <Form.Item style={itemStyle} label="Merital Status">
+          <Select onSelect={this.selectMeritalStatus}>
+            <Select.Option value="Single">Single</Select.Option>
+            <Select.Option value="Married">Married</Select.Option>
+          </Select>
         </Form.Item>
-        <Form.Item name="contact_no" label="Contact no." style={itemStyle}>
-          <InputNumber value={userinfo ? userinfo.contact_no : ""} style={{ width: 403 }} />
+        <Form.Item style={itemStyle} label="D.O.B">          
+          {dob ? 
+            <DatePicker onChange={this.setDob} defaultValue={moment(dob)} />
+          :
+            <DatePicker onChange={this.setDob} />
+          }
         </Form.Item>
-        <Form.Item name="tax_id" label="Tax Id" style={itemStyle}>
-          <InputNumber value={userinfo ? userinfo.tax_id : ""} style={{ width: 403 }} />
+        
+        <Form.Item style={itemStyle} label="Emergency Contact Name">
+          <Input name="emergencyName" onChange={this.handleChange} value={emergencyName} />
         </Form.Item>
-        <Form.Item name="npi" label="NPI" style={itemStyle}>
-          <Input value={userinfo ? userinfo.npi : ""} />
+        <Form.Item style={itemStyle} label="Emergency Contact Relation">
+          <Input name="emergencyRelation" onChange={this.handleChange} value={emergencyRelation} />
         </Form.Item>
-        <Form.Item name="emergency_name" label="Emergency Contact Name" style={itemStyle}>
-          <Input value={userinfo ? userinfo.emergency_name : ""} />
+        <Form.Item style={itemStyle} label="Emergency contact no.">
+          <Input name="emergencyContactNumber" onChange={this.handleChange} value={emergencyContactNumber} />
         </Form.Item>
-        <Form.Item name="emergency_contact" label="Emergency contact no." style={itemStyle}>
-          <InputNumber value={userinfo ? userinfo.emergency_contact : ""} style={{ width: 403 }} />
+
+        <Form.Item style={itemStyle} label="Qualification">
+          <Input name="qualification" onChange={this.handleChange} value={qualification} />
         </Form.Item>
-        <Form.Item name="duration" label="Duration of contract/internship" style={itemStyle}>
-          <Input value={userinfo ? userinfo.duration : ""} />
+        <Form.Item style={itemStyle} label="Work Exprience">
+          <Input name="workExprience" onChange={this.handleChange} value={workExprience} />
         </Form.Item>
-        <Form.Item name="date_of_joining" label="Date of Joining" style={itemStyle}>
-          <DatePicker defaultValue={moment(userinfo ? userinfo.date_of_joining : "", dateFormat)} format={dateFormat} style={{ width: 403 }} />
-        </Form.Item>
-        <Form.Item>
+        
+        <Form.Item style={itemStyle}>
           <Button type="primary" htmlType="submit">Submit</Button>
           <Button onClick={this.onReset} className="ml-4">Cancel</Button>
         </Form.Item>

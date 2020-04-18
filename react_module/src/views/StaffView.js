@@ -1,29 +1,29 @@
 import React from 'react';
 import { Helmet } from 'react-helmet'
 // import { Tabs } from 'antd';
-import { Tabs,} from 'antd';
+// import { Tabs,} from 'antd';
 import StaffBasicInfo from 'components/staff/StaffBasicInfo'
-import CertificationDetails from 'components/staff/CertificationDetails'
-import HrDetails from 'components/staff/HrDetails'
-import CredentiallingInfo from 'components/staff/CredentiallingInfo'
+// import CertificationDetails from 'components/staff/CertificationDetails'
+// import HrDetails from 'components/staff/HrDetails'
+// import CredentiallingInfo from 'components/staff/CredentiallingInfo'
 import Authorize from 'components/LayoutComponents/Authorize'
 
 
 class StaffView extends React.Component {
     render() {
-        const { TabPane } = Tabs;
+        // const { TabPane } = Tabs;
         return (
-          <Authorize roles={[1]} redirect to="/dashboard/beta">
+          <Authorize roles={["school_admin"]} redirect to="/dashboard/beta">
             <Helmet title="Partner" />
-            <div className="utils__title utils__title--flat mb-3">
+            {/* <div className="utils__title utils__title--flat mb-3">
               <strong className="text-uppercase font-size-16">Create Staff</strong>
-            </div>
+            </div> */}
             <div className="row justify-content-md-center">
               <div className="col-sm-7">
                 <div className="card">
                   <div className="card-body">
     
-                    <Tabs type="card">
+                    {/* <Tabs type="card">
                       <TabPane tab="Excel Upload" key="1">
                         Content of Tab Pane 1
                       </TabPane>
@@ -39,7 +39,11 @@ class StaffView extends React.Component {
                       <TabPane tab="Credentialling Info" key="5">
                         <CredentiallingInfo />
                       </TabPane>
-                    </Tabs>
+                    </Tabs> */}
+                    <h5>CREATE STAFF</h5>
+                    <hr />
+                    <br />
+                    <StaffBasicInfo /> 
                   </div>
                 </div>
               </div>

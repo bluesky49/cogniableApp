@@ -189,11 +189,11 @@ class EditHealthForm extends React.Component {
 
           <Form.Item {...tailLayout}>
             <Button type="primary" htmlType="submit"> 
-            Submit
+              Submit
             </Button>
 
             <Button htmlType="primary" onClick={this.onReset} className="ml-4">
-            cancel
+              cancel
             </Button>
           </Form.Item>  
 

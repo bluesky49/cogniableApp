@@ -91,6 +91,7 @@ export function* LOGOUT() {
 
   localStorage.setItem('database', "");
   localStorage.setItem('token',  "");
+  localStorage.setItem('role',  "");
 }
 
 export default function* rootSaga() {

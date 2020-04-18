@@ -3,11 +3,12 @@ import { Form, Input, Select, Button, Checkbox } from 'antd'
 import { Helmet } from 'react-helmet'
 import { Link, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
+import client from '../../../config'
 import styles from './style.module.scss'
 
 
 const { Option } = Select
-const API_URL = process.env.REACT_APP_API_URL;
+// const API_URL = process.env.REACT_APP_API_URL;
 
 @Form.create()
 @connect(({ user }) => ({ user }))
@@ -26,16 +27,35 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    fetch(`${API_URL}/school/country_list`, {headers:{ "Accept": "application/json", "Content-Type": "application/json", "database":"india" }})
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            CountryList: result,
-            countryLoad: true
-          });
-        }
-      )
+
+    const query = `query {
+      country {
+        edges {
+          node {
+            id
+            name
+          }
+      }
+    }
+    }`
+
+
+    client.request(query).then(data => {
+      this.setState({
+        CountryList: data.country.edges,
+        countryLoad: true
+      });
+    })
+    // fetch(`${API_URL}/school/country_list`, {headers:{ "Accept": "application/json", "Content-Type": "application/json", "database":"india" }})
+    //   .then(res => res.json())
+    //   .then(
+    //     (result) => {
+    //       this.setState({
+    //         CountryList: result,
+    //         countryLoad: true
+    //       });
+    //     }
+    //   )
 
     fetch('http://ip-api.com/json')
       .then(res => res.json())
@@ -125,7 +145,7 @@ class Login extends Component {
                             optionFilterProp="children"
                           >
                             {CountryList.map(c =>
-                              <Option value={c.id}>{c.name}</Option>
+                              <Option value={c.node.id}>{c.node.name}</Option>
                             )}
                           </Select>
                         )}
@@ -159,7 +179,7 @@ class Login extends Component {
                           >
                             Register
                           </a>{' '}
-                        if you don&#39;t have account
+                          if you don&#39;t have account
                         </span>
                       </div>
                       <div className="form-group">

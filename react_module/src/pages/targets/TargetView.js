@@ -1,14 +1,13 @@
 import React from 'react'
 import { Helmet } from 'react-helmet'
-import { Table, Button, Form, Select, Icon, Input, Row, Col, Upload, Collapse, DatePicker, Tabs } from 'antd';
+import { Table, Button, Form, Select, Icon, Input, Tabs } from 'antd';
 import Chat from 'components/CleanUIComponents/Chat'
 import Authorize from 'components/LayoutComponents/Authorize'
 import { GraphQLClient } from 'graphql-request'
-// import LoginForm from 'components/CleanUIComponents/Targets'
+import TargetAllocate from 'components/CleanUIComponents/Targets'
+
 const FormItem = Form.Item
 const { TabPane } = Tabs;
-const { Panel } = Collapse;
-const { TextArea } = Input;
 // const temp = [];
 
 const graphQLClient = new GraphQLClient('http://development.cogniable.us/apis/school/graphql', {
@@ -27,23 +26,6 @@ const column1 = [
     dataIndex: 'node.targetMain.targetName',
   },
 ];
-// const data1 = [
-//   {
-//     key:{'key':'1'},
-//     target:{
-//     domain: 'MAND',
-//     targetname: 'requests for activities using appropriate adjectives'
-//   }
-
-//   },
-//   {
-//     key:{'key':'2'},
-//     target:{
-//     domain: 'MAND',
-//     targetname: 'requests for activities using appropriate adjectives'
-//     }
-//   },
-// ];
 
 const column2 = [
   {
@@ -66,24 +48,7 @@ const column2 = [
     render: text => <a>{text}</a>,
   },
 ];
-// const data2 = [
-//   {
-//     key: '3',
-//     domain: 'MAND',
-//     targetname: 'requests for activities using appropriate adjectives',
-//     status: 'baseline',
-//     copy: <Icon type="copy" />
 
-//   },
-//   {
-//     key: '4',
-//     domain: 'MAND',
-//     targetname: 'requests for activities using appropriate adjectives',
-//     status: 'in-therapy',
-//     copy: <Icon type="copy" />
-
-//   }
-// ];
 const rowSelection1 = {
   onChange: (selectedRowKeys, selectedRows) => {
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -125,13 +90,12 @@ class TargetView extends React.Component {
       consdays: "",
       trials: "",
       steps: "",
-      objectives: "",
-
+      // SelectedTarList:[],         
       divShow: false,
       filterShow: false,
       LearnerList: [],
       SuggestedTarget: [],
-      AllocatedTarget:[],
+      AllocatedTarget: [],
       DomainList: [],
       targetArea: []
 
@@ -186,6 +150,7 @@ class TargetView extends React.Component {
       })
     })
   }
+
 
   handleSubmit = e => {
     e.preventDefault();
@@ -248,7 +213,7 @@ class TargetView extends React.Component {
 
           this.setState({
             SuggestedTarget: data.target.edges,
-            AllocatedTarget:data.targetAllocates.edges,
+            AllocatedTarget: data.targetAllocates.edges,
           })
         })
 
@@ -261,7 +226,7 @@ class TargetView extends React.Component {
 
   // setDate = (value) => { this.setState({ date: (new Date(value)).toISOString().slice(0, 10) }) }
 
-  selectDomain = (value) => { this.setState({ domain2: value }) }
+  // selectDomain = (value) => { this.setState({ domain2: value }) }
 
   selectTargetName = (value) => { this.setState({ targetname: value }) }
 
@@ -299,6 +264,7 @@ class TargetView extends React.Component {
   }
 
   consoleValue = (e, ) => {
+
     e.preventDefault();
     this.setState({
       divShow: true
@@ -364,7 +330,7 @@ class TargetView extends React.Component {
     const filterDiv = filterShow ? { display: 'block', padding: '0', marginBottom: '0', backgroundColor: 'inherit' } : { display: 'none' }
     // const {Column} = Table;
     const filterOptionStyle = { display: 'inline-block', marginRight: '10px' }
-    const { searchlearner, domain1, domain2, targetarea, search, targetname, targettype, mcriteria, date, codes, status, consdays, trials, steps, objectives } = this.state
+    const { searchlearner, domain1, domain2, targetarea, search, targetname, targettype, mcriteria, date, codes, status, consdays, trials, steps } = this.state
     console.log(searchlearner, domain1, domain2, targetarea, search, targetname, date, codes, status, consdays, trials, steps)
     return (
       <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
@@ -407,7 +373,7 @@ class TargetView extends React.Component {
                                 showSearch
                                 style={{ width: '100%' }}
                                 placeholder="Select a Learner"
-                                optionFilterProp="children"                             
+                                optionFilterProp="children"
                               >
                                 {LearnerList.map(c =>
                                   <option value={c.node.id}>{c.node.firstname}</option>
@@ -429,7 +395,7 @@ class TargetView extends React.Component {
                                 style={{ width: '100%' }}
                                 placeholder="Select a domain"
                                 optionFilterProp="children"
-                                onChange={this.DomainChange}                               
+                                onChange={this.DomainChange}
                               >
                                 {DomainList.map(c =>
                                   <option value={c.id}>{c.domain}</option>
@@ -448,7 +414,7 @@ class TargetView extends React.Component {
                                 showSearch
                                 style={{ width: '100%' }}
                                 placeholder="Select a Target Area"
-                                optionFilterProp="children"                               
+                                optionFilterProp="children"
                               >
                                 {targetArea.map(c =>
                                   <option value={c.node.id}>{c.node.Area}</option>
@@ -531,7 +497,7 @@ class TargetView extends React.Component {
                   style={{ float: "right" }}
                   onClick={(e) => this.consoleValue(e)}
                 >
-                  Allocated Targets
+                  Allocate Targets
                 </Button>
                 <h4 style={{ backgroundColor: "inherit" }}>Suggested Targets</h4>
                 <Table
@@ -564,94 +530,7 @@ class TargetView extends React.Component {
                 <div className="table-operations" style={{ marginBottom: '16px' }}>
                   <Button style={{ marginRight: '-12px', float: 'right', border: 'none', padding: 'none' }} onClick={() => this.setState({ divShow: false })}>X</Button>
                 </div>
-                <Form>
-                  <Form.Item label="Domain">
-                    <Select name="domain2" onSelect={this.selectDomain}>
-                      <Select.Option value="demo">Mand</Select.Option>
-                      <Select.Option value="demo">2</Select.Option>
-                    </Select>
-                  </Form.Item>
-                  <Form.Item label="Target Name">
-                    <Input name="targetname" />
-                  </Form.Item>
-                  <Form.Item label="Target Type">
-                    <Select name="targettype">
-                      {targettype.map(c =>
-                        <option value={c.id}>{c.typeTar}</option>
-                      )}
-                    </Select>
-                  </Form.Item>
-                  <Form.Item label="Mastery Criteria">
-                    <Select name="mcriteria">
-                      {mcriteria.map(c =>
-                        <option value={c.id}>Response Percentage:{c.responsePercentage}%,Consecutive Days:{c.consecutiveDays}, Min Trial:{c.minTrial}</option>
-                      )}
-                    </Select>
-                  </Form.Item>
-                  <Form.Item label="Date Baseline">
-                    <DatePicker name="date" />
-                  </Form.Item>
-                  <Form.Item label="Custom Prompt Codes">
-                    <Select name="codes">
-                      {codes.map(c =>
-                        <option value={c.id}>{c.promptName}</option>
-                      )}
-                    </Select>
-                  </Form.Item>
-                  <Form.Item label="Status">
-                    <Select name="status">
-                      {status.map(c =>
-                        <option value={c.id}>{c.statusName}</option>
-                      )}
-                    </Select>
-                  </Form.Item>
-                  <Form.Item label="Consecutive days">
-                    <Input name="consdays" onChange={this.onhandleChange} />
-                  </Form.Item>
-                  <Form.Item label="Desired Daily Trials">
-                    <Select name="trials" onSelect={this.selectDailytrials}>
-                      <Select.Option value="demo">1</Select.Option>
-                      <Select.Option value="demo">2</Select.Option>
-                    </Select>
-                  </Form.Item>
-                  <Form.Item label="Steps">
-                    <Select name="steps" onSelect={this.selectsteps}>
-                      <Select.Option value="demo">1</Select.Option>
-                      <Select.Option value="demo">2</Select.Option>
-                    </Select>
-                  </Form.Item>
-                  <Row>
-                    <Col sm={24}>
-                      <Collapse
-                        bordered={false}
-                        defaultActiveKey={['1']}
-                        className="site-collapse-custom-collapse"
-                      >
-                        <Panel header="Teaching objectives and session objectives" key="1" className="site-collapse-custom-panel">
-                          <TextArea name="objectives" autoSize={{ minRows: 2, maxRows: 5 }}>
-                            {objectives}
-                          </TextArea>
-                        </Panel>
-                      </Collapse>
-                    </Col>
-                  </Row>
-                  <Form.Item label="&nbsp;">
-                    <Button>Video</Button> &emsp;&emsp;&emsp;
-                    <Button type="primary">Document</Button>&emsp;&emsp;&emsp;
-                    <Button type="primary">Link</Button>
-                  </Form.Item>
-                  <Form.Item label="Upload">
-                    <Upload name="logo" action="/upload.do" listType="picture">
-                      <Button>
-                        Choose file
-                      </Button>
-                    </Upload>,
-                  </Form.Item>
-                  <Form.Item>
-                    <Button type="primary">Submit</Button>
-                  </Form.Item>
-
-                </Form>
+                <TargetAllocate DomainList={DomainList} targettype={targettype} mcriteria={mcriteria} codes={codes} status={status} /> 
               </div>
             </div>
           </div>

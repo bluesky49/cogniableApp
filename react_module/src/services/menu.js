@@ -1,3 +1,6 @@
+// import { connect } from 'react-redux'
+/* eslint-disable no-else-return */
+
 export async function getLeftMenuData() {
   return [
     {
@@ -15,15 +18,193 @@ export async function getLeftMenuData() {
     {
       divider: true,
     },
-    {
+    { 
       title: 'Dashboard Alpha',
       key: 'dashboardAlpha',
       url: '/dashboard/alpha',
       icon: 'icmn icmn-home',
     },
   ]
+
 }
+
 export async function getTopMenuData() {
+  if (JSON.parse(localStorage.getItem('role')) === "parents"){  
+    console.log('entered in parent menu')
+    return [
+      {
+        title: 'Dashboard',
+        key: 'settings',
+        icon: 'icmn icmn-cog utils__spin-delayed--pseudo-selector',
+      },
+      {
+        title: 'Partners',
+        key: 'partners',
+        // url: '/partners/laerners',
+        icon: 'icmn icmn-books',
+        children: [
+              {
+                title: 'Learners',
+                key: 'partnersLearner',
+                url: '/partners/learner',
+              },
+              {
+                title: 'Staff',
+                key: 'partnersStaff',
+                url: '/partners/viewstaffs',
+              },
+              {
+                title: 'Network Providers',
+                key: 'partnersProviders',
+                url: '/partners/providers',
+              },
+              {
+                title: 'Others',
+                key: 'partnersOthers',
+                url: '/partners/others',
+              },
+        ]
+      },
+      {
+        title: 'Assessment',
+        key: 'parentAssessment',
+        // url: '/dashboard/alpha',
+        icon: 'icmn icmn-books',
+        children: [
+          {
+            title: 'VB-MAPP',
+            key: 'parentVBMAPP',
+            url: '/parent/VBMAPP',
+          },
+          {
+            title: 'PEAK',
+            key: 'parentPEAK',
+            url: '/parent/PEAK',
+          },
+          {
+            title: 'CogniAble',
+            key: 'parentCogniAble',
+            url: '/parent/COGNIABLE',
+          },
+          {
+            title: 'ABC',
+            key: 'parentABC',
+            url: '/parent/ABC',
+          },
+          {
+            title: 'Preference Assessment',
+            key: 'parentPreferenceAssessment',
+            url: '/parent/PreferenceAssessment',
+          },
+        ]
+      },
+      {
+        title: 'Goals',
+        key: 'parentGoals',
+        url: '/partners/editprofile',
+        icon: 'icmn icmn-books',
+        children: [
+          {
+            title: 'Long Term',
+            key: 'revenueAuthorizations',
+            url: '/revenue/authorization',
+          },
+          {
+            title: 'Short Term',
+            key: 'revenueAuthorizationByPayor',
+            url: '/revenue/authorizationbypayor',
+          },
+          {
+            title: 'Tragets',
+            key: 'revenueBilling',
+            url: '/revenue/billing',
+          },
+          
+        ]
+      },
+      {
+        title: 'Sessions',
+        key: 'parentSessions',
+        // url: '/therapy/tables',
+        icon: 'icmn icmn-books',
+        children: [
+          {
+            title: 'Skill Acquisition',
+            key: 'parentSkillAcquisition',
+            // url: '/therapy/assessment',
+          },
+          {
+            key: 'parentBehaviorReduction',
+            title: 'Behavior Reduction',
+            url: '/therapy/targetmapping',
+            // pro: true,
+          },
+          {
+            key: 'parentMaintenance',
+            title: 'Maintenance',
+            url: '/therapy/assessment/peak',
+          },
+          
+        ]
+      },
+      {
+        title: 'Daily Vitals',
+        key: 'parentDailyVitals',
+        icon: 'icmn icmn-books',
+        children: [
+          {
+            title: 'Mand',
+            key: 'parentMand',
+            url: '/scheduling/task',
+          },
+          {
+            title: 'Behavior',
+            key: 'ParentBehavior',
+            url: '/scheduling/appointments',
+          },
+          {
+            title: 'Height',
+            key: 'parentHeight',
+            url: '/scheduling/viewcalendar',
+          },
+          {
+            title: 'Weight',
+            key: 'parentWeight',
+            url: '/scheduling/viewdayplanner',
+          },
+          {
+            title: 'Toileting',
+            key: 'parentToileting',
+            url: '/scheduling/viewasgrid',
+          },
+          {
+            title: 'Meal',
+            key: 'parentMeal',
+            url: '/scheduling/historyandaudits',
+          },
+          {
+            title: 'Prescription',
+            key: 'parentPrescription',
+            url: '/scheduling/attendance',
+          },
+        ]
+      },
+      
+      
+    ]
+  }
+  else if(JSON.parse(localStorage.getItem('role')) === "therapist"){
+    return [
+      {
+        title: 'Dashboard',
+        key: 'settings',
+        icon: 'icmn icmn-cog utils__spin-delayed--pseudo-selector',
+      },
+    ]
+  }
+  else{
+  
+
   return [
     {
       title: 'Dashboard',
@@ -39,7 +220,7 @@ export async function getTopMenuData() {
             {
               title: 'Learners',
               key: 'partnersLearner',
-              url: '/partners/learner',
+              url: '/partners/viewlearners',
             },
             {
               title: 'Staff',
@@ -106,46 +287,90 @@ export async function getTopMenuData() {
         },
       ]
     },
+    // {
+    //   title: 'Revenue',
+    //   key: 'revenue',
+    //   url: '/partners/editprofile',
+    //   icon: 'icmn icmn-books',
+    //   children: [
+    //     {
+    //       title: 'Authorizations',
+    //       key: 'revenueAuthorizations',
+    //       url: '/revenue/authorization',
+    //     },
+    //     {
+    //       title: 'Authorization by payor',
+    //       key: 'revenueAuthorizationByPayor',
+    //       url: '/revenue/authorizationbypayor',
+    //     },
+    //     {
+    //       title: 'Billing',
+    //       key: 'revenueBilling',
+    //       url: '/revenue/billing',
+    //     },
+    //     {
+    //       title: 'Invoices',
+    //       key: 'revenueInvoices',
+    //       url: '/revenue/invoices',
+    //     },
+    //     {
+    //       title: 'Sales',
+    //       key: 'revenueSales',
+    //       url: '/revenue/sales',
+    //     },
+    //     {
+    //       title: 'Leads',
+    //       key: 'revenueLeads',
+    //       url: '/revenue/leads',
+    //     },
+    //     {
+    //       title: 'Opportunities',
+    //       key: 'revenueOpportunities',
+    //       url: '/revenue/opportunities',
+    //     },
+    //   ]
+    // },
     {
-      title: 'Revenue',
-      key: 'revenue',
-      url: '/partners/editprofile',
-      icon: 'icmn icmn-books',
-      children: [
+      title: 'Record Data',
+      key: 'record_data',
+      url: '#',
+      icon: 'icmn icmn-home',
+      children:[
         {
-          title: 'Authorizations',
-          key: 'revenueAuthorizations',
-          url: '/revenue/authorization',
+          title: 'Meal Data',
+          key: 'meal_data',
+          url: '/mealData/',
+          icon: 'icmn icmn-home',
         },
         {
-          title: 'Authorization by payor',
-          key: 'revenueAuthorizationByPayor',
-          url: '/revenue/authorizationbypayor',
+          title: 'Medical Data',
+          key: 'medical_data',
+          url: '/medicalData/',
+          icon: 'icmn icmn-home',
         },
         {
-          title: 'Billing',
-          key: 'revenueBilling',
-          url: '/revenue/billing',
+          title: 'Family Members',
+          key: 'family',
+          url: '/family/',
+          icon: 'icmn icmn-home',
         },
         {
-          title: 'Invoices',
-          key: 'revenueInvoices',
-          url: '/revenue/invoices',
+          title: 'Toilet Data',
+          key: 'toilet',
+          url: '/toilet/',
+          icon: 'icmn icmn-home',
         },
         {
-          title: 'Sales',
-          key: 'revenueSales',
-          url: '/revenue/sales',
+          title: 'Decel Data',
+          key: 'decel',
+          url: '/decel/',
+          icon: 'icmn icmn-home',
         },
         {
-          title: 'Leads',
-          key: 'revenueLeads',
-          url: '/revenue/leads',
-        },
-        {
-          title: 'Opportunities',
-          key: 'revenueOpportunities',
-          url: '/revenue/opportunities',
+          title: 'Mand Data',
+          key: 'mand',
+          url: '/mand/',
+          icon: 'icmn icmn-home',
         },
       ]
     },
@@ -443,230 +668,7 @@ export async function getTopMenuData() {
 
       icon: 'icmn icmn-books',
     },
-    // {
-    //   title: 'Dashboard Alpha',
-    //   key: 'dashboardAlpha',
-    //   url: '/dashboard/alpha',
-    //   icon: 'icmn icmn-home',
-    // },
-    // {
-    //   title: 'Pages',
-    //   key: 'pages',
-    //   icon: 'icmn icmn-stack',
-    //   children: [
-    //     {
-    //       title: 'Dashboard Alpha',
-    //       key: 'dashboardAlpha',
-    //       url: '/dashboard/alpha',
-    //     },
-    //     {
-    //       title: 'Dashboard Beta',
-    //       key: 'dashboardBeta',
-    //       url: '/dashboard/beta',
-    //       pro: true,
-    //     },
-    //     {
-    //       title: 'Dashboard Crypto',
-    //       key: 'dashboardCrypto',
-    //       url: '/dashboard/crypto',
-    //       pro: true,
-    //     },
-    //     {
-    //       title: 'Dashboard Gamma',
-    //       key: 'dashboardGamma',
-    //       url: '/dashboard/gamma',
-    //       pro: true,
-    //     },
-    //     {
-    //       title: 'Dashboard Docs',
-    //       key: 'dashboardDocs',
-    //       url: '/dashboard/docs',
-    //       pro: true,
-    //     },
-    //     {
-    //       divider: true,
-    //     },
-    //     {
-    //       title: 'Default Pages',
-    //       key: 'defaultPages',
-    //       children: [
-    //         {
-    //           key: 'loginAlpha',
-    //           title: 'Login Alpha',
-    //           url: '/pages/login-alpha',
-    //           pro: true,
-    //         },
-    //         {
-    //           key: 'loginBeta',
-    //           title: 'Login Beta',
-    //           url: '/pages/login-beta',
-    //           pro: true,
-    //         },
-    //         {
-    //           key: 'register',
-    //           title: 'Register',
-    //           url: '/pages/register',
-    //           pro: true,
-    //         },
-    //         {
-    //           key: 'lockscreen',
-    //           title: 'Lockscreen',
-    //           url: '/pages/lockscreen',
-    //           pro: true,
-    //         },
-    //         {
-    //           key: 'pricingTable',
-    //           title: 'Pricing Tables',
-    //           url: '/pages/pricing-table',
-    //           pro: true,
-    //         },
-    //         {
-    //           key: 'invoice',
-    //           title: 'Invoice',
-    //           url: '/pages/invoice',
-    //           pro: true,
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       title: 'Ecommerce',
-    //       key: 'ecommerce',
-    //       children: [
-    //         {
-    //           title: 'Dashboard',
-    //           key: 'dashboard',
-    //           url: '/ecommerce/dashboard',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Products Catalog',
-    //           key: 'productsCatalog',
-    //           url: '/ecommerce/products-catalog',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Products Details',
-    //           key: 'productsDetails',
-    //           url: '/ecommerce/product-details',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Products Edit',
-    //           key: 'productsEdit',
-    //           url: '/ecommerce/product-edit',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Products List',
-    //           key: 'productsList',
-    //           url: '/ecommerce/products-list',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Orders',
-    //           key: 'orders',
-    //           url: '/ecommerce/orders',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Cart',
-    //           key: 'cart',
-    //           url: '/ecommerce/cart',
-    //           pro: true,
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       title: 'Apps',
-    //       key: 'apps',
-    //       children: [
-    //         {
-    //           title: 'Messaging',
-    //           key: 'messaging',
-    //           url: '/apps/messaging',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Mail',
-    //           key: 'mail',
-    //           url: '/apps/mail',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Profile',
-    //           key: 'profile',
-    //           url: '/apps/profile',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Gallery',
-    //           key: 'gallery',
-    //           url: '/apps/gallery',
-    //           pro: true,
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       title: 'Blog',
-    //       key: 'blog',
-    //       children: [
-    //         {
-    //           title: 'Feed',
-    //           key: 'blogFeed',
-    //           url: '/blog/feed',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Post',
-    //           key: 'blogPost',
-    //           url: '/blog/post',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Add Post',
-    //           key: 'blogAddPost',
-    //           url: '/blog/add-blog-post',
-    //           pro: true,
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       title: 'YouTube',
-    //       key: 'youtube',
-    //       children: [
-    //         {
-    //           title: 'Feed',
-    //           key: 'youtubeFeed',
-    //           url: '/youtube/feed',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'View',
-    //           key: 'youtubeView',
-    //           url: '/youtube/view',
-    //           pro: true,
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       title: 'GitHub',
-    //       key: 'github',
-    //       children: [
-    //         {
-    //           title: 'Explore',
-    //           key: 'githubExplore',
-    //           url: '/github/explore',
-    //           pro: true,
-    //         },
-    //         {
-    //           title: 'Discuss',
-    //           key: 'githubDiscuss',
-    //           url: '/github/discuss',
-    //           pro: true,
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // },
   ]
 }
+}
+

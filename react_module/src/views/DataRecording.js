@@ -1,645 +1,622 @@
+/* eslint-disable react/no-unused-state */
+/* eslint-disable no-nested-ternary */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/no-access-state-in-setstate */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable eqeqeq */
+/* eslint-disable react/jsx-boolean-value */
+/* eslint-disable no-plusplus */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable no-useless-concat */
+/* eslint-disable import/no-extraneous-dependencies */
+
+
 import React from 'react'
 import { Helmet } from 'react-helmet'
-import ChartistGraph from 'react-chartist'
-import ChartistTooltip from 'chartist-plugin-tooltips-updated'
-import { Row, Col, Select, Form, Collapse, Card,Button, Tooltip, Radio, Tree, Icon, Input, InputNumber } from 'antd';
-// import Stopwatch from 'components/StopWatch'
+import { Row, Col, Select, Form, Collapse, Tree, Icon, DatePicker, notification, Empty, Button } from 'antd';
+import { gql } from "apollo-boost";
 import Authorize from 'components/LayoutComponents/Authorize'
+import { connect } from 'react-redux'
+import Scroll from 'react-scroll';
+import Timer from 'react-compound-timer'
+import client from '../apollo/config'
 
-import { LeftOutlined,RightOutlined,CheckOutlined,CloseOutlined } from '@ant-design/icons';
-// import style from './dataRecording.scss'
+import TargetGraph from '../components/dataRecording/TargetGraph'
+// import RecordingBlock from '../components/dataRecording/RecordingBlock'
+import TargetRecordingBlock from '../components/dataRecording/TargetRecordingBlock'
+import TargetRecordingBlockWithSd from '../components/dataRecording/TargetRecordingBlockWithSd'
+import TargetRecordingBlockWithStep from '../components/dataRecording/TargetRecordingBlockWithStep'
+import TargetBehaviorReduction from '../components/dataRecording/TargetBehaviorReduction'
+// import TargetPeakDataRecording from '../components/dataRecording/TargetPeakDataRecording'
 
+const {Element, Link} = Scroll;
 
 const { Panel } = Collapse;
-// const data = [
-//     '18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period',
-//     '18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period',
-//     '18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period',
-//     '18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period',
-//     'Los Angeles battles huge wildfires.',
-//   ];
-
 const { TreeNode } = Tree;
 
-const smilData = {
-    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-    series: [
-      [12, 9, 7, 8, 5, 4, 6, 2, 3, 3, 4, 6],
-      [4, 5, 3, 7, 3, 5, 5, 3, 4, 4, 5, 5],
-      [5, 3, 4, 5, 6, 3, 3, 4, 5, 6, 3, 4],
-      [3, 4, 5, 6, 7, 6, 4, 5, 6, 7, 6, 3],
-    ],
-  }
-  
-  const smilOptions = {
-    low: 0,
-    plugins: [ChartistTooltip({ anchorToPoint: false, appendToBody: true, seriesName: false })],
-    seq: 0,
-  }
-  
-  const smilListener = {
-    created() {
-      smilOptions.seq = 0
-    },
-    draw(data) {
-      const delays = 80
-      const durations = 500
-  
-      if (data.type === 'line') {
-        smilOptions.seq += 1
-        data.element.animate({
-          opacity: {
-            begin: smilOptions.seq * delays + 1e3,
-            dur: durations,
-            from: 0,
-            to: 1,
-          },
-        })
-      } else if (data.type === 'label' && data.axis === 'x')
-        data.element.animate({
-          y: {
-            begin: smilOptions.seq * delays,
-            dur: durations,
-            from: data.y + 100,
-            to: data.y,
-            easing: 'easeOutQuart',
-          },
-        })
-      else if (data.type === 'label' && data.axis === 'y')
-        data.element.animate({
-          x: {
-            begin: smilOptions.seq * delays,
-            dur: durations,
-            from: data.x - 100,
-            to: data.x,
-            easing: 'easeOutQuart',
-          },
-        })
-      else if (data.type === 'point')
-        data.element.animate({
-          x1: {
-            begin: smilOptions.seq * delays,
-            dur: durations,
-            from: data.x - 10,
-            to: data.x,
-            easing: 'easeOutQuart',
-          },
-          x2: {
-            begin: smilOptions.seq * delays,
-            dur: durations,
-            from: data.x - 10,
-            to: data.x,
-            easing: 'easeOutQuart',
-          },
-          opacity: {
-            begin: smilOptions.seq * delays,
-            dur: durations,
-            from: 0,
-            to: 1,
-            easing: 'easeOutQuart',
-          },
-        })
-      else if (data.type === 'grid') {
-        const pos1Animation = {
-          begin: smilOptions.seq * delays,
-          dur: durations,
-          from: data[`${data.axis.units.pos}1`] - 30,
-          to: data[`${data.axis.units.pos}1`],
-          easing: 'easeOutQuart',
-        }
-        const pos2Animation = {
-          begin: smilOptions.seq * delays,
-          dur: durations,
-          from: data[`${data.axis.units.pos}2`] - 100,
-          to: data[`${data.axis.units.pos}2`],
-          easing: 'easeOutQuart',
-        }
-        const ctAnimations = {}
-        ctAnimations[`${data.axis.units.pos}1`] = pos1Animation
-        ctAnimations[`${data.axis.units.pos}2`] = pos2Animation
-        ctAnimations.opacity = {
-          begin: smilOptions.seq * delays,
-          dur: durations,
-          from: 0,
-          to: 1,
-          easing: 'easeOutQuart',
-        }
-        data.element.animate(ctAnimations)
-      }
-    },
-  }
-
-
+@connect(({ datarecording }) => ({ datarecording }))
 class DataRecording extends React.Component {
 
-    state = {
-        count : 1,
-        percentage :0.0,
-        correct:0,
-        collapseCount:1,
-        totalSteps:3,
-        stepTrails:5,
-        stepCount:1,
-        sdName: ['stimulus one','stimulus two', 'stimulus three', 'stimulus four', 'stimulus five'],
-        sdTrailCount:1,
-        totalSd:5,
-        sdCount:1,
-        sdRequiredTrails:5,
+  constructor(props) {
+    super(props);
 
-        
+    this.state = {
+      learnerId: "U3R1ZGVudFR5cGU6OTI=",
+      targetType: 'target',
+      currentStatus: '',
+      currentTargetType: '',
+      currentDate: '',
+      SelectedTargetObject: null,
 
-        
-    }
-
-    
-
-    onSelect = (selectedKeys, info) => {
-        console.log('selected', selectedKeys, info);
+      isLoaded: true,
+      targetList: [],
+      sessionTypeList: [],
+      targetStatusList: [],
+      targetTypeList:[],
+      video: false
     };
+    
+    this.child = React.createRef();
+  }
 
-    addCount(This, val){
+  componentDidMount() {
+
+    const {learnerId} = this.state;
+
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'datarecording/TARGET_LIST',
+      payload:{
+        learner:learnerId,
+      }
+    })
+
+    client.query({
+      query: gql`{
+        targetStatus  {
+          id,
+          statusName
+        }
+        types {
+          id,
+          typeTar
+        }
+      }`
+    })
+    .then(result => {
         this.setState({
-            count: val+1 ,
-            percentage: ((This.state.correct+1)*100/This.state.count),
-            correct: This.state.correct +1,
+          targetStatusList: result.data.targetStatus,
+          targetTypeList: result.data.types,
+          isLoaded: false
         })
-        console.log(This.state.count, This.state.correct+1)
-    }
-
-    removeCount(This, val){
-       
-        this.setState({
-            count:val+1,
-            percentage: ((This.state.correct)*100/This.state.count),            
+    })
+    .catch(error => { 
+        error.graphQLErrors.map((item) => { 
+            return notification.error({
+                message: 'Somthing want wrong',
+                description: item.message,
+            }); 
         })
-      
+    });
+
+  }
+
+  selectStatus = (value) => {
+    const {learnerId} = this.state;
+    let queryGQL = null
+    console.log(value)
+
+    if (value === 'all'){
+      // this.setState({
+      //   currentStatus: ''
+      // })  
+      queryGQL = gql`{ targetAllocates(studentId:"${learnerId}")
+        {
+          edges {
+            node {
+              id,
+              time, 
+              goalName,
+              targetInstr,
+              targetStatus{
+                statusName
+            },
+              targetAllcatedDetails{ 
+                id, 
+                targetName, 
+                dateBaseline, 
+                DailyTrials, 
+                consecutiveDays,
+              },
+              videos{
+                  edges{
+                      node{
+                          id,
+                          url
+                      }
+                  }
+              },
+              sd{
+                  edges{
+                      node{
+                          id,
+                          sd
+                      }
+                  }
+              },
+              steps{
+                  edges{
+                      node{
+                          id,
+                          step
+                      }
+                  }
+              }
+          }
+        }
+      }`
+    }
+    else{
+      this.setState({
+        currentStatus: value,
+      })
+      queryGQL = gql`{ targetAllocates(studentId:"${learnerId}", targetStatus:"${value}")
+        {
+          edges {
+            node {
+              id,
+              time, 
+              goalName,
+              targetInstr,
+              targetStatus{
+                statusName
+            },
+              targetAllcatedDetails{ 
+                id, 
+                targetName, 
+                dateBaseline, 
+                DailyTrials, 
+                consecutiveDays,
+            },
+            videos{
+                edges{
+                    node{
+                        id,
+                        url
+                    }
+                }
+            },
+            sd{
+                edges{
+                    node{
+                        id,
+                        sd
+                    }
+                }
+            },
+            steps{
+                edges{
+                    node{
+                        id,
+                        step
+                    }
+                }
+            }
+            }
+          }
+        }
+      }`
+
     }
 
-    addStepCount(This, val){
-        if (This.state.stepTrails > val){
-            this.setState({
-                stepCount: val+1,
-            })        
-        }
-        else{
-            this.setState({
-                stepCount: 1,
-                collapseCount: This.state.collapseCount+1,
-            })
+    const {dispatch} = this.props;
 
+    client.query({query: queryGQL})
+    .then(result => {
+      dispatch({
+        type: 'datarecording/UPDATE_TARGET_STATUS',
+        payload:{
+          data: result
         }
-        // console.log(This.state.count, This.state.correct+1)
-    }
+      })
 
-    addSdCount(This, val){
-        if (This.state.sdRequiredTrails > val){
-            this.setState({
-                sdTrailCount: val+1,
-            })        
-        }
-        else{
-            this.setState({
-                sdTrailCount: 1,
-                sdCount: This.state.sdCount+1,
-                // sdName: This.state.sdName + This.state.sdCount
-            })
-
-        }
-        // console.log(This.state.count, This.state.correct+1)
-    }
-
-    nextSd(This, sdCount){
-        if (This.state.totalSd > sdCount){
-            this.setState({
-                sdCount: sdCount+1,
-                sdTrailCount: 1,
-            })
-        }
-    }
-
-    previousSd(This, sdCount){
-        if (This.state.sdCount > 1){
-            this.setState({
-                sdCount: sdCount-1,
-                sdTrailCount: 1,
-            })
-        }
-    }
-
-    changeCollapse(count){
-        this.setState({
-            collapseCount: count
+        // this.setState({
+        //   targetList: result.data.targetAllocates.edges,
+        // })
+    })
+    .catch(error => { 
+        error.graphQLErrors.map((item) => { 
+            return notification.error({
+                message: 'Somthing want wrong',
+                description: item.message,
+            }); 
         })
-        console.log(count)
+    });
+    
+  }
+
+  
+  
+
+  onSelect = (selectedKeys, info) => {
+    console.log('selected', selectedKeys, info);
+    
+  };
+
+  changeTarget = (index) => {
+    const { dispatch, datarecording: { TargetInitialValue, TargetList, TargetActiveKey } } = this.props;
+
+    let sdKey = ''
+    let stepKey = ''
+
+    if (TargetList[index].node.sd.edges.length > 0){
+      sdKey = TargetList[index].node.sd.edges[0].node.id
     }
+
+    if (TargetList[index].node.steps.edges.length > 0){
+      stepKey = TargetList[index].node.steps.edges[0].node.id
+    }
+
+    dispatch({
+      type: 'datarecording/SET_STATE',
+      payload: {
+        TargetInitialValue: index + 1,
+        TargetActiveKey: TargetList[index].node.id,
+        Correct: [],
+        Incorrect: [],
+        RecordingType: 'Target',
+        StimulusActiveKey: sdKey,
+        StimulusActiveIndex: 1,
+        StapActiveKey: stepKey,
+        StapActiveIndex: 1,
+        count: 1,
+        percentage: 0.0,
+        correct: 0,
+        incorrect: 0,
+
+      }
+    })
+
+    let i = 0;
+    const elements = document.getElementsByClassName("tarilSpanClass");
+    for (i = 0; i < elements.length; i++) {
+        elements[i].style.backgroundColor = "#F5F5F5";
+    }
+    document.getElementById("correctResponseButton").style.color = "gray";
+    document.getElementById("correctResponseButton").style.borderColor = "gray";
+    document.getElementById("incorrectResponseButton").style.color = "gray";
+    document.getElementById("incorrectResponseButton").style.borderColor = "gray";
+
+    // for target automatic scroll
+    document.getElementsByClassName("targetElements")[index].style.backgroundColor = "#bae7ff";
+    document.getElementsByClassName("targetElements")[TargetInitialValue-1].style.backgroundColor = "white";
+    // document.getElementById(TargetActiveKey).click();
+
+
+  }
+
+  startSession = (time) => {
+    console.log(time)
+    const ts = new Date(time);
+    console.log(ts.toLocaleTimeString());
+
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'datarecording/SET_STATE',
+      payload: {
+        SessionStatus: 'Started'
+      }
+    })
+  }
+
+  pauseSession = (time) => {
+
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'datarecording/SET_STATE',
+      payload: {
+        SessionStatus: 'Paused'
+      }
+    })
+  }
+
+  endSession = (time) => {
+
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'datarecording/SET_STATE',
+      payload: {
+        SessionStatus: 'Ended'
+      }
+    })
+  }
+
       
     
   render() {
-    const style1 = { border:'1px solid #f6f7fb', Height:'700px', backgroundColor:'white', padding:'5px'};
-    const style2 = { border:'1px solid #f6f7fb', height:'700px', overflow:'auto'};
+    const style1 = { border:'1px solid #f6f7fb', minHeight:'700px', backgroundColor:'white', padding:'5px'};
+    const style2 = { border:'1px solid #f6f7fb',overflow: 'hidden',position: 'relative', minHeight:'700px'};
     const style3 = { border:'1px solid #f6f7fb', Height:'700px', backgroundColor:'white' };
-    const {count,correct, percentage, collapseCount, totalSteps, stepTrails, stepCount,
-           sdName, sdCount, sdTrailCount, totalSd, sdRequiredTrails } = this.state;
-    // const cardStyle = {borderRadius:'0'}
+    const {video, isLoaded, targetList, sessionTypeList, targetStatusList, sessionTypeId, targetType, targetTypeList, SelectedTargetObject} = this.state;
+    const {datarecording:{TargetList, TargetActiveKey, SessionStatus}} = this.props;
+    if (isLoaded){
+      return "Loading..."
+    }
+
     return (
-      <Authorize roles={[1]} redirect to="/dashboard/beta">
-        <Helmet title="Partner" />
-        {/* <div className="utils__title utils__title--flat mb-3">
-          <strong className="text-uppercase font-size-16">Target Type Mapping</strong>
-        </div> */}
-        {/* <div className="row justify-content-md-center"> */}
-        <Row style={{padding:'0', marginRight:'-30px', marginLeft:'-30px', marginTop:'-30px', display:'flex' }}>
+      <Authorize roles={["school_admin"]} redirect to="/dashboard/beta">
+        <Helmet title="Session" />
+        <Row style={{padding:'0', marginRight:'-30px', marginLeft:'-30px', marginTop:'0', display:'flex' }}>
           <Col xs={0} sm={6} md={6} lg={5} xl={5} style={style1}>
-            <Collapse bordered={false}>
-              <Panel header="Filters" key="1">
-                <Form
-                
-                  labelCol={{
-                    span: 8,
-                  }}
-                  wrapperCol={{
-                    span: 14,
-                  }}
-                  layout="horizontal"
-                  labelAlign='left'
-                  initialValues={{
-                    size: 'middle'
-                  }}
-                
-                  size='middle'
-                
-                
+            <Collapse bordered={false} defaultActiveKey={['2']}>
+              <Panel header="Clock" key="2" style={{paddingBottom:"0"}}>
+                <Timer
+                  initialTime={0}
+                  startImmediately={false}
+                    
                 >
-                  <Form.Item label="Domain">
-                    <Select>
-                      <Select.Option value="demo">Demo</Select.Option>
+                  {({ start, resume, pause, stop, reset, getTime }) => (
+                        <React.Fragment>
+                            <h6 style={{textAlign:'center', fontSize:'30px'}}>
+                              <span style={{textAlign:'center'}}>
+                                <Timer.Hours formatValue={(value) => `${(value < 10 ? `0${value}` : value)} : `} /> 
+                                <Timer.Minutes formatValue={(value) => `${(value < 10 ? `0${value}` : value)} : `} /> 
+                                <Timer.Seconds formatValue={(value) => `${(value < 10 ? `0${value}` : value)} `} /> 
+                              </span>
+                            </h6>
+                            <br />
+                            <div style={{textAlign:'center'}}>
+                                {SessionStatus === 'NotStarted' ? 
+                                  <Button onClick={() => {start(); this.startSession(getTime());}}><Icon type="caret-right" />Start Session</Button>
+                                :
+                                  ''
+                                }
+                                
+                                {SessionStatus === 'Started'?
+                                  <>
+                                    <Button onClick={() => { this.pauseSession(getTime()); stop(); }}>Pause</Button>&nbsp;
+                                    <Button onClick={() => { this.endSession(getTime()); stop(); }}>End</Button>
+                                  </>
+                                :
+                                  ''
+                                }
+                                {SessionStatus === 'Paused'?
+                                  <>
+                                    <Button onClick={() => {start(); this.startSession(getTime());}}><Icon type="caret-right" />Resume Session</Button>
+                                  </>
+                                :
+                                  ''
+                                }
+                                {SessionStatus === 'Ended'?
+                                  <>
+                                    <p>Session Completed!!</p>
+                                  </>
+                                :
+                                  ''
+                                }
+                                {/* <Button onClick={pause}><Icon type="pause" /></Button>
+                                <Button onClick={resume}>Resume</Button> */}
+                                {/* <Button onClick={() => { this.consoleTime(getTime()); stop(); }}><Icon type="stop" /></Button>
+                                <Button onClick={reset}><Icon type="undo" /></Button> */}
+                            </div>
+                        </React.Fragment>
+                    )}
+                </Timer>
+              </Panel>
+              <Panel header="Filters" key="1" style={{paddingBottom:"0"}}>
+                <Form layout={{labelCol: { span: 4 }, wrapperCol: { span: 14 },}} labelAlign='left' initialValues={{size: 'middle'}} size='middle'>
+                  <Form.Item label="">
+                    <Select placeholder="Select status" onSelect={this.selectStatus}>
+                      <Select.Option value="all">All</Select.Option>
+                      {targetStatusList.map((item) => <Select.Option value={item.id}>{item.statusName}</Select.Option>)}
                     </Select>
                   </Form.Item>
-                  <Form.Item label="Assessment" style={{marginTop:'-25px'}}>
-                    <Select>
-                      <Select.Option value="demo">Demo</Select.Option>
+                  <Form.Item label="" style={{marginTop:'-25px'}}>
+                    <Select placeholder="Select target type">
+                      {targetTypeList.map((item) => <Select.Option value={item.id}>{item.typeTar}</Select.Option>)}
                     </Select>
                   </Form.Item>
-                  <Form.Item label="Status" style={{marginTop:'-25px'}}>
-                    <Select>
-                      <Select.Option value="demo">Demo</Select.Option>
+                  <Form.Item label="" style={{marginTop:'-25px'}}>
+                    <Select placeholder="Select target objective">
+                      <Select.Option value="0">Skill Acquisition</Select.Option>
+                      <Select.Option value="1">Behavior Reduction</Select.Option>
+                      <Select.Option value="2">Maintenance </Select.Option>
                     </Select>
+                  </Form.Item>
+                 
+                  <Form.Item label="" style={{marginTop:'-25px'}}>
+                    <DatePicker style={{width:"100%"}} />
                   </Form.Item>
                 </Form>
-
-              </Panel>
-              
+              </Panel>  
             </Collapse>
-            
-            <Tree
-              showLine
-              blockNode
-              autoExpandParent
-              switcherIcon={<Icon type="down" />}
-              defaultExpandedKeys={[]}
-              onSelect={this.onSelect}
-              
+
+            {/* <Element 
+              name="test7" 
+              className="element" 
+              id="containerElement" 
+              style={{
+                position: 'relative',
+                height: '600px',
+                overflow: 'scroll',
+                marginBottom: '100px'
+              }}
             >
-              <TreeNode title={<span>18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period</span>} key="0-0">
-                <TreeNode title="Stimulus" key="0-0-0">
-                  <TreeNode title="18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period" key="0-0-0-0" />
-                  <TreeNode title="18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period" key="0-0-0-1" />
-                  <TreeNode title="add stimulus" key="0-0-0-2" />
-                </TreeNode>
-                <TreeNode title="Steps" key="0-0-1">
-                  <TreeNode title="18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period" key="0-0-1-0" />
-                  <TreeNode title="add step" key="0-0-1-1" />
-                </TreeNode>
-              </TreeNode>
-            </Tree>
-            <hr style={{margin:'0'}} />
-            <Tree
-              showLine
-              switcherIcon={<Icon type="down" />}
-              defaultExpandedKeys={[]}
-              onSelect={this.onSelect}
+      
+              {TargetList.length > 0 ?
+                TargetList.map((item, index) => 
+
+                  <>
+                    <Element className="targetElements" style={{padding:"4px"}} name={item.node.id}><a onClick={() => this.changeTarget(index)}><Icon type="book" /> <span>{item.node.targetAllcatedDetails.targetName}</span></a></Element>
+                    <Link activeClass="active" id={item.node.id} to={item.node.id} spy={true} smooth={true} duration={250} style={{display:'hidden'}} containerId="containerElement">&nbsp;</Link>
+                  </>
+                )
+              : 
+                <p>no</p>
+              }
+    
+            </Element> */}
+
+            <Element 
+              name="test7" 
+              className="element" 
+              id="containerElement" 
+              style={{
+                position: 'relative',
+                height: '600px',
+                overflow: 'scroll',
+                marginBottom: '100px'
+              }}
             >
-              <TreeNode title="18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period" key="0-0">
-                <TreeNode title="Stimulus" key="0-0-0">
-                  <TreeNode title="leaf" key="0-0-0-0" />
-                  <TreeNode title="leaf" key="0-0-0-1" />
-                  <TreeNode title="add stimulus" key="0-0-0-2" />
+      
+              {TargetList.length > 0 ?
+                TargetList.map((item, index) => 
+
+                  <>
+                    <Element className="targetElements" style={{padding:"4px", borderRadius:"8px"}} name={item.node.id}>
+                      <a onClick={() => this.changeTarget(index)}>
+                        {/* <Icon type="book" /> <span>{item.node.targetAllcatedDetails.targetName}</span> */}
+
+                        <Tree showLine blockNode autoExpandParent selectable={false} defaultExpandAll switcherIcon={<Icon type="down" />} onSelect={this.onSelect}>
+                          <TreeNode title={item.node.targetAllcatedDetails.targetName} key={item.node.id}>
+                            {item.node.sd.edges.length > 0 ?
+                              <TreeNode title="Stimulus" key={`"${item.node.id}"`+"sd"} disabled>
+                                {item.node.sd.edges.map((sdItem) => 
+
+                                  <>
+                                    <TreeNode title={sdItem.node.sd} key={sdItem.node.id} goal="sd" />
+                                  </>
+                              )}
+                              </TreeNode>
+                            : 
+                              ''
+                            }
+                            {item.node.steps.edges.length > 0 ?
+                              <TreeNode title="Steps" key={`"${item.node.id}"`+"step"} disabled>
+                                {item.node.steps.edges.map((stepItem) => 
+
+                                  <>
+                                    <TreeNode title={stepItem.node.step} key={stepItem.node.id} goal="step" />
+                                  </>
+                              )}
+                              </TreeNode>
+                            : 
+                              ''
+                            }
+                          </TreeNode>
+                        </Tree>
+
+                      </a>
+                    </Element>
+                    {/* <Link activeClass="active" id={item.node.id} to={item.node.id} spy={true} smooth={true} duration={250} style={{display:'hidden'}} containerId="containerElement">&nbsp;</Link> */}
+                  </>
+                )
+              : 
+                <p>Loading Targets...</p>
+              }
+
+              {TargetList.length > 0 ?
+                TargetList.map((item, index) => 
+
+                  <>
+                    <div style={{width:"200px"}}>
+                      <Link activeClass="active" id={item.node.id} to={item.node.id} spy={true} smooth={true} duration={250} style={{display:'hidden'}} containerId="containerElement">&nbsp;</Link>
+                    </div>
+                  </>
+                )
+              : 
+                ''
+              }
+    
+    
+            </Element>
+
+            {/* <Element 
+              name="test7" 
+              className="element" 
+              id="containerElement" 
+              style={{
+                position: 'relative',
+                height: '600px',
+                overflow: 'scroll',
+                marginBottom: '100px'
+              }}
+            >
+      
+              <Tree showLine blockNode autoExpandParent defaultExpandAll switcherIcon={<Icon type="down" />} onSelect={this.onSelect}>
+                <TreeNode title="Targets" key="0">
+                  {TargetList.length > 0 ?
+                    TargetList.map((item, index) => 
+
+                      <>
+                        <TreeNode title={<Element className="targetElements" name={item.node.id}>{item.node.targetAllcatedDetails.targetName}</Element>} key={item.node.id} />
+                      </>
+                    )
+                  : 
+                    <TreeNode title="No Target Associated in this session" key="0-0" />
+                  }
                 </TreeNode>
-                <TreeNode title="Steps" key="0-0-1">
-                  <TreeNode title="leaf" key="0-0-1-0" />
-                  <TreeNode title="add step" key="0-0-1-1" />
+              </Tree>
+
+              {TargetList.length > 0 ?
+                TargetList.map((item, index) => 
+
+                  
+                <Link id={item.node.id} to={item.node.id} spy={true} smooth={true} duration={250} style={{display:'hidden'}} containerId="containerElement">&nbsp;</Link>
+                  
+                )
+              : 
+                <p>1</p>
+              }
+    
+            </Element> */}
+
+            
+
+            {/* <Tree showLine blockNode autoExpandParent defaultExpandAll switcherIcon={<Icon type="down" />} onSelect={this.onSelect}>
+                <TreeNode title="Targets" key="0">
+                  {TargetList.length > 0 ?
+                    TargetList.map((item, index) => 
+
+                      <>
+                        <TreeNode title={<Element name={index}>{item.node.targetAllcatedDetails.targetName}</Element>} key={item.node.id} />
+                        <TreeNode title={<Link activeClass="active" id={item.node.id} to={index} spy={true} smooth={true} duration={250} containerId="containerElement">link</Link>} key={item.node.id} />
+                      </>
+                    )
+                  : 
+                    <TreeNode title="No Target Associated in this session" key="0-0" />
+                  }
                 </TreeNode>
-              </TreeNode>
-            </Tree>
-            <hr style={{margin:'0'}} />
-            
-            
-            
+              </Tree> */}
             
           </Col>
-          <Col xs={24} sm={6} md={6} lg={10} xl={10} style={style2}>
-            <Card style={{ width: '100%', backgroundColor:'#fbfbfb'}}>
-              <Card style={{ width: '96%', backgroundColor: 'white', margin:'10px auto', height:'530px'}}>
-                <h5 style={{textAlign:'center'}}>18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period</h5>
-                <br />
-                <span>{percentage} % Correct</span> <span style={{float:'right'}}>In-Therapy</span>
-                <br />
-                <br />
-                
-                <p style={{textAlign:'center'}}>Trail {count}/No max</p>
-                {/* <br /> */}
-                <p style={{textAlign:'center', marginTop:'4px'}}>
-                  <Button style={{padding:'0 70px'}} onClick={()=> this.removeCount(this,count)}><CloseOutlined /></Button> &nbsp;
-                  <Button style={{padding:'0 70px'}} onClick={()=> this.addCount(this, count,correct)}><CheckOutlined /></Button>
-                </p>
-                <p style={{textAlign:'center', marginTop:'4px'}}>
-                  <Button style={{padding:'0 20px'}}>Prompt 1</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 2</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 3</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 4</Button>
-                </p>
-                
-              </Card>
-              {/* </Card>
-            <Card style={{ width: '100%', backgroundColor:'#fbfbfb'}}> */}
-              <Card style={{ width: '96%', backgroundColor: 'white', margin:'10px auto', height:'530px'}}>
-                <h5 style={{textAlign:'center'}}>18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period</h5>
-                <br />
-                <span>{percentage} % Correct</span> <span style={{float:'right'}}>In-Therapy</span>
-                <br />
-                <br />
-                <p style={{textAlign:'center', marginTop:'-4px'}}>{sdName[sdCount-1]}</p>
-                <Tooltip title="previous trail">
-                  <Button style={{float:'left', marginLeft:'40px'}} onClick={()=>this.previousSd(this, sdCount)}><LeftOutlined /></Button>
-                </Tooltip>
-                
-                <Tooltip title="next trail">
-                  <Button style={{float:'right', marginRight:'40px'}} onClick={()=>this.nextSd(this, sdCount)}><RightOutlined /></Button>
-                </Tooltip>
-                
-                <p style={{textAlign:'center', marginTop:'4px'}}>Stimulus {sdCount}/{totalSd}</p>
-                <br />
-                
-                <p style={{textAlign:'center'}}>Trail {sdTrailCount}/{sdRequiredTrails}</p>
-                {/* <br /> */}
-                <p style={{textAlign:'center', marginTop:'4px'}}>
-                  <Button style={{padding:'0 70px'}} onClick={()=> this.addSdCount(this, sdTrailCount)}><CloseOutlined /></Button> &nbsp;
-                  <Button style={{padding:'0 70px'}} onClick={()=> this.addSdCount(this, sdTrailCount)}><CheckOutlined /></Button>
-                </p>
-                <p style={{textAlign:'center', marginTop:'4px'}}>
-                  <Button style={{padding:'0 20px'}}>Prompt 1</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 2</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 3</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 4</Button>
-                </p>
-                
-              </Card>
-              <Card style={{ width: '96%', backgroundColor: 'white', margin:'10px auto', height:'530px'}}>
-                <h5 style={{textAlign:'center'}}>18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period</h5>
-                <br />
-                <span>{percentage} % Correct</span> <span style={{float:'right'}}>In-Therapy</span>
-                <br />
-                <br />
-                
-                
-                {/* <br /> */}
-                <Collapse accordion activeKey={collapseCount}>
-                  <Panel header="Step 1 : Instruction 1" key="1">
-                    
-                    <p style={{textAlign:'center'}}>Trail {stepCount}/{stepTrails}</p>
-                    <p style={{textAlign:'center', marginTop:'4px'}}>
-                      <Button style={{padding:'0 70px'}} onClick={()=> this.removeCount(this,count)}><CloseOutlined /></Button> &nbsp;
-                      <Button style={{padding:'0 70px'}} onClick={()=> this.addStepCount(this, stepCount,collapseCount,totalSteps)}><CheckOutlined /></Button>
-                    </p>
-                    <p style={{textAlign:'center', marginTop:'4px'}}>
-                      <Button style={{padding:'0 20px'}}>Prompt 1</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 2</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 3</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 4</Button>
-                    </p>
-                  </Panel>
-                  <Panel header="Step 2 : Instruction 2" key="2">
-                    <p style={{textAlign:'center'}}>Trail {stepCount}/{stepTrails}</p>
-                    <p style={{textAlign:'center', marginTop:'4px'}}>
-                      <Button style={{padding:'0 70px'}} onClick={()=> this.removeCount(this,count)}><CloseOutlined /></Button> &nbsp;
-                      <Button style={{padding:'0 70px'}} onClick={()=> this.addStepCount(this, stepCount,correct)}><CheckOutlined /></Button>
-                    </p>
-                    <p style={{textAlign:'center', marginTop:'4px'}}>
-                      <Button style={{padding:'0 20px'}}>Prompt 1</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 2</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 3</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 4</Button>
-                    </p>
-                  </Panel>
-                  <Panel header="Step 3 : Instruction 3" key="3">
-                    <p style={{textAlign:'center'}}>Trail {stepCount}/{stepTrails}</p>
-                    <p style={{textAlign:'center', marginTop:'4px'}}>
-                      <Button style={{padding:'0 70px'}} onClick={()=> this.removeCount(this,count)}><CloseOutlined /></Button> &nbsp;
-                      <Button style={{padding:'0 70px'}} onClick={()=> this.addStepCount(this, stepCount,correct)}><CheckOutlined /></Button>
-                    </p>
-                    <p style={{textAlign:'center', marginTop:'4px'}}>
-                      <Button style={{padding:'0 20px'}}>Prompt 1</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 2</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 3</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 4</Button>
-                    </p>
-                  </Panel>
-                </Collapse>
-                
-              </Card>
-              {/* </Card>
-            <Card style={{ width: '100%', backgroundColor:'#f6f7fb'}}> */}
-              <Card style={{ width: '96%', backgroundColor: 'white', margin:'10px auto'}}>
-                <h5 style={{textAlign:'center'}}>18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period</h5>
-                <br />
-                <span>% Correct</span> <span style={{float:'right'}}>In-Therapy</span>
-                <br />
-                <br />
-            
-                <p style={{textAlign:'center', marginTop:'4px'}}>Trail 1/No max</p>
-                <p style={{textAlign:'center', marginTop:'14px'}}>
-                  <Radio.Group>
-                    <Radio.Button value="correct">Correct</Radio.Button>
-                    <Radio.Button value="error">Error</Radio.Button>
-                    <Radio.Button value="no-response">No Response</Radio.Button>
-                    <Radio.Button value="delayed">Prompt</Radio.Button>
-                  </Radio.Group>
-                </p>
-                <p style={{textAlign:'center', marginTop:'4px'}}>
-                  <Button style={{padding:'0 20px'}}>Prompt 1</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 2</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 3</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 4</Button>
-                </p>
-              </Card>
-              <Card style={{ width: '96%', backgroundColor: 'white', margin:'10px auto'}}>
-                <h5 style={{textAlign:'center'}}>18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period</h5>
-                <br />
-                <span>% Correct</span> <span style={{float:'right'}}>In-Therapy</span>
-                <br />
-                <br />
-                <Tooltip title="previous trail">
-                  <Button style={{float:'left', marginLeft:'40px'}}><LeftOutlined /></Button>
-                </Tooltip>
-                
-                <Tooltip title="next trail">
-                  <Button style={{float:'right', marginRight:'40px'}}><RightOutlined /></Button>
-                </Tooltip>
-                <p style={{textAlign:'center', marginTop:'4px'}}>Stimulus 1/5</p>
-                <br />
-                <p style={{textAlign:'center', marginTop:'4px'}}>Trail 1/No max</p>
-                <p style={{textAlign:'center', marginTop:'14px'}}>
-                  <Radio.Group>
-                    <Radio.Button value="correct">Correct</Radio.Button>
-                    <Radio.Button value="error">Error</Radio.Button>
-                    <Radio.Button value="no-response">No Response</Radio.Button>
-                    <Radio.Button value="delayed">Prompt</Radio.Button>
-                  </Radio.Group>
-                </p>
-                <p style={{textAlign:'center', marginTop:'4px'}}>
-                  <Button style={{padding:'0 20px'}}>Prompt 1</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 2</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 3</Button>
-                  <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 4</Button>
-                </p>
-              </Card>
-              <Card style={{ width: '96%', backgroundColor: 'white', margin:'10px auto'}}>
-                <h5 style={{textAlign:'center'}}>18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period</h5>
-                <br />
-                <span>% Correct</span> <span style={{float:'right'}}>In-Therapy</span>
-                <br />
-                <br />
-                <Collapse accordion defaultActiveKey='1'>
-                  <Panel header="Step 1 : Instruction 1" key="1">
-                    <p style={{textAlign:'center', marginTop:'4px'}}>Trail 1/No max</p>
-                    <p style={{textAlign:'center', marginTop:'14px'}}>
-                      <Radio.Group>
-                        <Radio.Button value="correct">Correct</Radio.Button>
-                        <Radio.Button value="error">Error</Radio.Button>
-                        <Radio.Button value="no-response">No Response</Radio.Button>
-                        <Radio.Button value="delayed">Prompt</Radio.Button>
-                      </Radio.Group>
-                    </p>
-                    <p style={{textAlign:'center', marginTop:'4px'}}>
-                      <Button style={{padding:'0 20px'}}>Prompt 1</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 2</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 3</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 4</Button>
-                    </p>
-                  </Panel>
-                  <Panel header="Step 2 : Instruction 2" key="2">
-                    <p style={{textAlign:'center', marginTop:'4px'}}>Trail 1/No max</p>
-                    <p style={{textAlign:'center', marginTop:'14px'}}>
-                      <Radio.Group>
-                        <Radio.Button value="correct">Correct</Radio.Button>
-                        <Radio.Button value="error">Error</Radio.Button>
-                        <Radio.Button value="no-response">No Response</Radio.Button>
-                        <Radio.Button value="delayed">Prompt</Radio.Button>
-                      </Radio.Group>
-                    </p>
-                    <p style={{textAlign:'center', marginTop:'4px'}}>
-                      <Button style={{padding:'0 20px'}}>Prompt 1</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 2</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 3</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 4</Button>
-                    </p>
-                  </Panel>
-                  <Panel header="Step 3 : Instruction 3" key="3">
-                    <p style={{textAlign:'center', marginTop:'4px'}}>Trail 1/No max</p>
-                    <p style={{textAlign:'center', marginTop:'14px'}}>
-                      <Radio.Group>
-                        <Radio.Button value="correct">Correct</Radio.Button>
-                        <Radio.Button value="error">Error</Radio.Button>
-                        <Radio.Button value="no-response">No Response</Radio.Button>
-                        <Radio.Button value="delayed">Prompt</Radio.Button>
-                      </Radio.Group>
-                    </p>
-                    <p style={{textAlign:'center', marginTop:'4px'}}>
-                      <Button style={{padding:'0 20px'}}>Prompt 1</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 2</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 3</Button>
-                      <Button style={{padding:'0 20px', marginLeft:'2px'}}>Prompt 4</Button>
-                    </p>
-                  </Panel>
-                </Collapse>
-                
-              </Card>
-              <Card style={{ width: '96%', backgroundColor: 'white', margin:'10px auto', height:'540px', marginBottom:'200px'}}>
-                <h5 style={{textAlign:'center'}}>18.10060 - Sits in a small group for 10 minutes, attends to the teacher/material for 50% of the period</h5>
-                <br />
-                <span>% Correct</span> <span style={{float:'right'}}>In-Therapy</span>
-                <br />
-                <br />
-            
-                <div>
-                  <Form 
-                    style={{padding:'0 80px'}} 
-                    layout={{
-                      labelCol: {span: 4 },
-                      wrapperCol: { span: 14 },
-                    }}
-                  >
-                    <Form.Item label="IRT" style={{marginBottom:'0'}}>
-                      <Radio.Group>
-                        <Radio.Button value="horizontal" style={{padding:'0 35px'}}>-</Radio.Button>
-                        <Radio.Button value="vertical" style={{padding:'0', border:'none'}}><InputNumber style={{borderRadius:'0'}} /></Radio.Button>
-                        <Radio.Button value="inline" style={{padding:'0 35px'}}>+</Radio.Button>
-                      </Radio.Group>
-                    </Form.Item>
-                    <Form.Item label="Frequency" style={{marginBottom:'0'}}>
-                      <Radio.Group>
-                        <Radio.Button value="horizontal" style={{padding:'0 35px'}}>-</Radio.Button>
-                        <Radio.Button value="vertical" style={{padding:'0', border:'none'}}><InputNumber style={{borderRadius:'0'}} /></Radio.Button>
-                        <Radio.Button value="inline" style={{padding:'0 35px'}}>+</Radio.Button>
-                      </Radio.Group>
-                    </Form.Item>
-                    <Form.Item label="Duration" style={{marginBottom:'0'}}>
-                      <Input placeholder="input placeholder" />
-                    </Form.Item>
-                    <Form.Item>
-                      <Button type="primary">Submit</Button>
-                    </Form.Item>
-                  </Form>
-                </div>
-                
-              </Card>
-            </Card>
+
+          <Col xs={24} sm={6} md={6} lg={11} xl={11} style={style2}>
+            {targetType === 'target' ?            
+              <TargetRecordingBlock target={SelectedTargetObject} targetList={TargetList} />
+            :
+              targetType === 'sd' ?
+                <TargetRecordingBlockWithSd />
+              :
+                targetType === 'step' ?
+                  <TargetRecordingBlockWithStep />
+                :
+                  targetType === 'behaviorReduction' ?
+                    <TargetBehaviorReduction />
+                  :
+                    <Empty />
+            }
           </Col>
-          <Col xs={0} sm={6} md={6} lg={9} xl={9} style={style3}>
-            <Collapse bordered={false} defaultActiveKey={['1']}>
-              <Panel header="Target Response Graph" key="1">
-                <ChartistGraph
-                  className="height-300 chart-smil-animations"
-                  data={smilData}
-                  options={smilOptions}
-                  type="Line"
-                  listener={smilListener}
-                />
-
-              </Panel>
-              <Panel header="Teaching Procedure" key="2">
-                Target Instructions 
-
-              </Panel>
-              <Panel header="Target Objective" key="3">
-                Target Instructions 
-
-              </Panel>
-              <Panel header="Generalization Criteria" key="4">
-                Target Instructions 
-
-              </Panel>
-              <Panel header="Best Practices" key="5">
-                Target Instructions 
-
-              </Panel>
-              
-              
-            </Collapse>
+          
+          <Col xs={0} sm={6} md={6} lg={8} xl={8} style={style3}>
+            <TargetGraph />
           </Col>
           
         </Row>
-        {/* </div> */}
       </Authorize>
     )
   }

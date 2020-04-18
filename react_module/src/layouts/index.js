@@ -56,8 +56,6 @@ class IndexLayout extends React.PureComponent {
       return 'main'
     }
 
-
-
     const Container = Layouts[getLayout()]
     const isUserAuthorized = user.authorized
     const isUserLoading = user.loading

@@ -9,7 +9,7 @@ class Authorize extends React.Component {
     const {
       user: { role },
     } = this.props // current user role
-    const { children, redirect = false, to = '/404', roles = ['school_admin'] } = this.props
+    const { children, redirect = false, to = '/404', roles = [1] } = this.props
     const authorized = roles.includes(role)
     const AuthorizedChildren = () => {
       // if user not equal needed role and if component is a page - make redirect to needed route

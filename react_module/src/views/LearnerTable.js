@@ -149,7 +149,7 @@ class LearnerTable extends React.Component {
     const {selectedName} = this.state;
     const filterOptionStyle = {display:'inline-block', marginRight:'10px'}
     return (
-      <Authorize roles={[1]} redirect to="/dashboard/beta">
+      <Authorize roles={["school_admin"]} redirect to="/dashboard/beta">
         <Helmet title="Partner" />
         {/* <div className="utils__title utils__title--flat mb-3">
           <strong className="text-uppercase font-size-16">Responsive Tables</strong>
@@ -160,7 +160,7 @@ class LearnerTable extends React.Component {
               <div className="card-body" style={{padding:'0', marginBottom:'0'}}>
                 <Button onClick={() => this.filterToggle(filterShow)}>Filter <FilterOutlined /></Button>
                 <p style={{float:'right'}}>
-                  <Button>Add Learner <PlusOutlined /></Button>
+                  <Button><a href="#/partners/learner">Add Learner <PlusOutlined /></a></Button>
                   <Button>Excel <FileExcelOutlined /></Button>
                   <Button>PDF <FilePdfOutlined /></Button>
                   <Button>Print <PrinterOutlined /></Button>

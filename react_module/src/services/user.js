@@ -1,9 +1,10 @@
-import { GraphQLClient } from 'graphql-request'
+// import { GraphQLClient } from 'graphql-request'
 import firebase from 'firebase/app'
 import { notification } from 'antd'
 import 'firebase/auth'
 import 'firebase/database'
 import 'firebase/storage'
+import client from '../config'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAE5G0RI2LwzwTBizhJbnRKIKbiXQIA1dY',
@@ -13,12 +14,6 @@ const firebaseConfig = {
   storageBucket: 'cleanui-72a42.appspot.com',
   messagingSenderId: '583382839121',
 }
-
-const graphQLClient = new GraphQLClient('http://development.cogniable.us/apis/school/graphql', {
-  headers: {
-    database: 'india',
-  },
-})
 
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 const firebaseAuth = firebase.auth
@@ -49,7 +44,7 @@ export async function login(payload) {
     password: payload.password,
   }
 
-  return graphQLClient.request(query, variables)
+  return client.request(query, variables)
 .then(data => {
       localStorage.setItem('token', JSON.stringify(data.tokenAuth.token));
       localStorage.setItem('role', JSON.stringify(data.tokenAuth.user.groups.edges[0].node.name));
@@ -82,7 +77,7 @@ export async function RefreshToken() {
         token: JSON.parse(localStorage.getItem('token'))
       }
 
-      return graphQLClient.request(query, variables)
+      return client.request(query, variables)
     .then(data => {
           localStorage.setItem('database', JSON.stringify('india'));
           localStorage.setItem('token',  JSON.stringify(data.refreshToken.token));

@@ -17,7 +17,7 @@
 }
 
 .ant-form-item-label {
-  text-align: left;
+  // text-align: left;
   white-space: normal;
 }
 
@@ -29,4 +29,18 @@
 form .ant-select:only-child,
 form .ant-cascader-picker:only-child {
   display: inline-block;
+}
+
+.ant-tabs-vertical.ant-tabs-card.ant-tabs-left .ant-tabs-card-bar.ant-tabs-left-bar .ant-tabs-tab{
+  margin-bottom: 0px;
+  border-radius: 0px;
+  background-color: white;
+}
+
+.ant-tree li {
+  // white-space: normal;
+  word-wrap: break-word;
+  list-style: none;
+  min-height: fit-content;
+  height: fit-content;
 }
