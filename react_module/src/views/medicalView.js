@@ -4,6 +4,7 @@ import Authorize from 'components/LayoutComponents/Authorize'
 import { Row,Col,Card,Button,Collapse, Form,Select,Input,Calendar} from 'antd';
 import { ArrowRightOutlined ,PlusOutlined} from '@ant-design/icons'
 import Iframe from 'react-iframe'
+import { connect } from 'react-redux'
 import { gql } from "apollo-boost";
 import client from '../apollo/config';
 import MedicalForm from '../components/meal_and_medical/medicalform'; 
@@ -17,6 +18,8 @@ const layout = {
       span: 6,
     },
   };
+
+@connect(({ user }) => ({ user }))
 class medicalView extends React.Component {
     state = {
         divShow: false,
@@ -25,9 +28,10 @@ class medicalView extends React.Component {
     };
 
     componentDidMount() {
+      const {user:{studentId}} = this.props;
       client.query({
         query: gql`query{
-            getMedication(student:"U3R1ZGVudFR5cGU6MTYz", date:"2020-04-11"){
+            getMedication(student:"${studentId}", date:"2020-04-11"){
                 edges{
                     node{
                        id,
@@ -71,10 +75,11 @@ class medicalView extends React.Component {
     }
 
     filterMedicalType = (value) => {
+      const {user:{studentId}} = this.props;
       if(value !== 'all'){
         client.query({
           query: gql`query{
-              getMedication(student:"U3R1ZGVudFR5cGU6MTYz", severity:"${value}"){
+              getMedication(student:"${studentId}", severity:"${value}"){
                   edges{
                       node{
                          id,
@@ -105,7 +110,7 @@ class medicalView extends React.Component {
       } else{
         client.query({
           query: gql`query{
-              getMedication(student:"U3R1ZGVudFR5cGU6MTYz"){
+              getMedication(student:"${studentId}"){
                   edges{
                       node{
                          id,
@@ -138,8 +143,9 @@ class medicalView extends React.Component {
 
     onPanelChange = (value) => {
       const date = new Date(value).toISOString().slice(0,10);
+      const {user:{studentId}} = this.props;
       client.query({
-        query: gql`query {getMedication(student:"U3R1ZGVudFR5cGU6MTYz", date_Gte:"${date}", date_Lte:"${date}"){
+        query: gql`query {getMedication(student:"${studentId}", date_Gte:"${date}", date_Lte:"${date}"){
             edges{
                 node{
                    id,
@@ -170,8 +176,9 @@ class medicalView extends React.Component {
 
     handleSearch = (value) => {
       console.log(value);
+      const {user:{studentId}} = this.props;
       client.query({
-        query: gql`query {getMedication(student:"U3R1ZGVudFR5cGU6MTYz", condition_Icontains:"${value}"){
+        query: gql`query {getMedication(student:"${studentId}", condition_Icontains:"${value}"){
             edges{
                 node{
                    id,
@@ -209,7 +216,7 @@ class medicalView extends React.Component {
   render(){
     const {divShow, medicalist, loading} = this.state;    
     return (
-      <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
+      <Authorize roles={['school_admin', 'parents', 'therapist']} redirect to="/dashboard/beta">
         <Helmet title="Dashboard Alpha" />
         <Row gutter={24}>
           <Col span={6}>

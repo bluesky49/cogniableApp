@@ -1,7 +1,7 @@
 import { all, takeEvery, put, call } from 'redux-saga/effects'
 // import { push } from 'react-router-redux';
 // import { notification } from 'antd'
-import { login, RefreshToken } from 'services/user'
+import { login, RefreshToken, StudentIdFromUserId, GetUserDetailsByUsername } from 'services/user'
 // import { GraphQLClient } from 'graphql-request'
 import actions from './actions'
 
@@ -23,8 +23,21 @@ export function* LOGIN({ payload }) {
   })
   const response = yield call(login,payload)
 
-  if(response)
-  {
+  if(response){
+    if (response.tokenAuth.user.groups.edges[0].node.name === 'parents'){
+      const result = yield call(StudentIdFromUserId, response.tokenAuth.user.id)
+
+      if (result){
+        yield put({
+          type: 'user/SET_STATE',
+          payload: {
+            studentId: result.data.students.edges[0].node.id,
+          },
+        })
+      }
+
+    }
+
     yield put({
       type: 'user/SET_STATE',
       payload: {
@@ -55,16 +68,42 @@ export function* LOAD_CURRENT_ACCOUNT() {
 
   const response = yield call(RefreshToken)
 
-  if(response)
-  {
-    yield put({
-      type: 'user/SET_STATE',
-      payload: {
-        authorized: true,
-        loading: false,
-        role:JSON.parse(localStorage.getItem('role')),
-      },
-    })
+  if(response){
+    console.log(response)
+    const result = yield call(GetUserDetailsByUsername, response.refreshToken.payload.username)
+
+    if (result){
+      console.log(result)
+
+      yield put({
+        type: 'user/SET_STATE',
+        payload: {
+          id: result.data.getuser.edges[0].node.id,
+          authorized: true,
+          loading: false,
+          role:JSON.parse(localStorage.getItem('role')),
+        },
+      })
+
+      if(result.data.getuser.edges[0].node.groups.edges[0].node.name === 'parents'){
+
+        const result2 = yield call(StudentIdFromUserId, result.data.getuser.edges[0].node.id)
+
+        if (result2){
+          yield put({
+            type: 'user/SET_STATE',
+            payload: {
+              studentId: result2.data.students.edges[0].node.id,
+            },
+          })
+        }
+
+
+      }
+
+    }
+
+    
   }
   else {
    LOGOUT()

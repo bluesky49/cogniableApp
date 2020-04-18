@@ -1,6 +1,7 @@
 import React from 'react';
 import {Form,Input,Button,Select,DatePicker,notification, TimePicker} from 'antd';
 import { gql } from "apollo-boost";
+import { connect } from 'react-redux'
 import client from '../../apollo/config'
 
 const layout = {
@@ -12,6 +13,7 @@ const layout = {
 const { TextArea } = Input;
 const { Option } = Select;
 
+@connect(({ user }) => ({ user }))
 class MealBasicForm extends React.Component {
   constructor(props){
     super(props);
@@ -27,9 +29,9 @@ class MealBasicForm extends React.Component {
   }
 
   SubmitForm = (e, This) => {
-    console.log(This);
+  
       e.preventDefault();
-      const { form } = this.props;
+      const {user:{studentId}, form} = this.props;
       form.validateFields((error, values) => {
         if (!error) {
           const date = new Date(values.date).toISOString().slice(0,10);
@@ -38,7 +40,7 @@ class MealBasicForm extends React.Component {
                 createFood(
                   input:{
                     foodData:{
-                      student:"U3R1ZGVudFR5cGU6MTYz",
+                      student:"${studentId}",
                       date:"${date}"
                       mealName:"${values.mealName}",
                       mealTime:"${values.mealTime}",

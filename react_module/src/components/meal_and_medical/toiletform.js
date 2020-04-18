@@ -1,6 +1,7 @@
 import React from 'react'
 import { Radio, Form ,Input,DatePicker,TimePicker,Button,Switch, notification} from 'antd';
 import moment from 'moment';
+import { connect } from 'react-redux'
 import { gql } from "apollo-boost";
 import client from '../../apollo/config'
 
@@ -13,7 +14,7 @@ const layout = {
 
     
   };
-
+  @connect(({ user }) => ({ user }))
 class ToiletBasicForm extends React.Component {
     state={
 
@@ -22,7 +23,7 @@ class ToiletBasicForm extends React.Component {
   SubmitForm = (e, This) => {
     console.log(This);
       e.preventDefault();
-      const { form } = this.props;
+      const {user:{studentId}, form} = this.props;
       form.validateFields((error, values) => {
         if (!error) {
           const date = new Date(values.date).toISOString().slice(0,10);
@@ -36,7 +37,7 @@ class ToiletBasicForm extends React.Component {
                 recordToiletdata(input:{
                     toiletData:
                     {
-                        student:"U3R1ZGVudFR5cGU6MTYz", 
+                        student:"${studentId}", 
                         date:"${date}",
                         time:"${time}",
                         lastWater:"${values.lastWater}",

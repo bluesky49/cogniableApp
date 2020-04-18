@@ -29,7 +29,7 @@ export async function getLeftMenuData() {
 }
 
 export async function getTopMenuData() {
-  if (JSON.parse(localStorage.getItem('role')) === "parents"){  
+  if (localStorage.getItem('role') === '"parents"'){  
     console.log('entered in parent menu')
     return [
       {
@@ -38,66 +38,44 @@ export async function getTopMenuData() {
         icon: 'icmn icmn-cog utils__spin-delayed--pseudo-selector',
       },
       {
-        title: 'Partners',
+        title: 'Family Members',
         key: 'partners',
-        // url: '/partners/laerners',
+        url: '/family/',
         icon: 'icmn icmn-books',
-        children: [
-              {
-                title: 'Learners',
-                key: 'partnersLearner',
-                url: '/partners/learner',
-              },
-              {
-                title: 'Staff',
-                key: 'partnersStaff',
-                url: '/partners/viewstaffs',
-              },
-              {
-                title: 'Network Providers',
-                key: 'partnersProviders',
-                url: '/partners/providers',
-              },
-              {
-                title: 'Others',
-                key: 'partnersOthers',
-                url: '/partners/others',
-              },
-        ]
       },
-      {
-        title: 'Assessment',
-        key: 'parentAssessment',
-        // url: '/dashboard/alpha',
-        icon: 'icmn icmn-books',
-        children: [
-          {
-            title: 'VB-MAPP',
-            key: 'parentVBMAPP',
-            url: '/parent/VBMAPP',
-          },
-          {
-            title: 'PEAK',
-            key: 'parentPEAK',
-            url: '/parent/PEAK',
-          },
-          {
-            title: 'CogniAble',
-            key: 'parentCogniAble',
-            url: '/parent/COGNIABLE',
-          },
-          {
-            title: 'ABC',
-            key: 'parentABC',
-            url: '/parent/ABC',
-          },
-          {
-            title: 'Preference Assessment',
-            key: 'parentPreferenceAssessment',
-            url: '/parent/PreferenceAssessment',
-          },
-        ]
-      },
+      // {
+      //   title: 'Assessment',
+      //   key: 'parentAssessment',
+      //   // url: '/dashboard/alpha',
+      //   icon: 'icmn icmn-books',
+      //   children: [
+      //     {
+      //       title: 'VB-MAPP',
+      //       key: 'parentVBMAPP',
+      //       url: '/parent/VBMAPP',
+      //     },
+      //     {
+      //       title: 'PEAK',
+      //       key: 'parentPEAK',
+      //       url: '/parent/PEAK',
+      //     },
+      //     {
+      //       title: 'CogniAble',
+      //       key: 'parentCogniAble',
+      //       url: '/parent/COGNIABLE',
+      //     },
+      //     {
+      //       title: 'ABC',
+      //       key: 'parentABC',
+      //       url: '/parent/ABC',
+      //     },
+      //     {
+      //       title: 'Preference Assessment',
+      //       key: 'parentPreferenceAssessment',
+      //       url: '/parent/PreferenceAssessment',
+      //     },
+      //   ]
+      // },
       {
         title: 'Goals',
         key: 'parentGoals',
@@ -125,27 +103,27 @@ export async function getTopMenuData() {
       {
         title: 'Sessions',
         key: 'parentSessions',
-        // url: '/therapy/tables',
+        url: '/therapy/sessionrecording',
         icon: 'icmn icmn-books',
-        children: [
-          {
-            title: 'Skill Acquisition',
-            key: 'parentSkillAcquisition',
-            // url: '/therapy/assessment',
-          },
-          {
-            key: 'parentBehaviorReduction',
-            title: 'Behavior Reduction',
-            url: '/therapy/targetmapping',
-            // pro: true,
-          },
-          {
-            key: 'parentMaintenance',
-            title: 'Maintenance',
-            url: '/therapy/assessment/peak',
-          },
+        // children: [
+        //   {
+        //     title: 'Skill Acquisition',
+        //     key: 'parentSkillAcquisition',
+        //     // url: '/therapy/assessment',
+        //   },
+        //   {
+        //     key: 'parentBehaviorReduction',
+        //     title: 'Behavior Reduction',
+        //     url: '/therapy/targetmapping',
+        //     // pro: true,
+        //   },
+        //   {
+        //     key: 'parentMaintenance',
+        //     title: 'Maintenance',
+        //     url: '/therapy/assessment/peak',
+        //   },
           
-        ]
+        // ]
       },
       {
         title: 'Daily Vitals',
@@ -155,37 +133,37 @@ export async function getTopMenuData() {
           {
             title: 'Mand',
             key: 'parentMand',
-            url: '/scheduling/task',
+            url: '/mand/',
           },
           {
             title: 'Behavior',
             key: 'ParentBehavior',
-            url: '/scheduling/appointments',
+            url: '/decel/',
           },
-          {
-            title: 'Height',
-            key: 'parentHeight',
-            url: '/scheduling/viewcalendar',
-          },
-          {
-            title: 'Weight',
-            key: 'parentWeight',
-            url: '/scheduling/viewdayplanner',
-          },
+          // {
+          //   title: 'Height',
+          //   key: 'parentHeight',
+          //   url: '/scheduling/viewcalendar',
+          // },
+          // {
+          //   title: 'Weight',
+          //   key: 'parentWeight',
+          //   url: '/scheduling/viewdayplanner',
+          // },
           {
             title: 'Toileting',
             key: 'parentToileting',
-            url: '/scheduling/viewasgrid',
+            url: '/toilet/',
           },
           {
             title: 'Meal',
             key: 'parentMeal',
-            url: '/scheduling/historyandaudits',
+            url: '/mealData/',
           },
           {
-            title: 'Prescription',
+            title: 'Medical Data',
             key: 'parentPrescription',
-            url: '/scheduling/attendance',
+            url: '/medicalData/',
           },
         ]
       },
@@ -193,7 +171,7 @@ export async function getTopMenuData() {
       
     ]
   }
-  else if(JSON.parse(localStorage.getItem('role')) === "therapist"){
+  else if(localStorage.getItem('role') === '"therapist"'){
     return [
       {
         title: 'Dashboard',

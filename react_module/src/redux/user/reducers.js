@@ -4,7 +4,8 @@ const initialState = {
   id: '',
   authorized: false,
   loading: false,
-  role:""
+  role:"",
+  studentId: "",
 }
 
 export default function userReducer(state = initialState, action) {

@@ -4,11 +4,12 @@ import Authorize from 'components/LayoutComponents/Authorize'
 import { Row,Col,Card,Calendar,Button} from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons'
 import Iframe from 'react-iframe';
+import { connect } from 'react-redux'
 import { gql } from "apollo-boost";
 import client from '../apollo/config';
 import ToiletForm from '../components/meal_and_medical/toiletform'
 
-
+@connect(({ user }) => ({ user }))
 class ToiletView extends React.Component {
     state = {
       divShow: false,
@@ -17,9 +18,10 @@ class ToiletView extends React.Component {
     };
 
     componentDidMount() {
+      const {user:{studentId}} = this.props;
       client.query({
         query: gql`query{
-            getToiletData(student:"U3R1ZGVudFR5cGU6MTYz"){
+            getToiletData(student:"${studentId}"){
                 edges{
                     node{
                         id,
@@ -48,9 +50,10 @@ class ToiletView extends React.Component {
    
     onPanelChange = (value) => {
       const date = new Date(value).toISOString().slice(0,10);
+      const {user:{studentId}} = this.props;
       client.query({
         query: gql`query{
-          getToiletData(student:"U3R1ZGVudFR5cGU6MTYz", date:"${date}"){
+          getToiletData(student:"${studentId}", date:"${date}"){
               edges{
                   node{
                       id,
@@ -88,7 +91,7 @@ class ToiletView extends React.Component {
       const {divShow, data, loading} = this.state; 
 
     return (
-      <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
+      <Authorize roles={['school_admin', 'parents', 'therapist']} redirect to="/dashboard/beta">
         <Helmet title="Dashboard Alpha" />
         <Row gutter={24}>
           <Col span={6}>

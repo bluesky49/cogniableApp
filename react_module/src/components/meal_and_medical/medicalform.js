@@ -1,6 +1,7 @@
 import React from 'react';
 import {Switch,Form,Input,Button,Select,notification,DatePicker,TimePicker} from 'antd';
 import { gql } from "apollo-boost";
+import { connect } from 'react-redux'
 import client from '../../apollo/config'
 
 const { TextArea } = Input;
@@ -14,6 +15,7 @@ const layout = {
 const { Option } = Select;
 // const { RangePicker } = DatePicker;
 
+@connect(({ user }) => ({ user }))
 class MedicalBasicForm extends React.Component {
   constructor(props){
     super(props);
@@ -31,7 +33,7 @@ class MedicalBasicForm extends React.Component {
   SubmitForm = (e, This) => {
     console.log(This);
       e.preventDefault();
-      const { form } = this.props;
+      const {user:{studentId}, form} = this.props;
       form.validateFields((error, values) => {
         if (!error) {
           const date = new Date(values.date).toISOString().slice(0,10);
@@ -40,7 +42,7 @@ class MedicalBasicForm extends React.Component {
                 createMedical(
                   input:{
                     medicalData:{
-                      student:"U3R1ZGVudFR5cGU6MTYz",
+                      student:"${studentId}",
                       date:"${date}"
                       condition:"${values.condition}",
                       severity:"${values.severity}",

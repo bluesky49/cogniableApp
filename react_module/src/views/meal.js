@@ -4,6 +4,7 @@ import Authorize from 'components/LayoutComponents/Authorize'
 import { Row,Col,Card,Button,Collapse, Form,Select,Input,Calendar} from 'antd';
 import { ArrowRightOutlined ,PlusOutlined} from '@ant-design/icons'
 import Iframe from 'react-iframe';
+import { connect } from 'react-redux'
 import { gql } from "apollo-boost";
 import client from '../apollo/config';
 import MealForm from '../components/meal_and_medical/mealform'; 
@@ -18,6 +19,8 @@ const layout = {
       span: 6,
     },
   };
+
+@connect(({ user }) => ({ user }))
 class meal extends React.Component {
     state = {
         divShow: false,
@@ -27,8 +30,9 @@ class meal extends React.Component {
     };
 
   componentDidMount() {
+    const {user:{studentId}} = this.props;
     client.query({
-      query: gql`query {getFood(student:"U3R1ZGVudFR5cGU6MTYz"){
+      query: gql`query {getFood(student:"${studentId}"){
           edges{
               node{
                  id,
@@ -71,9 +75,10 @@ class meal extends React.Component {
     }
 
     filterMealType = (value) => {
+      const {user:{studentId}} = this.props;
       if(value !== 'all'){
         client.query({
-          query: gql`query {getFood(student:"U3R1ZGVudFR5cGU6MTYz", mealType:"${value}"){
+          query: gql`query {getFood(student:"${studentId}", mealType:"${value}"){
               edges{
                   node{
                      id,
@@ -100,7 +105,7 @@ class meal extends React.Component {
         );
       } else{
         client.query({
-          query: gql`query {getFood(student:"U3R1ZGVudFR5cGU6MTYz"){
+          query: gql`query {getFood(student:"${studentId}"){
               edges{
                   node{
                      id,
@@ -130,9 +135,10 @@ class meal extends React.Component {
     }
 
     onPanelChange = (value) => {
+      const {user:{studentId}} = this.props;
       const date = new Date(value).toISOString().slice(0,10);
       client.query({
-        query: gql`query {getFood(student:"U3R1ZGVudFR5cGU6MTYz", date_Gte:"${date}", date_Lte:"${date}"){
+        query: gql`query {getFood(student:"${studentId}", date_Gte:"${date}", date_Lte:"${date}"){
             edges{
                 node{
                    id,
@@ -161,8 +167,9 @@ class meal extends React.Component {
 
     handleSearch = (value) => {
       console.log(value);
+      const {user:{studentId}} = this.props;
       client.query({
-        query: gql`query {getFood(student:"U3R1ZGVudFR5cGU6MTYz", mealName_Icontains:"${value}"){
+        query: gql`query {getFood(student:"${studentId}", mealName_Icontains:"${value}"){
             edges{
                 node{
                    id,
@@ -200,7 +207,7 @@ class meal extends React.Component {
   render(){
     const {divShow, foodlist, loading} = this.state;    
     return (
-      <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
+      <Authorize roles={['school_admin', 'parents']} redirect to="/dashboard/beta">
         <Helmet title="Dashboard Alpha" />
         <Row gutter={24}>
           <Col span={6}>

@@ -13,7 +13,7 @@ class FamilyMembers extends React.Component {
     const iconStyle = {float:"left",width:"auto"}
     const rightIconStyle = {float:"right"}
     return (
-      <Authorize roles={['school_admin', 'admin']} redirect to="/dashboard/beta">
+      <Authorize roles={['school_admin', 'parents']} redirect to="/dashboard/beta">
         <Helmet title="Partner" />
         <Row gutter={24}>
           <Col span={6}>

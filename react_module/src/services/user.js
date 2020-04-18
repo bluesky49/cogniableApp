@@ -4,7 +4,10 @@ import { notification } from 'antd'
 import 'firebase/auth'
 import 'firebase/database'
 import 'firebase/storage'
+import { gql } from "apollo-boost";
 import client from '../config'
+import apolloClient from '../apollo/config'
+
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAE5G0RI2LwzwTBizhJbnRKIKbiXQIA1dY',
@@ -21,6 +24,7 @@ export default firebaseApp
 
 
 export async function login(payload) {
+  console.log('checked')
   const query = `mutation TokenAuth($username: String!, $password: String!) {
     tokenAuth(input: {username: $username, password: $password}) {
       token,
@@ -45,18 +49,76 @@ export async function login(payload) {
   }
 
   return client.request(query, variables)
-.then(data => {
-      localStorage.setItem('token', JSON.stringify(data.tokenAuth.token));
-      localStorage.setItem('role', JSON.stringify(data.tokenAuth.user.groups.edges[0].node.name));
-      localStorage.setItem('database', JSON.stringify('india'));
-      return data;
-})
-.catch(err => {
-  notification.error({
-        message: err.response.errors[0].message,
-        description: err.response.errors[0].message,
+    .then(data => {
+          localStorage.setItem('token', JSON.stringify(data.tokenAuth.token));
+          localStorage.setItem('role', JSON.stringify(data.tokenAuth.user.groups.edges[0].node.name));
+          localStorage.setItem('database', JSON.stringify('india'));
+          return data;
+    })
+    .catch(err => {
+      notification.error({
+            message: err.response.errors[0].message,
+            description: err.response.errors[0].message,
+          })
+    })
+
+}
+
+export async function StudentIdFromUserId(payload) {
+    return apolloClient.query({
+        query: gql`{
+          students (parent:"${payload}")  {
+            edges {
+              node {
+                id, firstname,
+              }
+            }
+          }
+        }`
+        })
+        .then(result => {
+          return result
+        })
+        .catch(error => { 
+          error.graphQLErrors.map((item) => { 
+              return notification.error({
+                  message: 'Somthing want wrong',
+                  description: item.message,
+              }); 
+          })
+        });
+}
+
+export async function GetUserDetailsByUsername(payload) {
+  return apolloClient.query({
+      query: gql`{
+        getuser(username:"${payload}") {
+          edges {
+            node {
+              id, username,
+                groups {
+                  edges {
+                    node {
+                      id, name
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }`
       })
-})
+      .then(result => {
+        return result
+      })
+      .catch(error => { 
+        error.graphQLErrors.map((item) => { 
+            return notification.error({
+                message: 'Somthing want wrong',
+                description: item.message,
+            }); 
+        })
+      });
 
 }
 

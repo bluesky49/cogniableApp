@@ -80,7 +80,7 @@ class ToiletData extends React.Component {
     }
 
     return (
-      <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
+      <Authorize roles={['school_admin', 'parents']} redirect to="/dashboard/beta">
         <Helmet title="Dashboard Alpha" />
         <Row gutter={24}>
           <Col span={6}>
