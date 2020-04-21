@@ -1,4 +1,4 @@
-// import { GraphQLClient } from 'graphql-request'
+import { GraphQLClient } from 'graphql-request'
 import firebase from 'firebase/app'
 import { notification } from 'antd'
 import 'firebase/auth'
@@ -7,7 +7,6 @@ import 'firebase/storage'
 import { gql } from "apollo-boost";
 import client from '../config'
 import apolloClient from '../apollo/config'
-
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAE5G0RI2LwzwTBizhJbnRKIKbiXQIA1dY',
@@ -24,7 +23,6 @@ export default firebaseApp
 
 
 export async function login(payload) {
-  console.log('checked')
   const query = `mutation TokenAuth($username: String!, $password: String!) {
     tokenAuth(input: {username: $username, password: $password}) {
       token,
@@ -49,18 +47,18 @@ export async function login(payload) {
   }
 
   return client.request(query, variables)
-    .then(data => {
-          localStorage.setItem('token', JSON.stringify(data.tokenAuth.token));
-          localStorage.setItem('role', JSON.stringify(data.tokenAuth.user.groups.edges[0].node.name));
-          localStorage.setItem('database', JSON.stringify('india'));
-          return data;
-    })
-    .catch(err => {
-      notification.error({
-            message: err.response.errors[0].message,
-            description: err.response.errors[0].message,
-          })
-    })
+.then(data => {
+      localStorage.setItem('token', JSON.stringify(data.tokenAuth.token));
+      localStorage.setItem('role', JSON.stringify(data.tokenAuth.user.groups.edges[0].node.name));
+      localStorage.setItem('database', JSON.stringify('india'));
+      return data;
+})
+.catch(err => {
+  notification.error({
+        message: err.response.errors[0].message,
+        description: err.response.errors[0].message,
+      })
+})
 
 }
 

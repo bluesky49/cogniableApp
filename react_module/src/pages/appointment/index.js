@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet'
 import Authorize from 'components/LayoutComponents/Authorize'
 import { Row,Col,Card,Calendar,Button,Collapse} from 'antd';
 import { UsergroupAddOutlined,VideoCameraOutlined,ClockCircleOutlined } from '@ant-design/icons'
-// import AppointmentForm from 'components/AppointmentForm'
+import AppointmentForm from 'components/AppointmentForm'
 
 const { Panel } = Collapse;
 
@@ -93,7 +93,7 @@ class Appointment extends React.Component {
           <Col span={8}>
             <Card>
               <Button style={{marginRight: '-12px', float:'right', border:'none', padding:'none'}} onClick={() => this.setState({divShow:false})}>X</Button>
-              {/* <AppointmentForm /> */}
+              <AppointmentForm />
             </Card>
           </Col>}
 

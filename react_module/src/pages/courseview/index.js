@@ -1,9 +1,8 @@
 import React from 'react'
 import { Collapse, List, Avatar } from 'antd';
 import { Helmet } from 'react-helmet'
-// import { GraphQLClient } from 'graphql-request'
+import { GraphQLClient } from 'graphql-request'
 import client from '../../config'
-
 const { Panel } = Collapse;
 
 // import table from './data.json'

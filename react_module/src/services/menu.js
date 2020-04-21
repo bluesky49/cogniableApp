@@ -1,5 +1,4 @@
-// import { connect } from 'react-redux'
-/* eslint-disable no-else-return */
+import React, { useState } from 'react';
 
 export async function getLeftMenuData() {
   return [
@@ -18,7 +17,7 @@ export async function getLeftMenuData() {
     {
       divider: true,
     },
-    { 
+    {
       title: 'Dashboard Alpha',
       key: 'dashboardAlpha',
       url: '/dashboard/alpha',
@@ -28,9 +27,9 @@ export async function getLeftMenuData() {
 
 }
 
-export async function getTopMenuData() {
-  if (localStorage.getItem('role') === '"parents"'){  
-    console.log('entered in parent menu')
+export async function getTopMenuData(role) {
+  
+  if (role === "parents"){
     return [
       {
         title: 'Dashboard',
@@ -97,7 +96,7 @@ export async function getTopMenuData() {
             key: 'revenueBilling',
             url: '/revenue/billing',
           },
-          
+
         ]
       },
       {
@@ -122,7 +121,7 @@ export async function getTopMenuData() {
         //     title: 'Maintenance',
         //     url: '/therapy/assessment/peak',
         //   },
-          
+
         // ]
       },
       {
@@ -167,21 +166,22 @@ export async function getTopMenuData() {
           },
         ]
       },
-      
-      
+
+
     ]
   }
-  else if(localStorage.getItem('role') === '"therapist"'){
+
+  if (role === "therapist"){
     return [
       {
         title: 'Dashboard',
         key: 'settings',
         icon: 'icmn icmn-cog utils__spin-delayed--pseudo-selector',
       },
+
     ]
   }
-  else{
-  
+
 
   return [
     {
@@ -646,7 +646,230 @@ export async function getTopMenuData() {
 
       icon: 'icmn icmn-books',
     },
+    // {
+    //   title: 'Dashboard Alpha',
+    //   key: 'dashboardAlpha',
+    //   url: '/dashboard/alpha',
+    //   icon: 'icmn icmn-home',
+    // },
+    // {
+    //   title: 'Pages',
+    //   key: 'pages',
+    //   icon: 'icmn icmn-stack',
+    //   children: [
+    //     {
+    //       title: 'Dashboard Alpha',
+    //       key: 'dashboardAlpha',
+    //       url: '/dashboard/alpha',
+    //     },
+    //     {
+    //       title: 'Dashboard Beta',
+    //       key: 'dashboardBeta',
+    //       url: '/dashboard/beta',
+    //       pro: true,
+    //     },
+    //     {
+    //       title: 'Dashboard Crypto',
+    //       key: 'dashboardCrypto',
+    //       url: '/dashboard/crypto',
+    //       pro: true,
+    //     },
+    //     {
+    //       title: 'Dashboard Gamma',
+    //       key: 'dashboardGamma',
+    //       url: '/dashboard/gamma',
+    //       pro: true,
+    //     },
+    //     {
+    //       title: 'Dashboard Docs',
+    //       key: 'dashboardDocs',
+    //       url: '/dashboard/docs',
+    //       pro: true,
+    //     },
+    //     {
+    //       divider: true,
+    //     },
+    //     {
+    //       title: 'Default Pages',
+    //       key: 'defaultPages',
+    //       children: [
+    //         {
+    //           key: 'loginAlpha',
+    //           title: 'Login Alpha',
+    //           url: '/pages/login-alpha',
+    //           pro: true,
+    //         },
+    //         {
+    //           key: 'loginBeta',
+    //           title: 'Login Beta',
+    //           url: '/pages/login-beta',
+    //           pro: true,
+    //         },
+    //         {
+    //           key: 'register',
+    //           title: 'Register',
+    //           url: '/pages/register',
+    //           pro: true,
+    //         },
+    //         {
+    //           key: 'lockscreen',
+    //           title: 'Lockscreen',
+    //           url: '/pages/lockscreen',
+    //           pro: true,
+    //         },
+    //         {
+    //           key: 'pricingTable',
+    //           title: 'Pricing Tables',
+    //           url: '/pages/pricing-table',
+    //           pro: true,
+    //         },
+    //         {
+    //           key: 'invoice',
+    //           title: 'Invoice',
+    //           url: '/pages/invoice',
+    //           pro: true,
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       title: 'Ecommerce',
+    //       key: 'ecommerce',
+    //       children: [
+    //         {
+    //           title: 'Dashboard',
+    //           key: 'dashboard',
+    //           url: '/ecommerce/dashboard',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Products Catalog',
+    //           key: 'productsCatalog',
+    //           url: '/ecommerce/products-catalog',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Products Details',
+    //           key: 'productsDetails',
+    //           url: '/ecommerce/product-details',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Products Edit',
+    //           key: 'productsEdit',
+    //           url: '/ecommerce/product-edit',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Products List',
+    //           key: 'productsList',
+    //           url: '/ecommerce/products-list',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Orders',
+    //           key: 'orders',
+    //           url: '/ecommerce/orders',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Cart',
+    //           key: 'cart',
+    //           url: '/ecommerce/cart',
+    //           pro: true,
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       title: 'Apps',
+    //       key: 'apps',
+    //       children: [
+    //         {
+    //           title: 'Messaging',
+    //           key: 'messaging',
+    //           url: '/apps/messaging',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Mail',
+    //           key: 'mail',
+    //           url: '/apps/mail',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Profile',
+    //           key: 'profile',
+    //           url: '/apps/profile',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Gallery',
+    //           key: 'gallery',
+    //           url: '/apps/gallery',
+    //           pro: true,
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       title: 'Blog',
+    //       key: 'blog',
+    //       children: [
+    //         {
+    //           title: 'Feed',
+    //           key: 'blogFeed',
+    //           url: '/blog/feed',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Post',
+    //           key: 'blogPost',
+    //           url: '/blog/post',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Add Post',
+    //           key: 'blogAddPost',
+    //           url: '/blog/add-blog-post',
+    //           pro: true,
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       title: 'YouTube',
+    //       key: 'youtube',
+    //       children: [
+    //         {
+    //           title: 'Feed',
+    //           key: 'youtubeFeed',
+    //           url: '/youtube/feed',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'View',
+    //           key: 'youtubeView',
+    //           url: '/youtube/view',
+    //           pro: true,
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       title: 'GitHub',
+    //       key: 'github',
+    //       children: [
+    //         {
+    //           title: 'Explore',
+    //           key: 'githubExplore',
+    //           url: '/github/explore',
+    //           pro: true,
+    //         },
+    //         {
+    //           title: 'Discuss',
+    //           key: 'githubDiscuss',
+    //           url: '/github/discuss',
+    //           pro: true,
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // },
   ]
 }
-}
-

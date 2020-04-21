@@ -1,12 +1,3 @@
-/* eslint-disable react/no-unused-state */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/jsx-indent */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/jsx-indent-props */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable react/jsx-no-undef */
-/* eslint-disable no-undef */
 import React from 'react'
  
 
@@ -69,7 +60,7 @@ class YouTubeView extends React.Component {
             </div>
           </div>
 
-          
+          </div>
         </section>
       </div>
     )

@@ -1,10 +1,3 @@
-/* eslint-disable react/no-unused-state */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/jsx-indent */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/jsx-indent-props */
-/* eslint-disable no-nested-ternary */
 import React from 'react';
 import {Helmet} from 'react-helmet';
 import {Form, Input, Button, Select, DatePicker, notification} from 'antd';

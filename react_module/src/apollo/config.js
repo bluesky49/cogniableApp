@@ -6,10 +6,13 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
 
 // const cache = new InMemoryCache();
-let token = '';
-if (localStorage.getItem('token')){
-  token  = JSON.parse(localStorage.getItem('token'))
+const token = ""
+
+if(!localStorage.getItem('token')===null || localStorage.getItem('token'))
+{
+  const token = JSON.parse(localStorage.getItem('token'))
 }
+
 // const database  = JSON.parse(localStorage.getItem('database'))
 const link = new HttpLink({
   headers: {

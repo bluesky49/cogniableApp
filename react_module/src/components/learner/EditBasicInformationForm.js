@@ -60,13 +60,13 @@ class EditBasicInformationForm extends React.Component {
           staffNodeList : result.data.staffs.edges,
           categoryList: result.data.category
         });
-  
+
       }
       );
 
   }
-  
-  
+
+
   handleChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value
@@ -97,7 +97,7 @@ class EditBasicInformationForm extends React.Component {
     console.log(userinfo.currentAddress)
     // const selectedDiagnosesList = []
     // userinfo.diagnoses.edges.map((item) => selectedDiagnosesList.push(item.node.id))
-    
+
 
     // staffNodeList.map((item) => staffList.push(item.node))
 
@@ -177,7 +177,13 @@ class EditBasicInformationForm extends React.Component {
           style={itemStyle}
         >
           <Select
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+             }
             mode="multiple"
+            maxTagCount="4"
             placeholder="Select Therapists"
             defaultValue={selectedStaffList}
             allowClear
@@ -213,7 +219,7 @@ class EditBasicInformationForm extends React.Component {
           ]}
           style={itemStyle}
         >
-          {userinfo.dob ? 
+          {userinfo.dob ?
             <DatePicker defaultValue={moment(userinfo.dob)} />
           :
             <DatePicker />
@@ -235,6 +241,15 @@ class EditBasicInformationForm extends React.Component {
             placeholder="Select a option and change input text above"
             onChange={this.onGenderChange}
             allowClear
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+             }
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+             }
             value={userinfo ? userinfo.gender : ""}
           >
             <Option value="male">Male</Option>
@@ -254,6 +269,11 @@ class EditBasicInformationForm extends React.Component {
           style={itemStyle}
         >
           <Select
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+             }
             placeholder="Select a option and change input text above"
             onSelect={this.handleChange}
             allowClear
@@ -273,6 +293,11 @@ class EditBasicInformationForm extends React.Component {
           style={itemStyle}
         >
           <Select
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+             }
             placeholder="Select a option"
             onSelect={this.handleChange}
             allowClear

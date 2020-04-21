@@ -1,13 +1,3 @@
-/* eslint-disable react/no-unused-state */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/jsx-indent */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/jsx-indent-props */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable react/jsx-closing-tag-location */
-
-
 import React from 'react';
 // import { Input, Button } from 'antd'
 import {Tabs, Drawer,Form, Button, Popover, Col, Row, DatePicker, Input, Spin, Select} from 'antd';

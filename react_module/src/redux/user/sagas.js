@@ -35,7 +35,6 @@ export function* LOGIN({ payload }) {
           },
         })
       }
-
     }
 
     yield put({
@@ -47,6 +46,11 @@ export function* LOGIN({ payload }) {
         role:response.tokenAuth.user.groups.edges[0].node.name,
       },
     })
+
+    yield put({
+      type: 'menu/GET_DATA'      
+    })
+
   }
 
 yield put({
@@ -103,7 +107,7 @@ export function* LOAD_CURRENT_ACCOUNT() {
 
     }
 
-    
+
   }
   else {
    LOGOUT()

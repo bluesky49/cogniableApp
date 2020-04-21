@@ -32,80 +32,15 @@ class LoginLayout extends React.PureComponent {
     return (
       <Layout>
         <Layout.Content>
-          <div
-            className={backgroundEnabled ? `${styles.layout} ${styles.light}` : `${styles.layout}`}
-            style={{
-              backgroundImage: backgroundEnabled
-                ? `url('resources/images/photos/${backgroundNumber}.jpeg')`
-                : `none`,
-            }}
-          >
-            <div className={styles.header}>
-              <div className={styles.logo}>
-                <Link to="/">
-                  {!backgroundEnabled && (
-                    <img src="resources/images/logo.png" alt="Clean UI React Admin Template" />
-                  )}
-                  {backgroundEnabled && (
-                    <img
-                      src="resources/images/logo-inverse.png"
-                      alt="Clean UI React Admin Template"
-                    />
-                  )}
-                </Link>
-              </div>
-              <div className={styles.controls}>
-                <div className="d-inline-block mr-3">
-                  <Button type="default" onClick={this.changeBackground}>
-                    Change Background
-                  </Button>
-                </div>
-                <div className="d-inline-block">
-                  <Button type="default" onClick={this.toggleBackground}>
-                    Toggle Background
-                  </Button>
-                </div>
-              </div>
-              <nav className={styles.navigation}>
-                <ul className={styles.navigationItems}>
-                  <li>
-                    <a href="javascript: void(0);">&larr; Back</a>
-                  </li>
-                  <li>
-                    <a className={styles.navigationActive} href="javascript: void(0);">
-                      Login
-                    </a>
-                  </li>
-                  <li>
-                    <a href="javascript: void(0);">About</a>
-                  </li>
-                  <li>
-                    <a href="javascript: void(0);">Support</a>
-                  </li>
-                </ul>
-              </nav>
+          <div>
+            <div align="center" className="mt-5">
+              <img
+                src="resources/images/HeaderLogo.png"
+                alt="HeaderLogo"
+                style={{ height: '62px' }}
+              />
             </div>
             <div className={styles.content}>{children}</div>
-            <div className={`${styles.footer} text-center`}>
-              <ul className="list-unstyled list-inline mb-3">
-                <li className="list-inline-item">
-                  <a href="javascript: void(0);">Terms of Use</a>
-                </li>
-                <li className="active list-inline-item">
-                  <a href="javascript: void(0);">Compliance</a>
-                </li>
-                <li className="list-inline-item">
-                  <a href="javascript: void(0);">Confidential Information</a>
-                </li>
-                <li className="list-inline-item">
-                  <a href="javascript: void(0);">Support</a>
-                </li>
-                <li className="list-inline-item">
-                  <a href="javascript: void(0);">Contacts</a>
-                </li>
-              </ul>
-              <p>&copy; 2019 Mediatec. All rights reserved.</p>
-            </div>
           </div>
         </Layout.Content>
       </Layout>

@@ -38,7 +38,7 @@ const {Element, Link} = Scroll;
 const { Panel } = Collapse;
 const { TreeNode } = Tree;
 
-@connect(({ datarecording, user }) => ({ datarecording, user }))
+@connect(({ datarecording }) => ({ datarecording }))
 class DataRecording extends React.Component {
 
   constructor(props) {
@@ -67,11 +67,11 @@ class DataRecording extends React.Component {
 
     const {learnerId} = this.state;
 
-    const {dispatch, user:{studentId}} = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'datarecording/TARGET_LIST',
       payload:{
-        learner:studentId,
+        learner:learnerId,
       }
     })
 
@@ -348,7 +348,7 @@ class DataRecording extends React.Component {
     }
 
     return (
-      <Authorize roles={["school_admin", 'parents', 'therapist']} redirect to="/dashboard/beta">
+      <Authorize roles={["school_admin"]} redirect to="/dashboard/beta">
         <Helmet title="Session" />
         <Row style={{padding:'0', marginRight:'-30px', marginLeft:'-30px', marginTop:'0', display:'flex' }}>
           <Col xs={0} sm={6} md={6} lg={5} xl={5} style={style1}>

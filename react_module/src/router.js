@@ -31,6 +31,16 @@ const routes = [
     component: loadable(() => import('pages/user/signup')),
     exact: true,
   },
+  {
+    path: '/user/phone',
+    component: loadable(() => import('pages/user/phone')),
+    exact: true,
+  },
+  {
+    path: '/user/otpVerification',
+    component: loadable(() => import('pages/user/otpVerification')),
+    exact: true,
+  },
 
   // Dashboards
   {

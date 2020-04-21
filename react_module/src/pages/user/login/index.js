@@ -1,11 +1,18 @@
 import React, { Component } from 'react'
-import { Form, Input, Select, Button, Checkbox } from 'antd'
+import { Form, Input, Select, Button } from 'antd'
 import { Helmet } from 'react-helmet'
 import { Link, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
+import {
+  UserOutlined,
+  KeyOutlined,
+  ArrowRightOutlined,
+  PhoneOutlined,
+  GoogleOutlined,
+  SecurityScanOutlined,
+} from '@ant-design/icons'
 import client from '../../../config'
 import styles from './style.module.scss'
-
 
 const { Option } = Select
 // const API_URL = process.env.REACT_APP_API_URL;
@@ -14,20 +21,18 @@ const { Option } = Select
 @connect(({ user }) => ({ user }))
 class Login extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       countryLoad: false,
       CountryList: [],
-      UserContryName: "",
-      timezone:null,
-      signupredirect:false,
-      loginredirect:false
-    };
-
+      // UserContryName: '',
+      // timezone: null,
+      signupredirect: false,
+      loginredirect: false,
+    }
   }
 
   componentDidMount() {
-
     const query = `query {
       country {
         edges {
@@ -39,12 +44,11 @@ class Login extends Component {
     }
     }`
 
-
     client.request(query).then(data => {
       this.setState({
         CountryList: data.country.edges,
-        countryLoad: true
-      });
+        countryLoad: true,
+      })
     })
     // fetch(`${API_URL}/school/country_list`, {headers:{ "Accept": "application/json", "Content-Type": "application/json", "database":"india" }})
     //   .then(res => res.json())
@@ -57,33 +61,30 @@ class Login extends Component {
     //     }
     //   )
 
-    fetch('http://ip-api.com/json')
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            UserContryName: result.country,
-            timezone:result.timezone
-          });
-        }
-      )
-
+    // fetch('http://ip-api.com/json')
+    //   .then(res => res.json())
+    //   .then(result => {
+    //     this.setState({
+    //       UserContryName: result.country,
+    //       timezone: result.timezone,
+    //     })
+    //   })
   }
 
   SignupRedirct = e => {
-    e.preventDefault();
+    e.preventDefault()
     this.setState({
-      signupredirect: true
-    });
+      signupredirect: true,
+    })
   }
 
   onSubmit = event => {
     event.preventDefault()
-    const { timezone } = this.state;
-    const { form, dispatch } = this.props;
+    // const { timezone } = this.state
+    const { form, dispatch } = this.props
     form.validateFields((error, values) => {
       if (!error) {
-        values.timezone = timezone;
+        // values.timezone = timezone
         dispatch({
           type: 'user/LOGIN',
           payload: values,
@@ -92,21 +93,20 @@ class Login extends Component {
     })
   }
 
-
   render() {
-    const {  form, user: { loading }, } = this.props;
+    const {
+      form,
+      user: { loading },
+    } = this.props
 
+    const { loginredirect, signupredirect, CountryList, countryLoad, UserContryName } = this.state
 
-    const { loginredirect,signupredirect, CountryList, countryLoad, UserContryName } = this.state;
-
-    if(loginredirect)
-    {
-      return <Redirect to='/master_target' />
+    if (loginredirect) {
+      return <Redirect to="/master_target" />
     }
 
-    if(signupredirect)
-    {
-      return <Redirect to='/user/signup' />
+    if (signupredirect) {
+      return <Redirect to="/user/signup" />
     }
 
     return (
@@ -118,87 +118,71 @@ class Login extends Component {
               <div className="col-xl-12">
                 <div className={styles.inner}>
                   <div className={styles.form}>
-                    <h4 className="text-uppercase">
-                      <strong>Please log in</strong>
+                    <h4 className="text-uppercase" align="center">
+                      <strong>SIGN IN</strong>
                     </h4>
                     <br />
                     <Form layout="vertical" hideRequiredMark onSubmit={this.onSubmit}>
-                      <Form.Item label="Email or Username or Phone">
+                      <Form.Item>
                         {form.getFieldDecorator('username', {
-                          rules: [{ required: true, message: 'Please input your Email or Username or Phone' }],
-                        })(<Input size="default" placeholder="Provide your Email or Username or Phone" />)}
-                      </Form.Item>
-                      <Form.Item label="Password">
-                        {form.getFieldDecorator('password', {
-                          rules: [{ required: true, message: 'Please input your password' }],
-                        })(<Input size="default" type="password" placeholder="Provide your Password" />)}
-                      </Form.Item>
-                      <Form.Item label="Country">
-                        {form.getFieldDecorator('country', { rules: [{ required: true, message: 'Please select your country' }] })(
-                          <Select
-                            id="user-country"
-                            showSearch
-                            {...countryLoad ? "" : "disabled"}
-                            style={{ width: '100%' }}
-                            initialValue={UserContryName}
-                            placeholder="Select your country"
-                            optionFilterProp="children"
-                          >
-                            {CountryList.map(c =>
-                              <Option value={c.node.id}>{c.node.name}</Option>
-                            )}
-                          </Select>
+                          rules: [{ required: true, message: 'Please input your Email' }],
+                        })(
+                          <Input
+                            size="large"
+                            placeholder="Email"
+                            prefix={<UserOutlined className="site-form-item-icon" />}
+                          />,
                         )}
                       </Form.Item>
                       <Form.Item>
-                        {form.getFieldDecorator('remember', {
-                          valuePropName: 'checked',
-                          initialValue: true,
-                        })(<Checkbox>Remember me</Checkbox>)}
-                        <Link
-                          to="/user/forgot"
-                          className="utils__link--blue utils__link--underlined pull-right"
-                        >
-                          Forgot password?
-                        </Link>
+                        {form.getFieldDecorator('password', {
+                          rules: [{ required: true, message: 'Please input your password' }],
+                        })(
+                          <Input
+                            size="large"
+                            type="password"
+                            prefix={<KeyOutlined className="site-form-item-icon" />}
+                            placeholder="Password"
+                          />,
+                        )}
                       </Form.Item>
-                      <div className="form-actions">
-                        <Button
-                          type="primary"
-                          className="width-150 mr-4"
-                          htmlType="submit"
-                          loading={loading}
-                        >
-                          Login
+                      <p align="center">
+                        <Link to="/user/forgot" className="utils__link--blue">
+                          {' '}
+                          Forgot Password
+                        </Link>
+                      </p>
+                      <Form.Item>
+                        <Button type="primary" htmlType="submit" size="large" block>
+                          SIGN IN
+                          <ArrowRightOutlined className="site-form-item-icon" />
                         </Button>
-                        <span className="ml-3 register-link">
-                          <a
-                            href="javascript: void(0);"
-                            className="text-primary utils__link--underlined"
-                            onClick={this.SignupRedirct}
-                          >
-                            Register
-                          </a>{' '}
-                          if you don&#39;t have account
-                        </span>
-                      </div>
+                        <p align="center" className="mt-2">
+                          <SecurityScanOutlined
+                            style={{ fontSize: '14px' }}
+                            className="site-form-item-icon"
+                          />{' '}
+                          Your Information is safe with us
+                        </p>
+                      </Form.Item>
                       <div className="form-group">
-                        <p>Use another service to Log In</p>
                         <div className="mt-2">
-                          <a href="javascript: void(0);" className="btn btn-icon mr-2">
-                            <i className="icmn-facebook" />
-                          </a>
-                          <a href="javascript: void(0);" className="btn btn-icon mr-2">
-                            <i className="icmn-google" />
-                          </a>
-                          <a href="javascript: void(0);" className="btn btn-icon mr-2">
-                            <i className="icmn-windows" />
-                          </a>
-                          <a href="javascript: void(0);" className="btn btn-icon mr-2">
-                            <i className="icmn-twitter" />
-                          </a>
+                          <Link to="/user/phone">
+                            <Button size="large" className="width-50p">
+                              <PhoneOutlined rotate="100" className="site-form-item-icon" />
+                              Phone
+                            </Button>
+                          </Link>
+                          <Button size="large" className="width-50p">
+                            <GoogleOutlined className="site-form-item-icon" />
+                            Google
+                          </Button>
                         </div>
                       </div>
+                      <p align="center">
+                        Need help?
+                        <text className="utils__link--blue"> Contact Us</text>
+                      </p>
                     </Form>
                   </div>
                 </div>
