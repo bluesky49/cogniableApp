@@ -1,14 +1,20 @@
-import React from 'react';
-import {Helmet} from 'react-helmet';
-import {Form, Input, Button, Select, DatePicker, notification} from 'antd';
-import BasicInformationForm from 'components/learner/BasicInformationForm';
-import Authorize from 'components/LayoutComponents/Authorize';
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/prefer-default-export */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable no-shadow */
+import React from 'react'
+import { Helmet } from 'react-helmet'
+import { Form, Input, Button, Select, DatePicker, notification } from 'antd'
+import BasicInformationForm from 'components/learner/BasicInformationForm'
+import Authorize from 'components/LayoutComponents/Authorize'
 
-import {gql} from 'apollo-boost';
-import client from '../../apollo/config';
+import { gql } from 'apollo-boost'
+import client from '../../apollo/config'
 
-const {TextArea} = Input;
-const {Option} = Select;
+const { TextArea } = Input
+const { Option } = Select
 const layout = {
   labelCol: {
     span: 7,
@@ -16,23 +22,23 @@ const layout = {
   wrapperCol: {
     span: 14,
   },
-};
+}
 const tailLayout = {
   wrapperCol: {
     offset: 7,
     span: 14,
   },
-};
+}
 
 class ABCForm extends React.Component {
   constructor(props) {
-    super(props);
-    this.state = {};
+    super(props)
+    this.state = {}
   }
 
   render() {
-    const itemStyle = {marginBottom:"5px"}
-    const { form } = this.props;
+    const itemStyle = { marginBottom: '5px' }
+    const { form } = this.props
 
     return (
       <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
@@ -44,15 +50,10 @@ class ABCForm extends React.Component {
                 <h5>ABC Recording</h5>
                 <hr />
                 <br />
-                <Form
-                  {...layout}
-                  name="control-ref"
-                >
+                <Form {...layout} name="control-ref">
                   <Form.Item label="Date & Time:" style={itemStyle}>
                     {form.getFieldDecorator('date_time', {
-                      rules: [
-                        {required: true, message: 'Please provide Date & Time !'},
-                      ],
+                      rules: [{ required: true, message: 'Please provide Date & Time !' }],
                     })(<DatePicker />)}
                   </Form.Item>
                   <Form.Item label="Location" style={itemStyle}>
@@ -68,9 +69,7 @@ class ABCForm extends React.Component {
                   </Form.Item>
                   <Form.Item label="Antecedents" style={itemStyle}>
                     {form.getFieldDecorator('firstName', {
-                      rules: [
-                        {required: true, message: 'Please provide firstName!'},
-                      ],
+                      rules: [{ required: true, message: 'Please provide firstName!' }],
                     })(<Input />)}
                   </Form.Item>
                   <Form.Item label="Behaviors" style={itemStyle}>
@@ -78,14 +77,8 @@ class ABCForm extends React.Component {
                   </Form.Item>
                   <Form.Item label="Consequences" style={itemStyle}>
                     {form.getFieldDecorator('authStaff')(
-                      <Select
-                        mode="multiple"
-                        placeholder="Select Therapist"
-                        allowClear
-                      >
-
-                      <Option value="1">gfd</Option>
-
+                      <Select mode="multiple" placeholder="Select Therapist" allowClear>
+                        <Option value="1">gfd</Option>
                       </Select>,
                     )}
                   </Form.Item>
@@ -142,23 +135,17 @@ class ABCForm extends React.Component {
                       {' '}
                       Submit
                     </Button>
-                    <Button
-                      type="primary"
-                      onClick={this.onReset}
-                      className="ml-4"
-                    >
+                    <Button type="primary" onClick={this.onReset} className="ml-4">
                       cancel
                     </Button>
-
                   </Form.Item>
-
                 </Form>
               </div>
             </div>
           </div>
         </div>
       </Authorize>
-    );
+    )
   }
 }
 

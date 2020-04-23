@@ -5,7 +5,6 @@ import { login, RefreshToken, StudentIdFromUserId, GetUserDetailsByUsername } fr
 // import { GraphQLClient } from 'graphql-request'
 import actions from './actions'
 
-
 // const API_URL = process.env.REACT_APP_API_URL;
 
 // const graphQLClient = new GraphQLClient('http://development.cogniable.us/apis/school/graphql', {
@@ -21,13 +20,13 @@ export function* LOGIN({ payload }) {
       loading: true,
     },
   })
-  const response = yield call(login,payload)
+  const response = yield call(login, payload)
 
-  if(response){
-    if (response.tokenAuth.user.groups.edges[0].node.name === 'parents'){
+  if (response) {
+    if (response.tokenAuth.user.groups.edges[0].node.name === 'parents') {
       const result = yield call(StudentIdFromUserId, response.tokenAuth.user.id)
 
-      if (result){
+      if (result) {
         yield put({
           type: 'user/SET_STATE',
           payload: {
@@ -43,23 +42,21 @@ export function* LOGIN({ payload }) {
         id: response.tokenAuth.user.id,
         authorized: true,
         loading: false,
-        role:response.tokenAuth.user.groups.edges[0].node.name,
+        role: response.tokenAuth.user.groups.edges[0].node.name,
       },
     })
 
     yield put({
-      type: 'menu/GET_DATA'      
+      type: 'menu/GET_DATA',
     })
-
   }
 
-yield put({
-  type: 'user/SET_STATE',
-  payload: {
-    loading: false,
-  },
-})
-
+  yield put({
+    type: 'user/SET_STATE',
+    payload: {
+      loading: false,
+    },
+  })
 }
 
 export function* LOAD_CURRENT_ACCOUNT() {
@@ -67,16 +64,17 @@ export function* LOAD_CURRENT_ACCOUNT() {
     type: 'user/SET_STATE',
     payload: {
       loading: true,
+      // role:JSON.parse(localStorage.getItem('role')),
     },
   })
 
   const response = yield call(RefreshToken)
 
-  if(response){
+  if (response) {
     console.log(response)
     const result = yield call(GetUserDetailsByUsername, response.refreshToken.payload.username)
 
-    if (result){
+    if (result) {
       console.log(result)
 
       yield put({
@@ -85,15 +83,14 @@ export function* LOAD_CURRENT_ACCOUNT() {
           id: result.data.getuser.edges[0].node.id,
           authorized: true,
           loading: false,
-          role:JSON.parse(localStorage.getItem('role')),
+          role: JSON.parse(localStorage.getItem('role')),
         },
       })
 
-      if(result.data.getuser.edges[0].node.groups.edges[0].node.name === 'parents'){
-
+      if (result.data.getuser.edges[0].node.groups.edges[0].node.name === 'parents') {
         const result2 = yield call(StudentIdFromUserId, result.data.getuser.edges[0].node.id)
 
-        if (result2){
+        if (result2) {
           yield put({
             type: 'user/SET_STATE',
             payload: {
@@ -101,17 +98,10 @@ export function* LOAD_CURRENT_ACCOUNT() {
             },
           })
         }
-
-
       }
-
     }
-
-
-  }
-  else {
-   LOGOUT()
-
+  } else {
+    LOGOUT()
   }
 
   yield put({
@@ -128,13 +118,13 @@ export function* LOGOUT() {
     payload: {
       authorized: false,
       loading: false,
-      role:"",
+      role: '',
     },
   })
 
-  localStorage.setItem('database', "");
-  localStorage.setItem('token',  "");
-  localStorage.setItem('role',  "");
+  localStorage.setItem('database', '')
+  localStorage.setItem('token', '')
+  localStorage.setItem('role', '')
 }
 
 export default function* rootSaga() {

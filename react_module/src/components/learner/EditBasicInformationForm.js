@@ -1,103 +1,97 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-unused-vars */
-import React from 'react';
-import { Form, Input, Button, Select, DatePicker } from 'antd';
-import moment from 'moment';
-import { gql } from "apollo-boost";
+import React from 'react'
+import { Form, Input, Button, Select, DatePicker } from 'antd'
+import moment from 'moment'
+import { gql } from 'apollo-boost'
 import client from '../../apollo/config'
 
-const { TextArea } = Input;
-const { Option } = Select;
+const { TextArea } = Input
+const { Option } = Select
 const tailLayout = {
   wrapperCol: {
     offset: 6,
     span: 14,
   },
-};
+}
 
 class EditBasicInformationForm extends React.Component {
-  constructor(props){
-    super(props);
+  constructor(props) {
+    super(props)
 
     this.state = {
       isLoaded: true,
-      clinicLocationList : [],
-      staffNodeList : [],
-      categoryList : [],
+      clinicLocationList: [],
+      staffNodeList: [],
+      categoryList: [],
     }
   }
 
   componentDidMount() {
-
-    client.query({
-      query: gql`
-        {schoolLocation {
-          edges {
-            node {
-              id,
-              location
+    client
+      .query({
+        query: gql`
+          {
+            schoolLocation {
+              edges {
+                node {
+                  id
+                  location
+                }
+              }
+            }
+            staffs {
+              edges {
+                node {
+                  id
+                  name
+                }
+              }
+            }
+            category {
+              id
+              category
             }
           }
-        },
-        staffs {
-          edges {
-            node {
-              id,
-              name,
-            }
-          }
-        },
-        category {
-          id,
-          category
-        }
-      }`
+        `,
       })
       .then(result => {
         this.setState({
           isLoaded: false,
           clinicLocationList: result.data.schoolLocation.edges,
-          staffNodeList : result.data.staffs.edges,
-          categoryList: result.data.category
-        });
-
-      }
-      );
-
+          staffNodeList: result.data.staffs.edges,
+          categoryList: result.data.category,
+        })
+      })
   }
 
-
-  handleChange = (e) => {
+  handleChange = e => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     })
-  };
-
+  }
 
   onFinish = values => {
-    console.log(values);
-  };
+    console.log(values)
+  }
 
   onReset = () => {
-    this.formRef.current.resetFields();
-  };
-
-
+    this.formRef.current.resetFields()
+  }
 
   render() {
     const itemStyle = { marginBottom: '0' }
 
-    const { userinfo } = this.props;
+    const { userinfo } = this.props
 
-    const {isLoaded, clinicLocationList, categoryList, staffNodeList} = this.state;
+    const { isLoaded, clinicLocationList, categoryList, staffNodeList } = this.state
 
     const selectedStaffList = []
-    userinfo.authStaff.edges.map((item) => selectedStaffList.push(item.node.id))
+    userinfo.authStaff.edges.map(item => selectedStaffList.push(item.node.id))
 
     console.log(userinfo.currentAddress)
     // const selectedDiagnosesList = []
     // userinfo.diagnoses.edges.map((item) => selectedDiagnosesList.push(item.node.id))
-
 
     // staffNodeList.map((item) => staffList.push(item.node))
 
@@ -122,7 +116,7 @@ class EditBasicInformationForm extends React.Component {
           ]}
           style={itemStyle}
         >
-          <Input value={userinfo ? userinfo.clientId : ""} />
+          <Input value={userinfo ? userinfo.clientId : ''} />
         </Form.Item>
 
         <Form.Item
@@ -131,14 +125,13 @@ class EditBasicInformationForm extends React.Component {
           rules={[
             {
               required: true,
-              type: "email"
+              type: 'email',
             },
           ]}
           style={itemStyle}
         >
-          <Input value={userinfo ? userinfo.email : ""} />
+          <Input value={userinfo ? userinfo.email : ''} />
         </Form.Item>
-
 
         <Form.Item
           name="firstName"
@@ -150,7 +143,7 @@ class EditBasicInformationForm extends React.Component {
           ]}
           style={itemStyle}
         >
-          <Input value={userinfo ? userinfo.firstname : ""} />
+          <Input value={userinfo ? userinfo.firstname : ''} />
         </Form.Item>
 
         <Form.Item
@@ -163,9 +156,8 @@ class EditBasicInformationForm extends React.Component {
           ]}
           style={itemStyle}
         >
-          <Input value={userinfo ? userinfo.lastname : ""} />
+          <Input value={userinfo ? userinfo.lastname : ''} />
         </Form.Item>
-
 
         <Form.Item
           label="Authorized Staff"
@@ -180,29 +172,25 @@ class EditBasicInformationForm extends React.Component {
             showSearch
             optionFilterProp="children"
             filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-             }
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
             mode="multiple"
             maxTagCount="4"
             placeholder="Select Therapists"
             defaultValue={selectedStaffList}
             allowClear
           >
-            {staffNodeList.map((item) => <Option value={item.node.id}>{item.node.name}</Option>)}
+            {staffNodeList.map(item => (
+              <Option value={item.node.id}>{item.node.name}</Option>
+            ))}
           </Select>
         </Form.Item>
 
-
-
-
-        <Form.Item
-          label="Address"
-          style={itemStyle}
-        >
+        <Form.Item label="Address" style={itemStyle}>
           <div>
             <div style={{ margin: '0px' }} />
             <TextArea
-              value={userinfo ? userinfo.currentAddress : ""}
+              value={userinfo ? userinfo.currentAddress : ''}
               placeholder="Address"
               autoSize={{ minRows: 2, maxRows: 5 }}
             />
@@ -215,17 +203,12 @@ class EditBasicInformationForm extends React.Component {
           rules={[
             {
               required: true,
-            }
+            },
           ]}
           style={itemStyle}
         >
-          {userinfo.dob ?
-            <DatePicker defaultValue={moment(userinfo.dob)} />
-          :
-            <DatePicker />
-          }
+          {userinfo.dob ? <DatePicker defaultValue={moment(userinfo.dob)} /> : <DatePicker />}
         </Form.Item>
-
 
         <Form.Item
           name="gender"
@@ -244,13 +227,13 @@ class EditBasicInformationForm extends React.Component {
             showSearch
             optionFilterProp="children"
             filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-             }
-            optionFilterProp="children"
-            filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-             }
-            value={userinfo ? userinfo.gender : ""}
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+            // optionFilterProp="children"
+            // filterOption={(input, option) =>
+            //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            //  }
+            value={userinfo ? userinfo.gender : ''}
           >
             <Option value="male">Male</Option>
             <Option value="female">Female</Option>
@@ -272,14 +255,16 @@ class EditBasicInformationForm extends React.Component {
             showSearch
             optionFilterProp="children"
             filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-             }
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
             placeholder="Select a option and change input text above"
             onSelect={this.handleChange}
             allowClear
-            value={userinfo.clinicLocation ? userinfo.clinicLocation.id : ""}
+            value={userinfo.clinicLocation ? userinfo.clinicLocation.id : ''}
           >
-            {clinicLocationList.map((item) => <Option value={item.node.id}>{item.node.location}</Option>)}
+            {clinicLocationList.map(item => (
+              <Option value={item.node.id}>{item.node.location}</Option>
+            ))}
           </Select>
         </Form.Item>
 
@@ -296,17 +281,18 @@ class EditBasicInformationForm extends React.Component {
             showSearch
             optionFilterProp="children"
             filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-             }
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
             placeholder="Select a option"
             onSelect={this.handleChange}
             allowClear
-            value={userinfo.category ? userinfo.category.id : ""}
+            value={userinfo.category ? userinfo.category.id : ''}
           >
-            {categoryList.map((item) => <Option value={item.id}>{item.category}</Option>)}
+            {categoryList.map(item => (
+              <Option value={item.id}>{item.category}</Option>
+            ))}
           </Select>
         </Form.Item>
-
 
         <Form.Item {...tailLayout}>
           <Button type="primary" htmlType="submit">
@@ -316,12 +302,9 @@ class EditBasicInformationForm extends React.Component {
           <Button htmlType="primary" onClick={this.onReset} className="ml-4">
             cancel
           </Button>
-
         </Form.Item>
-
-
       </Form>
-    );
+    )
   }
 }
 

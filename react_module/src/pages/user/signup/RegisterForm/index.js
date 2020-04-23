@@ -1,66 +1,88 @@
 import React from 'react'
-import { Form, Input, Icon, Button, Select, message } from 'antd'
-import { Redirect } from 'react-router-dom'
+import { Form, Input, Icon, Button, Select, message, InputNumber } from 'antd'
+import { Link, Redirect } from 'react-router-dom'
+import client from '../../../../config'
 
 const FormItem = Form.Item
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL
 const { Option } = Select
 
 class RegisterFormComponent extends React.Component {
   state = {
     confirmDirty: false,
-    CountryList:[],
-    LoginRedirect:false
+    CountryList: [],
+    LoginRedirect: false,
   }
 
+  // componentDidMount() {
+  //   fetch(`${API_URL}/school/country_list`, { headers: { "Accept": "application/json", "Content-Type": "application/json", "database": "india" } })
+  //     .then(res => res.json())
+  //     .then(
+  //       (result) => {
+  //         this.setState({
+  //           CountryList: result
+  //         });
+  //       }
+  //     )
+  // }
+
   componentDidMount() {
-    fetch(`${API_URL}/school/country_list`, {headers:{ "Accept": "application/json", "Content-Type": "application/json", "database":"india" }})
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            CountryList: result
-          });
-        }
-      )
+    const query = `query {
+      country {
+        edges {
+          node {
+            id
+            name
+          }
+      }
+    }
+    }`
+
+    client.request(query).then(data => {
+      this.setState({
+        CountryList: data.country.edges,
+      })
+    })
   }
 
   LoginRedirectFun = e => {
-    e.preventDefault();
+    e.preventDefault()
     this.setState({
-      LoginRedirect: true
-    });
+      LoginRedirect: true,
+    })
   }
 
   handleSubmit = event => {
-    event.preventDefault();
-    const { form } = this.props;
-    const { timezone } = this.state;
+    event.preventDefault()
+    const { form } = this.props
+    const { timezone } = this.state
     form.validateFields((error, values) => {
       if (!error) {
-        values.timezone = timezone;
+        values.timezone = timezone
 
-        console.log(values);
+        console.log(values)
 
         fetch(`${API_URL}/administrative/sign_up/`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": '*',
-            'country':values.country
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            country: values.country,
           },
-          body: JSON.stringify(values)
-        }).then(res => res.json()).then((result) => {
-          if (result.status) {
-              message.success(result.detail);
+          body: JSON.stringify(values),
+        })
+          .then(res => res.json())
+          .then(result => {
+            if (result.status) {
+              message.success(result.detail)
               this.setState({
                 LoginRedirect: true,
-            });
-          } else {
-            message.error(result.detail);
-          }
-        })
+              })
+            } else {
+              message.error(result.detail)
+            }
+          })
       }
     })
   }
@@ -72,7 +94,6 @@ class RegisterFormComponent extends React.Component {
       confirmDirty: confirmDirty || !!value,
     })
   }
-
 
   compareToFirstPassword = (rule, value, callback) => {
     const { form } = this.props
@@ -93,61 +114,68 @@ class RegisterFormComponent extends React.Component {
   }
 
   render() {
-    const { form } = this.props;
-    const { CountryList, LoginRedirect } = this.state;
+    const { form } = this.props
+    const { CountryList, LoginRedirect } = this.state
+    const inputStyle = { paddingBottom: 0 }
 
-    if(LoginRedirect)
-    {
-      return <Redirect to='/user/login' />
+    if (LoginRedirect) {
+      return <Redirect to="/user/login" />
     }
     return (
-      <Form onSubmit={this.handleSubmit} className="login-form">
-        <FormItem>
+      <Form onSubmit={this.handleSubmit} hideRequiredMark layout="vertical">
+        <FormItem style={inputStyle}>
           {form.getFieldDecorator('school_name', {
             rules: [{ required: true, message: 'Please input your Clinic name!' }],
           })(
             <Input
+              size="large"
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder="Please input your Clinic name"
             />,
           )}
         </FormItem>
-        <FormItem>
+        <FormItem style={inputStyle}>
           {form.getFieldDecorator('email', {
-            rules: [{ type:"email", required: true, message: 'Please input your email!' }],
+            rules: [{ type: 'email', required: true, message: 'Please input your email!' }],
           })(
             <Input
+              size="large"
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder="Please input your Email"
             />,
           )}
         </FormItem>
-        <FormItem>
-          {form.getFieldDecorator('country', { rules: [{ required: true, message: 'Please select your country' }] })(
+        <FormItem style={inputStyle}>
+          {form.getFieldDecorator('country', {
+            rules: [{ required: true, message: 'Please select your country' }],
+          })(
             <Select
+              size="large"
               id="user-country"
               showSearch
               style={{ width: '100%' }}
               placeholder="Select your country"
               optionFilterProp="children"
             >
-              {CountryList.map(c =>
-                <Option value={c.id}>{c.name}</Option>
-              )}
-            </Select>
+              {CountryList.map(c => (
+                <Option value={c.node.id}>{c.node.name}</Option>
+              ))}
+            </Select>,
           )}
         </FormItem>
-        <FormItem>
+        <FormItem style={inputStyle}>
           {form.getFieldDecorator('no_learner', {
             rules: [{ required: true, message: 'Please input your number of learner!' }],
           })(
-            <Input
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            <InputNumber
+              size="large"
+              min={1}
+              style={{ width: '100%' }}
               placeholder="Please input your number learner"
             />,
           )}
         </FormItem>
-        <FormItem>
+        <FormItem style={inputStyle}>
           {form.getFieldDecorator('password', {
             rules: [
               {
@@ -159,13 +187,14 @@ class RegisterFormComponent extends React.Component {
             ],
           })(
             <Input
+              size="large"
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
               type="password"
               placeholder="Input your password"
             />,
           )}
         </FormItem>
-        <FormItem>
+        <FormItem style={inputStyle}>
           {form.getFieldDecorator('confirm', {
             rules: [
               {
@@ -177,17 +206,26 @@ class RegisterFormComponent extends React.Component {
             ],
           })(
             <Input
+              size="large"
               type="password"
               onBlur={this.handleConfirmBlur}
               placeholder="Confirm your password"
             />,
           )}
         </FormItem>
-
-        <div className="form-actions">
-          <Button type="primary" htmlType="submit" className="login-form-button">
+        <Form.Item>
+          <Button type="primary" htmlType="submit" size="large" block>
             Sign Up
+            {/* <ArrowRightOutlined className="site-form-item-icon" /> */}
           </Button>
+          <p style={{ marginTop: '10px' }}>
+            <Link to="/user/login" className="utils__link--blue">
+              {' '}
+              back to login
+            </Link>
+          </p>
+        </Form.Item>
+        {/* <div className="form-actions">
           <span className="ml-3 pull-right">
             <a
               href="javascript: void(0);"
@@ -197,7 +235,7 @@ class RegisterFormComponent extends React.Component {
               Login
             </a>{' '}
           </span>
-        </div>
+        </div> */}
       </Form>
     )
   }

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useState } from 'react'
 
 export async function getLeftMenuData() {
   return [
@@ -24,12 +25,10 @@ export async function getLeftMenuData() {
       icon: 'icmn icmn-home',
     },
   ]
-
 }
 
 export async function getTopMenuData(role) {
-  
-  if (role === "parents"){
+  if (role === 'parents') {
     return [
       {
         title: 'Dashboard',
@@ -96,8 +95,7 @@ export async function getTopMenuData(role) {
             key: 'revenueBilling',
             url: '/revenue/billing',
           },
-
-        ]
+        ],
       },
       {
         title: 'Sessions',
@@ -164,24 +162,20 @@ export async function getTopMenuData(role) {
             key: 'parentPrescription',
             url: '/medicalData/',
           },
-        ]
+        ],
       },
-
-
     ]
   }
 
-  if (role === "therapist"){
+  if (role === 'therapist') {
     return [
       {
         title: 'Dashboard',
         key: 'settings',
         icon: 'icmn icmn-cog utils__spin-delayed--pseudo-selector',
       },
-
     ]
   }
-
 
   return [
     {
@@ -195,27 +189,27 @@ export async function getTopMenuData(role) {
       // url: '/partners/laerners',
       icon: 'icmn icmn-books',
       children: [
-            {
-              title: 'Learners',
-              key: 'partnersLearner',
-              url: '/partners/viewlearners',
-            },
-            {
-              title: 'Staff',
-              key: 'partnersStaff',
-              url: '/partners/viewstaffs',
-            },
-            {
-              title: 'Network Providers',
-              key: 'partnersProviders',
-              url: '/partners/providers',
-            },
-            {
-              title: 'Others',
-              key: 'partnersOthers',
-              url: '/partners/others',
-            },
-      ]
+        {
+          title: 'Learners',
+          key: 'partnersLearner',
+          url: '/partners/viewlearners',
+        },
+        {
+          title: 'Staff',
+          key: 'partnersStaff',
+          url: '/partners/viewstaffs',
+        },
+        {
+          title: 'Network Providers',
+          key: 'partnersProviders',
+          url: '/partners/providers',
+        },
+        {
+          title: 'Others',
+          key: 'partnersOthers',
+          url: '/partners/others',
+        },
+      ],
     },
     {
       title: 'Files',
@@ -263,7 +257,7 @@ export async function getTopMenuData(role) {
           key: 'filesSurvey',
           url: '/files/filessurvey',
         },
-      ]
+      ],
     },
     // {
     //   title: 'Revenue',
@@ -313,7 +307,7 @@ export async function getTopMenuData(role) {
       key: 'record_data',
       url: '#',
       icon: 'icmn icmn-home',
-      children:[
+      children: [
         {
           title: 'Meal Data',
           key: 'meal_data',
@@ -350,7 +344,7 @@ export async function getTopMenuData(role) {
           url: '/mand/',
           icon: 'icmn icmn-home',
         },
-      ]
+      ],
     },
     {
       title: 'Therapy',
@@ -384,7 +378,7 @@ export async function getTopMenuData(role) {
               title: 'CogniAble Assessment',
               url: '/therapy/assessment/cogniableassessment',
             },
-          ]
+          ],
         },
         {
           title: 'Learners Binder',
@@ -422,8 +416,7 @@ export async function getTopMenuData(role) {
               title: 'Excel Upload',
               url: '/therapy/learnernamebinder/excelupload',
             },
-
-          ]
+          ],
         },
         {
           title: 'Session',
@@ -460,7 +453,7 @@ export async function getTopMenuData(role) {
           key: 'therapyToiletingSchedule',
           url: '/therapy/toiletingschedule',
         },
-      ]
+      ],
     },
     {
       title: 'Scheduling',
@@ -523,7 +516,7 @@ export async function getTopMenuData(role) {
           key: 'schedulingMeeting',
           url: '/scheduling/meeting',
         },
-      ]
+      ],
     },
     {
       title: 'HR',
@@ -586,7 +579,7 @@ export async function getTopMenuData(role) {
           key: 'hrExpenseClaims',
           url: '/hr/expenseclaims',
         },
-      ]
+      ],
     },
     {
       title: 'Analytics',
@@ -604,7 +597,7 @@ export async function getTopMenuData(role) {
           key: 'analyticsReports',
           url: '/analytics/reports',
         },
-      ]
+      ],
     },
     {
       title: 'Messages',
@@ -637,7 +630,7 @@ export async function getTopMenuData(role) {
           key: 'messagesReachme',
           url: '/messages/reachme',
         },
-      ]
+      ],
     },
     {
       title: 'Customize',

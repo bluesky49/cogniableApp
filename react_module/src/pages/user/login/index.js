@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { Component } from 'react'
 import { Form, Input, Select, Button } from 'antd'
 import { Helmet } from 'react-helmet'
@@ -164,8 +165,14 @@ class Login extends Component {
                           />{' '}
                           Your Information is safe with us
                         </p>
+                        <p align="center">
+                          <Link to="/user/signUp" className="utils__link--blue">
+                            {' '}
+                            Sign Up
+                          </Link>
+                        </p>
                       </Form.Item>
-                      <div className="form-group">
+                      {/* <div className="form-group">
                         <div className="mt-2">
                           <Link to="/user/phone">
                             <Button size="large" className="width-50p">
@@ -178,10 +185,12 @@ class Login extends Component {
                             Google
                           </Button>
                         </div>
-                      </div>
+                      </div> */}
+
                       <p align="center">
                         Need help?
-                        <text className="utils__link--blue"> Contact Us</text>
+                        {/* <text className="utils__link--blue"> Contact Us support@cogniable.us  </text> */}
+                        <text> Contact Us at support@cogniable.us </text>
                       </p>
                     </Form>
                   </div>

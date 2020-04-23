@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 import { GraphQLClient } from 'graphql-request'
 import firebase from 'firebase/app'
 import { notification } from 'antd'
 import 'firebase/auth'
 import 'firebase/database'
 import 'firebase/storage'
-import { gql } from "apollo-boost";
+import { gql } from 'apollo-boost'
 import client from '../config'
 import apolloClient from '../apollo/config'
 
@@ -20,7 +21,6 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 const firebaseAuth = firebase.auth
 export default firebaseApp
-
 
 export async function login(payload) {
   const query = `mutation TokenAuth($username: String!, $password: String!) {
@@ -46,25 +46,26 @@ export async function login(payload) {
     password: payload.password,
   }
 
-  return client.request(query, variables)
-.then(data => {
-      localStorage.setItem('token', JSON.stringify(data.tokenAuth.token));
-      localStorage.setItem('role', JSON.stringify(data.tokenAuth.user.groups.edges[0].node.name));
-      localStorage.setItem('database', JSON.stringify('india'));
-      return data;
-})
-.catch(err => {
-  notification.error({
+  return client
+    .request(query, variables)
+    .then(data => {
+      localStorage.setItem('token', JSON.stringify(data.tokenAuth.token))
+      localStorage.setItem('role', JSON.stringify(data.tokenAuth.user.groups.edges[0].node.name))
+      localStorage.setItem('database', JSON.stringify('india'))
+      return data
+    })
+    .catch(err => {
+      notification.error({
         message: err.response.errors[0].message,
         description: err.response.errors[0].message,
       })
-})
-
+    })
 }
 
 export async function StudentIdFromUserId(payload) {
-    return apolloClient.query({
-        query: gql`{
+  return apolloClient
+    .query({
+      query: gql`{
           students (parent:"${payload}")  {
             edges {
               node {
@@ -72,23 +73,24 @@ export async function StudentIdFromUserId(payload) {
               }
             }
           }
-        }`
+        }`,
+    })
+    .then(result => {
+      return result
+    })
+    .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
         })
-        .then(result => {
-          return result
-        })
-        .catch(error => { 
-          error.graphQLErrors.map((item) => { 
-              return notification.error({
-                  message: 'Somthing want wrong',
-                  description: item.message,
-              }); 
-          })
-        });
+      })
+    })
 }
 
 export async function GetUserDetailsByUsername(payload) {
-  return apolloClient.query({
+  return apolloClient
+    .query({
       query: gql`{
         getuser(username:"${payload}") {
           edges {
@@ -104,26 +106,23 @@ export async function GetUserDetailsByUsername(payload) {
               }
             }
           }
-        }`
-      })
-      .then(result => {
-        return result
-      })
-      .catch(error => { 
-        error.graphQLErrors.map((item) => { 
-            return notification.error({
-                message: 'Somthing want wrong',
-                description: item.message,
-            }); 
+        }`,
+    })
+    .then(result => {
+      return result
+    })
+    .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
         })
-      });
-
+      })
+    })
 }
 
-
 export async function RefreshToken() {
-  if(localStorage.getItem('token')===null || !localStorage.getItem('token'))
-  {
+  if (localStorage.getItem('token') === null || !localStorage.getItem('token')) {
     return false
   }
 
@@ -133,22 +132,21 @@ export async function RefreshToken() {
           payload
         }
       }`
-      const variables = {
-        token: JSON.parse(localStorage.getItem('token'))
-      }
+  const variables = {
+    token: JSON.parse(localStorage.getItem('token')),
+  }
 
-      return client.request(query, variables)
+  return client
+    .request(query, variables)
     .then(data => {
-          localStorage.setItem('database', JSON.stringify('india'));
-          localStorage.setItem('token',  JSON.stringify(data.refreshToken.token));
-          return data;
+      localStorage.setItem('database', JSON.stringify('india'))
+      localStorage.setItem('token', JSON.stringify(data.refreshToken.token))
+      return data
     })
     .catch(err => {
-        return err;
+      return err
     })
 }
-
-
 
 export async function logout() {
   return firebaseAuth()

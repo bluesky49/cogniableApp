@@ -1,14 +1,14 @@
+/* eslint-disable no-unused-vars */
 import { all, put, call, takeEvery, select } from 'redux-saga/effects'
 import { getLeftMenuData, getTopMenuData } from 'services/menu'
 import actions from './actions'
 
 export function* GET_DATA() {
-  const getUser = state => state.user
-  const userobj = yield select(getUser);
+  // const getUser = state => state.user
+  // const userobj = yield select(getUser);
 
   const menuLeftData = yield call(getLeftMenuData)
-  const menuTopData = yield call(getTopMenuData, userobj.role)
-
+  const menuTopData = yield call(getTopMenuData, JSON.parse(localStorage.getItem('role')))
 
   yield put({
     type: 'menu/SET_STATE',
