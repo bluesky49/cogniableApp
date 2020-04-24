@@ -221,7 +221,7 @@ class RegisterFormComponent extends React.Component {
           <p style={{ marginTop: '10px' }}>
             <Link to="/user/login" className="utils__link--blue">
               {' '}
-              back to login
+              Back to login
             </Link>
           </p>
         </Form.Item>

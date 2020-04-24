@@ -21,25 +21,26 @@ import Others from './Partners/Others/index'
 import MyFiles from './Files/MyFiles'
 
 class TopBar extends React.Component {
-
   render() {
-    const newSelectedKey =  store.get('app.menu.selectedKeys');
-    if (newSelectedKey){
-      if (newSelectedKey[0] === 'partners' || 
-          newSelectedKey[0] === 'partnersLearner' ||
-          newSelectedKey[0] === 'partnersStaff' ||
-          newSelectedKey[0] === 'partnersProviders' ||
-          newSelectedKey[0] === 'partnersOthers'
-        ){
-        return(
-          <div className={styles.topbar}>        
-            <div className="mr-4">          
+    const newSelectedKey = store.get('app.menu.selectedKeys')
+    console.log(newSelectedKey)
+    if (newSelectedKey) {
+      if (
+        newSelectedKey[0] === 'partners' ||
+        newSelectedKey[0] === 'partnersLearner' ||
+        newSelectedKey[0] === 'partnersStaff' ||
+        newSelectedKey[0] === 'partnersProviders' ||
+        newSelectedKey[0] === 'partnersOthers'
+      ) {
+        return (
+          <div className={styles.topbar}>
+            <div className="mr-4">
               <Learners />
             </div>
-            <div className="mr-4">        
+            <div className="mr-4">
               <Staff />
             </div>
-            <div className="mr-4">        
+            <div className="mr-4">
               <Providers />
             </div>
             <div className="mr-auto">
@@ -64,30 +65,34 @@ class TopBar extends React.Component {
         newSelectedKey[0] === 'filesOwnedByMe' ||
         newSelectedKey[0] === 'filesUploadedByMe' ||
         newSelectedKey[0] === 'filesDocumentryReport' ||
-        newSelectedKey[0] === 'filesSurvey' 
-      ){
-        return(
-          <div className={styles.topbar}>              
+        newSelectedKey[0] === 'filesSurvey'
+      ) {
+        return (
+          <div className={styles.topbar}>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-upload3`} /><b>Upload</b>
+              <i className={`${styles.icon} icmn-upload3`} />
+              <b>Upload</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-files-empty`} /><b>All Files</b>
+              <i className={`${styles.icon} icmn-files-empty`} />
+              <b>All Files</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-plus`} /><b>New Files</b>
+              <i className={`${styles.icon} icmn-plus`} />
+              <b>New Files</b>
             </a>
-            
-            <div className="mr-4">        
+
+            <div className="mr-4">
               <MyFiles />
             </div>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-file-text2`} /><b>Document Report</b>
+              <i className={`${styles.icon} icmn-file-text2`} />
+              <b>Document Report</b>
             </a>
             <a href="#" className="mr-auto d-none d-sm-inline">
               <b>Survery</b>
             </a>
-            
+
             <div className="mr-4">
               <LanguageSelector />
             </div>
@@ -106,25 +111,30 @@ class TopBar extends React.Component {
         newSelectedKey[0] === 'parentCogniAble' ||
         newSelectedKey[0] === 'parentABC' ||
         newSelectedKey[0] === 'parentPreferenceAssessment'
-      ){
-        return(
-          <div className={styles.topbar}>              
+      ) {
+        return (
+          <div className={styles.topbar}>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-upload3`} /><b>VB-MAPP</b>
+              <i className={`${styles.icon} icmn-upload3`} />
+              <b>VB-MAPP</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-files-empty`} /><b>CogniAble</b>
+              <i className={`${styles.icon} icmn-files-empty`} />
+              <b>CogniAble</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-plus`} /><b>PEAK</b>
+              <i className={`${styles.icon} icmn-plus`} />
+              <b>PEAK</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-file-text2`} /><b>ABC</b>
+              <i className={`${styles.icon} icmn-file-text2`} />
+              <b>ABC</b>
             </a>
             <a href="#" className="mr-auto d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-file-text2`} /><b>Preference Assessment</b>
+              <i className={`${styles.icon} icmn-file-text2`} />
+              <b>Preference Assessment</b>
             </a>
-            
+
             <div className="mr-4">
               <LanguageSelector />
             </div>
@@ -140,19 +150,22 @@ class TopBar extends React.Component {
         newSelectedKey[0] === 'parentSkillAcquisition' ||
         newSelectedKey[0] === 'parentBehaviorReduction' ||
         newSelectedKey[0] === 'parentMaintenance'
-      ){
-        return(
-          <div className={styles.topbar}>              
+      ) {
+        return (
+          <div className={styles.topbar}>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-upload3`} /><b>Skill Acquisition</b>
+              <i className={`${styles.icon} icmn-upload3`} />
+              <b>Skill Acquisition</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-files-empty`} /><b>Behavior Reduction</b>
+              <i className={`${styles.icon} icmn-files-empty`} />
+              <b>Behavior Reduction</b>
             </a>
             <a href="#" className="mr-auto d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-plus`} /><b>Maintenance</b>
+              <i className={`${styles.icon} icmn-plus`} />
+              <b>Maintenance</b>
             </a>
-            
+
             <div className="mr-4">
               <LanguageSelector />
             </div>
@@ -172,31 +185,38 @@ class TopBar extends React.Component {
         newSelectedKey[0] === 'ParentBehavior' ||
         newSelectedKey[0] === 'parentMand' ||
         newSelectedKey[0] === 'parentDailyVitals'
-      ){
-        return(
-          <div className={styles.topbar}>              
+      ) {
+        return (
+          <div className={styles.topbar}>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-upload3`} /><b>Mand</b>
+              <i className={`${styles.icon} icmn-upload3`} />
+              <b>Mand</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-files-empty`} /><b>Behavior</b>
+              <i className={`${styles.icon} icmn-files-empty`} />
+              <b>Behavior</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-plus`} /><b>Height</b>
+              <i className={`${styles.icon} icmn-plus`} />
+              <b>Height</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-plus`} /><b>Weight</b>
+              <i className={`${styles.icon} icmn-plus`} />
+              <b>Weight</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-plus`} /><b>Toileting</b>
+              <i className={`${styles.icon} icmn-plus`} />
+              <b>Toileting</b>
             </a>
             <a href="#" className="mr-4 d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-plus`} /><b>Meal</b>
+              <i className={`${styles.icon} icmn-plus`} />
+              <b>Meal</b>
             </a>
             <a href="#" className="mr-auto d-none d-sm-inline">
-              <i className={`${styles.icon} icmn-plus`} /><b>Prescription</b>
+              <i className={`${styles.icon} icmn-plus`} />
+              <b>Prescription</b>
             </a>
-            
+
             <div className="mr-4">
               <LanguageSelector />
             </div>
@@ -207,9 +227,7 @@ class TopBar extends React.Component {
           </div>
         )
       }
-
     }
-    
 
     return (
       <div className={styles.topbar}>
@@ -223,8 +241,8 @@ class TopBar extends React.Component {
           <LiveSearch />
         </div>
         <div className="mr-4">
-          <Button type="danger" style={{borderRadius:"20px", width:'40px', height:'40px'}}>
-            <i className={`${styles.icon} icmn-plus`} style={{marginLeft:'-2px'}} />
+          <Button type="danger" style={{ borderRadius: '20px', width: '40px', height: '40px' }}>
+            <i className={`${styles.icon} icmn-plus`} style={{ marginLeft: '-2px' }} />
           </Button>
         </div>
         <div className="mr-4">
@@ -240,7 +258,6 @@ class TopBar extends React.Component {
       </div>
     )
   }
-  
 }
 
 export default TopBar

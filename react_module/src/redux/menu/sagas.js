@@ -6,9 +6,13 @@ import actions from './actions'
 export function* GET_DATA() {
   // const getUser = state => state.user
   // const userobj = yield select(getUser);
+  let role = ''
+  if (localStorage.getItem('role')) {
+    role = JSON.parse(localStorage.getItem('role'))
+  }
 
   const menuLeftData = yield call(getLeftMenuData)
-  const menuTopData = yield call(getTopMenuData, JSON.parse(localStorage.getItem('role')))
+  const menuTopData = yield call(getTopMenuData, role)
 
   yield put({
     type: 'menu/SET_STATE',

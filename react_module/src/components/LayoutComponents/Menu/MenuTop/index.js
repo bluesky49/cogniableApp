@@ -64,7 +64,6 @@ class MenuTop extends React.Component {
     this.setState({
       selectedKeys: [e.key],
     })
-  
   }
 
   generateMenuItems = () => {
@@ -142,14 +141,20 @@ class MenuTop extends React.Component {
     return (
       <div>
         <div className={styles.logo}>
-          <div className={styles.logoContainer} style={{backgroundColor:"white", borderBottom:'1px solid #f2f2f2'}}>
-            <img src="resources/images/logo-inverse1.png" alt="CogniAble Logo" />
+          <div
+            className={styles.logoContainer}
+            style={{ backgroundColor: 'white', borderBottom: '1px solid #f2f2f2' }}
+          >
+            <img
+              src="resources/images/HeaderLogo.png"
+              alt="CogniAble Logo"
+              style={{ marginLeft: '14px' }}
+            />
           </div>
         </div>
         <Menu
           theme={isLightTheme ? 'light' : 'dark'}
           onClick={this.handleClick}
-          
           selectedKeys={selectedKeys}
           mode="horizontal"
         >
