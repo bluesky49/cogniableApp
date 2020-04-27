@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import { connectRouter } from 'connected-react-router'
 import user from './user/reducers'
+import family from './family/reducers'
 import menu from './menu/reducers'
 import settings from './settings/reducers'
 import datarecording from './datarecording/reducers'
@@ -14,4 +15,5 @@ export default history =>
     settings,
     datarecording,
     goals,
+    family,
   })

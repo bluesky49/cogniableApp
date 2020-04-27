@@ -50,8 +50,25 @@ export default class extends Component {
                 <div className={styles.inner}>
                   <div className={styles.form}>
                     <h4 className="text-uppercase" align="center">
-                      <strong>Enter Mobile Number</strong>
+                      <strong>Sign In</strong>
                     </h4>
+                    <p align="center">
+                      Don&apos;t have an account?
+                      <Link to="/user/signUp" className="utils__link--blue">
+                        {' '}
+                        Sign Up
+                      </Link>
+                    </p>
+                    <div align="center" className={styles.customLayout}>
+                      <img
+                        src="resources/images/login.jpg"
+                        alt="HeaderLogo"
+                        style={{
+                          height: '200px',
+                          borderRadius: '20px',
+                        }}
+                      />
+                    </div>
                     <br />
                     <Form
                       layout="vertical"
@@ -102,10 +119,8 @@ export default class extends Component {
                       </div>
                       <p align="center">
                         Need help?
-                        <text to="/user/forgot" className="utils__link--blue">
-                          {' '}
-                          Contact Us
-                        </text>
+                        {/* <text className="utils__link--blue"> Contact Us support@cogniable.us  </text> */}
+                        <text> Contact Us at support@cogniable.us </text>
                       </p>
                     </Form>
                   </div>

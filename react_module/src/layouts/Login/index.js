@@ -31,14 +31,14 @@ class LoginLayout extends React.PureComponent {
     const { backgroundNumber, backgroundEnabled } = this.state
 
     return (
-      <Layout>
+      <Layout style={{ backgroundColor: 'white' }}>
         <Layout.Content>
-          <div>
-            <div align="center" className="mt-5">
+          <div className={styles.customBackgroung}>
+            <div align="left" className={styles.customLayout}>
               <img
                 src="resources/images/HeaderLogo.png"
                 alt="HeaderLogo"
-                style={{ height: '62px' }}
+                style={{ height: '35px' }}
               />
             </div>
             <div className={styles.content}>{children}</div>

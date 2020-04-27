@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Form, Input, Button, Col, Row } from 'antd'
 import { Helmet } from 'react-helmet'
+import { Link } from 'react-router-dom'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import styles from './style.module.scss'
 
@@ -48,7 +49,27 @@ export default class extends Component {
                 <div className={styles.inner}>
                   <div className={styles.form}>
                     <h4 className="text-uppercase" align="center">
-                      <strong>Verification</strong>
+                      <strong>Sign In</strong>
+                    </h4>
+                    <p align="center">
+                      Don&apos;t have an account?
+                      <Link to="/user/signUp" className="utils__link--blue">
+                        {' '}
+                        Sign Up
+                      </Link>
+                    </p>
+                    <div align="center" className={styles.customLayout}>
+                      <img
+                        src="resources/images/login.jpg"
+                        alt="HeaderLogo"
+                        style={{
+                          height: '200px',
+                          borderRadius: '20px',
+                        }}
+                      />
+                    </div>
+                    <h4 className="mt-2" align="center">
+                      Verification
                     </h4>
                     <p align="center">Enter OTP to verify your phone number</p>
                     <br />

@@ -1,0 +1,9 @@
+.btnActive:focus {
+  background-color: #dbdbdb;
+  color: #fff !important;
+}
+
+.btnActive:focus div span,
+.btnActive:focus div h4 {
+  color: #fff;
+}

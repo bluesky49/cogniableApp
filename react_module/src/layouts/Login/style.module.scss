@@ -5,7 +5,8 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 100vh;
-  background-color: $gray-lighten-more;
+  // background-color: $gray-lighten-more;
+  // background-color: '#ffffff';
   background-size: cover;
   transition: background-image 0.4s linear;
 
@@ -42,6 +43,10 @@
     }
   }
 }
+
+// .customBackgroung {
+//   // background-color: green;
+// }
 
 .header {
   display: flex;
@@ -89,6 +94,10 @@
   @media screen and (max-width: $sm-max-width) {
     display: none;
   }
+}
+.customLayout {
+  margin-top: 1rem;
+  margin-left: 1rem;
 }
 
 .navigation {

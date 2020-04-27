@@ -26,19 +26,24 @@ export async function login(payload) {
   const query = `mutation TokenAuth($username: String!, $password: String!) {
     tokenAuth(input: {username: $username, password: $password}) {
       token,
-      user
-      {
+      user{
         id,
-        groups
-        {
+        groups{
           edges {
             node {
               id,
               name
-              }
+            }
+          }
+        }
+        studentsSet{
+          edges {
+            node {
+              id
+            }
+          }
+        }
       }
-      }
-    }
     }
   }`
   const variables = {
@@ -149,7 +154,5 @@ export async function RefreshToken() {
 }
 
 export async function logout() {
-  return firebaseAuth()
-    .signOut()
-    .then(() => true)
+  return apolloClient.cache.reset()
 }

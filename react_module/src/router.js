@@ -48,29 +48,29 @@ const routes = [
     component: loadable(() => import('pages/dashboard/clinic_admin')),
   },
 
-    // Partners
+  // Partners
   {
     path: '/partners/laerners',
-    component: loadable(() => import('components/Partners/Learners/LearnerForm'))
+    component: loadable(() => import('components/Partners/Learners/LearnerForm')),
   },
   {
     path: '/partners/staff',
-    component: loadable(() => import('views/StaffView'))
+    component: loadable(() => import('views/StaffView')),
   },
   {
     path: '/partners/learner',
-    component: loadable(() => import('views/LearnerView'))
+    component: loadable(() => import('views/LearnerView')),
   },
   {
     path: '/partners/viewlearners',
-    component: loadable(() => import('pages/learners/view_learners'))
+    component: loadable(() => import('pages/learners/view_learners')),
   },
   {
     path: '/partners/viewstaffs',
-    component: loadable(() => import('views/StaffTable'))
+    component: loadable(() => import('views/StaffTable')),
   },
 
-// targets
+  // targets
   {
     path: '/targets/suggest_target',
     component: loadable(() => import('pages/targets/TargetView')),
@@ -83,23 +83,23 @@ const routes = [
   },
   {
     path: '/targets/program',
-    component: loadable(() => import('pages/program'))
+    component: loadable(() => import('pages/program')),
   },
   {
     path: '/targets/program2',
-    component: loadable(() => import('pages/program2'))
+    component: loadable(() => import('pages/program2')),
   },
   {
     path: '/targets/abc',
-    component: loadable(() => import('pages/targets/ABC'))
+    component: loadable(() => import('pages/targets/ABC')),
   },
   {
     path: '/targets/session_target',
-    component: loadable(() => import('pages/session_target'))
+    component: loadable(() => import('pages/session_target')),
   },
   {
     path: '/forms/intake',
-    component: loadable(() => import('pages/intake'))
+    component: loadable(() => import('pages/intake')),
   },
 
   // Course
@@ -111,76 +111,87 @@ const routes = [
   {
     path: '/course/coursedetail/',
     component: loadable(() => import('pages/courseview/coursedetail')),
-    exact: true,    
+    exact: true,
   },
-
-
 
   // Edit Profile
   {
     path: '/partners/editprofile',
-    component: loadable(() => import('components/UserProfile/EditProfile'))
+    component: loadable(() => import('components/UserProfile/EditProfile')),
   },
   {
     path: '/targets/appointment',
-    component: loadable(() => import('pages/appointment'))
+    component: loadable(() => import('pages/appointment')),
   },
   // Table Responsive
   {
     path: '/therapy/tables',
-    component: loadable(() => import('views/LearnerTable'))
+    component: loadable(() => import('views/LearnerTable')),
   },
   // Target Type Mapping
   {
     path: '/therapy/targetmapping',
-    component: loadable(() => import('views/TargetTypeMapping'))
+    component: loadable(() => import('views/TargetTypeMapping')),
   },
   // Data Recording
   {
     path: '/therapy/sessionrecording',
-    component: loadable(() => import('views/DataRecording'))
+    component: loadable(() => import('views/DataRecording')),
   },
   {
     path: '/therapy/learnernamebinder/goals',
-    component: loadable(() => import('views/Goals'))
+    component: loadable(() => import('views/Goals')),
   },
   // parent settings
   {
     path: '/parent/settings',
-    component: loadable(() => import('views/ParentSettings'))
+    component: loadable(() => import('views/ParentSettings')),
   },
 
   //
   {
     path: '/parent/familymember',
-    component: loadable(() => import('views/FamilyMembers'))
+    component: loadable(() => import('views/FamilyMembers')),
   },
 
   {
     path: '/mealData/',
-    component: loadable(() => import('views/meal'))
+    component: loadable(() => import('views/meal')),
   },
-  {
-    path: '/family/',
-    component: loadable(() => import('views/family'))
-  },
+  // {
+  //   path: '/family/',
+  //   component: loadable(() => import('views/family')),
+  // },
   {
     path: '/medicalData/',
-    component: loadable(() => import('views/medicalView'))
+    component: loadable(() => import('views/medicalView')),
   },
   {
     path: '/toilet/',
-    component: loadable(() => import('views/ToiletView'))
+    component: loadable(() => import('views/ToiletView')),
   },
   {
     path: '/decel/',
-    component: loadable(() => import('views/decel'))
+    component: loadable(() => import('views/decel')),
   },
   {
     path: '/mand/',
-    component: loadable(() => import('views/MandData'))
+    component: loadable(() => import('views/MandData')),
   },
 
+  // By me
+  {
+    path: '/dashboard/alpha/',
+    component: loadable(() => import('views/parent/ParentDashboard')),
+  },
+  {
+    path: '/parent/sessionrecording',
+    component: loadable(() => import('views/parent/videoSession')),
+  },
+  {
+    path: '/family/',
+    component: loadable(() => import('views/family/family')),
+  },
 ]
 
 class Router extends React.Component {

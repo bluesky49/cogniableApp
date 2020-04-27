@@ -1,7 +1,13 @@
 import { all, takeEvery, put, call } from 'redux-saga/effects'
 // import { push } from 'react-router-redux';
 // import { notification } from 'antd'
-import { login, RefreshToken, StudentIdFromUserId, GetUserDetailsByUsername } from 'services/user'
+import {
+  login,
+  RefreshToken,
+  StudentIdFromUserId,
+  GetUserDetailsByUsername,
+  logout,
+} from 'services/user'
 // import { GraphQLClient } from 'graphql-request'
 import actions from './actions'
 
@@ -23,19 +29,6 @@ export function* LOGIN({ payload }) {
   const response = yield call(login, payload)
 
   if (response) {
-    if (response.tokenAuth.user.groups.edges[0].node.name === 'parents') {
-      const result = yield call(StudentIdFromUserId, response.tokenAuth.user.id)
-
-      if (result) {
-        yield put({
-          type: 'user/SET_STATE',
-          payload: {
-            studentId: result.data.students.edges[0].node.id,
-          },
-        })
-      }
-    }
-
     yield put({
       type: 'user/SET_STATE',
       payload: {
@@ -45,6 +38,20 @@ export function* LOGIN({ payload }) {
         role: response.tokenAuth.user.groups.edges[0].node.name,
       },
     })
+
+    if (response.tokenAuth.user.groups.edges[0].node.name === 'parents') {
+      // const result = yield call(StudentIdFromUserId, response.tokenAuth.user.id)
+      localStorage.setItem(
+        'studentId',
+        JSON.stringify(response.tokenAuth.user.studentsSet.edges[0].node.id),
+      )
+      yield put({
+        type: 'user/SET_STATE',
+        payload: {
+          studentId: response.tokenAuth.user.studentsSet.edges[0].node.id,
+        },
+      })
+    }
 
     yield put({
       type: 'menu/GET_DATA',
@@ -121,6 +128,14 @@ export function* LOGOUT() {
       role: '',
     },
   })
+  yield put({
+    type: 'family/SET_STATE',
+    payload: {
+      familyMembers: [],
+      loading: false,
+    },
+  })
+  yield call(logout)
 
   localStorage.setItem('database', '')
   localStorage.setItem('token', '')

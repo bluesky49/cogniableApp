@@ -120,8 +120,25 @@ class Login extends Component {
                 <div className={styles.inner}>
                   <div className={styles.form}>
                     <h4 className="text-uppercase" align="center">
-                      <strong>SIGN IN</strong>
+                      <strong>Sign In</strong>
                     </h4>
+                    <p align="center">
+                      Don&apos;t have an account?
+                      <Link to="/user/signUp" className="utils__link--blue">
+                        {' '}
+                        Sign Up
+                      </Link>
+                    </p>
+                    <div align="center" className={styles.customLayout}>
+                      <img
+                        src="resources/images/login.png"
+                        alt="HeaderLogo"
+                        style={{
+                          height: '200px',
+                          borderRadius: '20px',
+                        }}
+                      />
+                    </div>
                     <br />
                     <Form layout="vertical" hideRequiredMark onSubmit={this.onSubmit}>
                       <Form.Item>
@@ -165,15 +182,15 @@ class Login extends Component {
                           />{' '}
                           Your Information is safe with us
                         </p>
-                        <p align="center">
+                        {/* <p align="center">
                           <Link to="/user/signUp" className="utils__link--blue">
                             {' '}
                             Sign Up
                           </Link>
-                        </p>
+                        </p> */}
                       </Form.Item>
                       {/* <div className="form-group">
-                        <div className="mt-2">
+                        <div>
                           <Link to="/user/phone">
                             <Button size="large" className="width-50p">
                               <PhoneOutlined rotate="100" className="site-form-item-icon" />
