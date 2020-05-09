@@ -6,6 +6,10 @@ import menu from './menu/reducers'
 import settings from './settings/reducers'
 import datarecording from './datarecording/reducers'
 import goals from './goals/reducers'
+import learners from './learners/reducers'
+import staffs from './staffs/reducers'
+import sessiontargetallocation from './sessiontargetallocation/reducers'
+import sessionrecording from './sessionrecording/reducers'
 
 export default history =>
   combineReducers({
@@ -16,4 +20,8 @@ export default history =>
     datarecording,
     goals,
     family,
+    learners,
+    staffs,
+    sessiontargetallocation,
+    sessionrecording,
   })

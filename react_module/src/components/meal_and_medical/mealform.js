@@ -9,6 +9,9 @@ const layout = {
   labelCol: {
     span: 6,
   },
+  wrapperCol: {
+    span: 18,
+  },
 }
 
 const { TextArea } = Input
@@ -91,37 +94,33 @@ class MealBasicForm extends React.Component {
   render() {
     const { form } = this.props
     const { isLoaded } = this.state
+    const itemStyle = { marginBottom: '5px' }
 
     if (isLoaded) {
       return <div>Loding...</div>
     }
 
     return (
-      <Form
-        {...layout}
-        onSubmit={e => this.SubmitForm(e, this)}
-        name="control-ref"
-        style={{ marginLeft: '10%' }}
-      >
-        <Form.Item label="Meal Date">
+      <Form {...layout} onSubmit={e => this.SubmitForm(e, this)} name="control-ref">
+        <Form.Item label="Meal Date" style={itemStyle}>
           {form.getFieldDecorator('date', {
             rules: [{ required: true, message: 'Please pick a date!' }],
           })(<DatePicker onChange={this.setDate} name="date" style={{ width: 250 }} />)}
         </Form.Item>
 
-        <Form.Item label="Meal Time">
+        <Form.Item label="Meal Time" style={itemStyle}>
           {form.getFieldDecorator('mealTime', {
             rules: [{ required: true, message: 'Please pick a time!' }],
           })(<TimePicker onChange={this.setTime} name="mealTime" style={{ width: 250 }} />)}
         </Form.Item>
 
-        <Form.Item label="Meal Name">
+        <Form.Item label="Meal Name" style={itemStyle}>
           {form.getFieldDecorator('mealName', {
             rules: [{ required: true, message: 'Please provide Meal Name!' }],
           })(<Input placeholder="Enter Meal Name" name="mealName" style={{ width: 250 }} />)}
         </Form.Item>
 
-        <Form.Item label="Meal Type">
+        <Form.Item label="Meal Type" style={itemStyle}>
           {form.getFieldDecorator('mealType', {
             rules: [{ required: true, message: 'Please Select an Option!!' }],
           })(
@@ -140,7 +139,7 @@ class MealBasicForm extends React.Component {
           )}
         </Form.Item>
 
-        <Form.Item label="Food Type">
+        <Form.Item label="Food Type" style={itemStyle}>
           {form.getFieldDecorator('foodType', {
             rules: [{ required: true, message: 'Please Select an Option!!' }],
           })(
@@ -159,13 +158,13 @@ class MealBasicForm extends React.Component {
           )}
         </Form.Item>
 
-        <Form.Item label="Water">
+        <Form.Item label="Water" style={itemStyle}>
           {form.getFieldDecorator('waterIntake', {
             rules: [{ required: true, message: 'Please Enter Water Intake!' }],
           })(<Input placeholder="Enter water taken" name="waterIntake" style={{ width: 250 }} />)}
         </Form.Item>
 
-        <Form.Item label="Note">
+        <Form.Item label="Note" style={itemStyle}>
           {form.getFieldDecorator('note', { initialValue: '' })(
             <TextArea
               placeholder="Meal Details"
@@ -176,7 +175,7 @@ class MealBasicForm extends React.Component {
           )}
         </Form.Item>
 
-        <Form.Item>
+        <Form.Item style={itemStyle}>
           <Button type="primary" htmlType="submit">
             Submit
           </Button>

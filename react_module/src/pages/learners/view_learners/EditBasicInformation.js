@@ -1,34 +1,26 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-indent */
 /* eslint-disable react/jsx-indent-props */
-/* eslint-disable no-underscore-dangle */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable object-shorthand */
-
 import React from 'react'
 import { Form, Input, Button, Select, DatePicker } from 'antd'
+import moment from 'moment'
 import { connect } from 'react-redux'
 
 const { TextArea } = Input
 const { Option } = Select
-const layout = {
-  labelCol: {
-    span: 7,
-  },
-  wrapperCol: {
-    span: 14,
-  },
-}
 const tailLayout = {
   wrapperCol: {
-    offset: 7,
+    offset: 6,
     span: 14,
   },
 }
 
 @connect(({ user, learners }) => ({ user, learners }))
-class BasicInformationForm extends React.Component {
-  formRef = React.createRef()
-
+class EditBasicInformation extends React.Component {
   constructor(props) {
     super(props)
 
@@ -36,27 +28,46 @@ class BasicInformationForm extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'learners/GET_LEARNERS_DROPDOWNS',
+    const {
+      form,
+      learners: { UserProfile },
+    } = this.props
+
+    const selectedStaffList = []
+    UserProfile.authStaff.edges.map(item => selectedStaffList.push(item.node.id))
+
+    form.setFieldsValue({
+      clientId: UserProfile.clientId,
+      category: UserProfile.category.id,
+      email: UserProfile.email,
+      gender: UserProfile.gender,
+      dob: moment(UserProfile.dob),
+      dateOfDiagnosis: moment(UserProfile.dateOfDiagnosis),
+      clinicLocation: UserProfile.clinicLocation ? UserProfile.clinicLocation.id : null,
+      firstName: UserProfile.firstname,
+      lastName: UserProfile.lastname,
+      authStaff: selectedStaffList,
+      parentFirstName: UserProfile.parentName,
+      parentMobileNumber: UserProfile.parentMobile,
+      ssnCard: UserProfile.ssnAadhar,
+      mobileNo: UserProfile.mobileno,
+      address: UserProfile.currentAddress,
     })
   }
 
-  onReset = () => {
-    const { form } = this.props
-    form.resetFields()
-  }
-
   handleSubmit = e => {
+    const {
+      form,
+      dispatch,
+      learners: { UserProfile },
+    } = this.props
     e.preventDefault()
-
-    const { form, dispatch } = this.props
-
-    form.validateFields((error, values) => {
-      if (!error) {
+    form.validateFields((err, values) => {
+      if (!err) {
         dispatch({
-          type: 'learners/CREATE_LEARNER',
+          type: 'learners/EDIT_LEARNER',
           payload: {
+            id: UserProfile.id,
             values: values,
           },
         })
@@ -64,15 +75,19 @@ class BasicInformationForm extends React.Component {
     })
   }
 
+  onReset = () => {
+    this.formRef.current.resetFields()
+  }
+
   render() {
+    const itemStyle = { marginBottom: '0' }
     const {
       form,
       learners: { clinicLocationList, categoryList, staffDropdownList },
     } = this.props
-    const itemStyle = { marginBottom: '5px' }
 
     return (
-      <Form {...layout} name="control-ref" onSubmit={e => this.handleSubmit(e)}>
+      <Form onSubmit={e => this.handleSubmit(e)}>
         <Form.Item label="Client Id" style={itemStyle}>
           {form.getFieldDecorator('clientId', {
             rules: [{ required: true, message: 'Please provide ClientId!' }],
@@ -91,9 +106,14 @@ class BasicInformationForm extends React.Component {
         <Form.Item label="Last Name" style={itemStyle}>
           {form.getFieldDecorator('lastName')(<Input />)}
         </Form.Item>
+        <Form.Item label="Mobile no" style={itemStyle}>
+          {form.getFieldDecorator('mobileNo', {
+            rules: [{ message: 'Please provide Mobile No!' }],
+          })(<Input />)}
+        </Form.Item>
         <Form.Item label="Authorized Staff" style={itemStyle}>
           {form.getFieldDecorator('authStaff')(
-            <Select mode="multiple" placeholder="Select Therapist" allowClear>
+            <Select mode="multiple" placeholder="Select Therapist" allowClear maxTagCount="4">
               {staffDropdownList.map(item => (
                 <Option value={item.node.id}>{item.node.name}</Option>
               ))}
@@ -122,6 +142,7 @@ class BasicInformationForm extends React.Component {
             </Select>,
           )}
         </Form.Item>
+
         <Form.Item label="Date of Diagnosis" style={itemStyle}>
           {form.getFieldDecorator('dateOfDiagnosis')(<DatePicker />)}
         </Form.Item>
@@ -166,7 +187,6 @@ class BasicInformationForm extends React.Component {
           <Button type="submit" htmlType="submit">
             Submit
           </Button>
-
           <Button htmlType="primary" onClick={this.onReset} className="ml-4">
             cancel
           </Button>
@@ -176,5 +196,6 @@ class BasicInformationForm extends React.Component {
   }
 }
 
-const BasicInformation = Form.create()(BasicInformationForm)
-export default BasicInformation
+const EditBasicInformationForm = Form.create()(EditBasicInformation)
+
+export default EditBasicInformationForm

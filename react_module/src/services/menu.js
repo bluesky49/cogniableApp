@@ -424,9 +424,9 @@ export async function getTopMenuData(role) {
           url: '/therapy/sessionrecording',
         },
         {
-          title: 'Supervision Feedback',
+          title: 'New Session',
           key: 'therapySupervisionFeedback',
-          url: '/therapy/supervisionfeedback',
+          url: '/sessionrecording',
         },
         {
           title: 'Session Feedback',

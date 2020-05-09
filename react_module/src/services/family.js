@@ -124,6 +124,9 @@ export async function createNewMember(payload) {
         }`,
     })
     .then(result => {
+      notification.success({
+        message: 'Family Member Created Successfully',
+      })
       return result
     })
     .catch(error => {

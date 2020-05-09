@@ -1,4 +1,5 @@
 import { all, takeEvery, put, call, select } from 'redux-saga/effects'
+import { notification } from 'antd'
 import {
   getSessionAndRelations,
   getFamilyDetails,
@@ -103,6 +104,9 @@ export function* EditMember({ payload }) {
 
   const response = yield call(editMember, payload)
   if (response && response.data) {
+    notification.success({
+      message: 'Family Member Edited Successfully',
+    })
     const baseResponse = response.data.editFamily.details
     const familyMembers = yield select(state => state.family.familyMembers)
     let newFamilyMembers = []

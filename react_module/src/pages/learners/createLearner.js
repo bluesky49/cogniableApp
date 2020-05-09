@@ -60,6 +60,7 @@ class BasicInformationForm extends React.Component {
             values: values,
           },
         })
+        form.resetFields()
       }
     })
   }
@@ -90,6 +91,11 @@ class BasicInformationForm extends React.Component {
         </Form.Item>
         <Form.Item label="Last Name" style={itemStyle}>
           {form.getFieldDecorator('lastName')(<Input />)}
+        </Form.Item>
+        <Form.Item label="Mobile no" style={itemStyle}>
+          {form.getFieldDecorator('mobileNo', {
+            rules: [{ message: 'Please provide Mobile No!' }],
+          })(<Input />)}
         </Form.Item>
         <Form.Item label="Authorized Staff" style={itemStyle}>
           {form.getFieldDecorator('authStaff')(
@@ -163,7 +169,7 @@ class BasicInformationForm extends React.Component {
           )}
         </Form.Item>
         <Form.Item {...tailLayout}>
-          <Button type="submit" htmlType="submit">
+          <Button type="primary" htmlType="submit">
             Submit
           </Button>
 

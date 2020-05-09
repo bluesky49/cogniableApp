@@ -13,6 +13,7 @@ class SessionClock extends Component {
           marginBottom: '20px',
           textAlign: 'center',
         }}
+        bodyStyle={{ padding: '10px' }}
       >
         <Title type="secondary">00:00:00</Title>
         <Button>

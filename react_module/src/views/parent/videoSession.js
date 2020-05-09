@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-indent */
+/* eslint-disable react/destructuring-assignment */
 import React from 'react'
 import { Helmet } from 'react-helmet'
-import { Row, Col, Card, Button, Layout, Icon, Badge, Typography, Progress } from 'antd'
+import { Row, Col, Card, Button, Layout, Icon, Badge, Typography, Progress, Drawer } from 'antd'
 import Authorize from 'components/LayoutComponents/Authorize'
 import './videoSession.scss'
 import Stimulus from 'components/parentsSession'
@@ -13,8 +14,8 @@ class VideoSession extends React.Component {
   constructor() {
     super()
     this.state = {
-      Box: { paddingBottom: '20px', paddingLeft: '210px', paddingRight: '210px' },
-      span: 16,
+      Box: {},
+      span: 24,
       borderBox: {
         paddingBottom: '20px',
         textAlign: 'center',
@@ -22,17 +23,18 @@ class VideoSession extends React.Component {
         marginRight: '10px',
       },
       Incorect: false,
+      LeftRightArrow: false,
       dataType: {},
       IncorectBtn: {
         backgroundColor: 'white',
         color: 'black',
-        height: '70px',
+        height: '50px',
         width: '70%',
       },
       correctbtn: {
         backgroundColor: 'white',
         color: 'black',
-        height: '70px',
+        height: '50px',
         width: '70%',
       },
       arr: [
@@ -48,28 +50,26 @@ class VideoSession extends React.Component {
           data: [0, 1, 2, 3, 4, 5, 6, 7],
         },
       ],
+      visible: false,
+      targetVisible: false,
     }
   }
 
   handleArow = () => {
-    const { Box } = this.state
-    if (Box.paddingLeft === '210px') {
+    const { span } = this.state
+    if (span === 24) {
       this.setState({
         Box: {
           paddingBottom: '20px',
-          paddingLeft: '0px',
-          paddingRight: '0px',
         },
-        span: 8,
+        span: 12,
       })
     } else {
       this.setState({
         Box: {
           paddingBottom: '20px',
-          paddingLeft: '210px',
-          paddingRight: '210px',
         },
-        span: 16,
+        span: 24,
       })
     }
   }
@@ -86,7 +86,7 @@ class VideoSession extends React.Component {
       IncorectBtn: {
         backgroundColor: '#FF8080',
         color: 'white',
-        height: '70px',
+        height: '50px',
         width: '70%',
       },
     })
@@ -98,21 +98,22 @@ class VideoSession extends React.Component {
       IncorectBtn: {
         backgroundColor: 'white',
         color: 'black',
-        height: '70px',
+        height: '50px',
         width: '70%',
       },
       correctbtn: {
         backgroundColor: 'white',
         color: 'black',
-        height: '70px',
+        height: '50px',
         width: '70%',
       },
       borderBox: {
-        border: '1px solid',
+        border: '1px solid #f2f2f2',
+        backgroundColor: '#f2f4f8',
         paddingBottom: '20px',
         textAlign: 'center',
-        marginLeft: '50px',
-        marginRight: '50px',
+        marginLeft: '25px',
+        marginRight: '25px',
       },
     })
   }
@@ -123,21 +124,22 @@ class VideoSession extends React.Component {
       IncorectBtn: {
         backgroundColor: 'white',
         color: 'black',
-        height: '70px',
+        height: '50px',
         width: '70%',
       },
       correctbtn: {
         backgroundColor: 'white',
         color: 'black',
-        height: '70px',
+        height: '50px',
         width: '70%',
       },
       borderBox: {
-        border: '1px solid',
+        border: '1px solid #f2f2f2',
+        backgroundColor: '#f2f4f8',
         paddingBottom: '20px',
         textAlign: 'center',
-        marginLeft: '50px',
-        marginRight: '50px',
+        marginLeft: '25px',
+        marginRight: '25px',
       },
     })
   }
@@ -147,7 +149,7 @@ class VideoSession extends React.Component {
       correctbtn: {
         backgroundColor: '#4BAEA0',
         color: 'white',
-        height: '70px',
+        height: '50px',
         width: '70%',
       },
     })
@@ -161,30 +163,59 @@ class VideoSession extends React.Component {
     this.setState({ dataType: { type: 'stimulus' } })
   }
 
+  showDrawer = () => {
+    this.setState({
+      visible: true,
+    })
+  }
+
+  onClose = () => {
+    this.setState({
+      visible: false,
+    })
+  }
+
+  showTargetDrawer = () => {
+    this.setState({
+      targetVisible: true,
+    })
+  }
+
+  onTargetClose = () => {
+    this.setState({
+      targetVisible: false,
+    })
+  }
+
   render() {
-    const { Content } = Layout
+    const { Header, Content, Sider } = Layout
     const { Title, Text } = Typography
     const { Meta } = Card
-    const { Box, span, Incorect, IncorectBtn, correctbtn, arr, dataType, borderBox } = this.state
+    const {
+      Box,
+      span,
+      Incorect,
+      IncorectBtn,
+      correctbtn,
+      LeftRightArrow,
+      arr,
+      dataType,
+      borderBox,
+    } = this.state
     const stimulus = (
       <div style={{ textAlign: 'center' }}>
-        <Text style={{ padding: '10px' }}>
-          Stimulus Description <br /> &nbsp;&nbsp;&nbsp;Stimulus 1 of 3{' '}
-        </Text>
+        <Text style={{ padding: '10px' }}>Stimulus 1 of 3 </Text>
       </div>
     )
     const staps = (
       <div style={{ textAlign: 'center' }}>
-        <Text style={{ padding: '10px' }}>
-          Steps Description <br />
-          &nbsp;&nbsp;&nbsp; Stimulus 1to 3
-        </Text>
+        <Text style={{ padding: '10px' }}>Step 1to 3</Text>
       </div>
     )
     const prompt = arr[1].data.map(data => {
       if (data) {
         return (
-          <div style={{ textAlign: 'center', paddingTop: '10px' }}>
+          <div style={{ textAlign: 'center', paddingTop: '5px' }}>
             <Button
               onClick={() => this.handlePrompt()}
               style={{
@@ -200,21 +231,25 @@ class VideoSession extends React.Component {
       }
       return null
     })
-    let progress = ['#FF9C52', '#4BAEA0', '#f42733', '0', '0', '0', '0', '0']
+    let progress = ['#FF9C52', '#4BAEA0', '#FF8080', '0', '0', '0', '0', '0']
     progress = progress.map(data => {
       if (data) {
         return (
-          <Text>
+          <span
+            style={{
+              height: '15px',
+              display: 'inline-block',
+              lineHeight: '12px',
+              width: '37px',
+              border: '1px solid #F5F5F5',
+              backgroundColor: data,
+              paddingLeft: '35px',
+              borderRadius: '2px',
+              marginRight: '5px',
+            }}
+          >
             &nbsp;
-            <Progress
-              showInfo={false}
-              status="active"
-              strokeColor={data}
-              percent={100}
-              style={{ width: '10%' }}
-            />
-            &nbsp;
-          </Text>
+          </span>
         )
       }
       return null
@@ -224,130 +259,215 @@ class VideoSession extends React.Component {
         <Helmet title="Partner" />
         <Layout>
           <Content>
-            <Row>
-              <Col span={span} style={Box}>
-                <Title type="secondary" style={{ paddingTop: '20px' }} level={4}>
+            <Row style={{ maxHeight: '600px', overflow: 'auto' }}>
+              <Col sm={17} style={{ position: 'relative', overflow: 'hidden' }}>
+                {/* <Title type="secondary" style={{ paddingTop: '20px' }} level={4}>
                   MORNING SESSION{' '}
-                </Title>
+                </Title> */}
                 <Card
-                  hoverable
-                  cover={
-                    <img
-                      alt="example"
-                      src="https://www.familyeducation.com/sites/default/files/2019-03/traits-babies-inherit-from-their-father_feature.jpg"
-                      style={{ maxHeight: '300px' }}
-                    />
-                  }
+                  style={{ padding: '10px', maxHeight: '600px', overflow: 'auto' }}
+                  bodyStyle={{ padding: '0px' }}
                 >
-                  <Meta
-                    title="Kunal names the Presented Complex action by watching "
-                    description="visual perfaction "
-                  />
-                  {!dataType.type ? progress : null}
-                  <div>
-                    <br />
-                    {dataType.type === 'staps' ? staps : null}
-                    {dataType.type === 'stimulus' ? stimulus : null}
-                    <br />
-                    {dataType.type ? (
-                      <Button
-                        style={{
-                          float: 'left',
-                          transition: '.60s ease',
-                          marginTop: '120px',
-                        }}
-                        onClick={() => this.handleLeftBtnArrow()}
-                      >
-                        <Icon type="left" />
-                      </Button>
-                    ) : null}
-                    {dataType.type ? (
-                      <Button
-                        style={{ float: 'right', transition: '.60s ease', marginTop: '120px' }}
-                        onClick={() => this.handleRightBtnArrow()}
-                      >
-                        <Icon type="right" />
-                      </Button>
-                    ) : null}
-                    <div style={borderBox}>
-                      <br />
-                      <Text style={{ border: '1px solid ', padding: '8px' }}>
-                        <Icon type="left" />
-                        &nbsp; Daily Trail 6 &nbsp;
-                        <Icon type="right" />
-                      </Text>
-                      <br />
-                      <br />
-                      {Incorect === true ? (
-                        prompt
-                      ) : (
-                        <div>
-                          <Button
-                            style={correctbtn}
-                            onClick={() => {
-                              this.handlCorrect()
-                            }}
-                          >
-                            Correct&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <Badge count={10} style={{ backgroundColor: 'grey' }} /> <br />
+                  <Col span={span} style={Box}>
+                    <Card
+                      bodyStyle={{ padding: '0px' }}
+                      style={{ padding: '10px', minHeight: '550px' }}
+                    >
+                      <Col sm={24} lg={12}>
+                        <img
+                          alt="example"
+                          src="https://www.familyeducation.com/sites/default/files/2019-03/traits-babies-inherit-from-their-father_feature.jpg"
+                          style={{ maxHeight: '250px', width: '100%' }}
+                        />
+                        <br />
+                        <h5 style={{ marginTop: '10px' }}>
+                          Kunal names the Presented Complex action by watching{' '}
+                        </h5>
+                        <Button onClick={this.showTargetDrawer}>Target Instruction</Button>
+                        <h6 style={{ marginTop: '10px' }}>visual perfaction </h6>
+                        {/* <Meta
+                          style={{ textAlign: 'left' }}
+                          title="Kunal names the Presented Complex action by watching "
+                          description="visual perfaction "
+                        /> */}
+                        {!dataType.type ? progress : null}
+                        {dataType.type === 'staps' ? <Staps data={dataType.data} /> : null}
+                        {dataType.type === 'stimulus' ? <Stimulus data={dataType.data} /> : null}
+                      </Col>
+
+                      <Col sm={24} lg={12}>
+                        <Card
+                          style={{ border: 'none', padding: '10px' }}
+                          bodyStyle={{ paddingTop: '0px' }}
+                        >
+                          <Button style={{ float: 'right' }} onClick={this.showDrawer}>
+                            BR
                           </Button>
                           <br />
+                          <br />
+                          {dataType.type === 'staps' ? staps : null}
+                          {dataType.type === 'stimulus' ? stimulus : null}
+
+                          {dataType.type ? (
+                            <Button
+                              style={{
+                                float: 'left',
+                                transition: '.60s ease',
+                                marginTop: '120px',
+                              }}
+                              onClick={() => this.handleLeftBtnArrow()}
+                            >
+                              <Icon type="left" />
+                            </Button>
+                          ) : null}
+                          {dataType.type ? (
+                            <Button
+                              style={{
+                                float: 'right',
+                                transition: '.60s ease',
+                                marginTop: '120px',
+                              }}
+                              onClick={() => this.handleRightBtnArrow()}
+                            >
+                              <Icon type="right" />
+                            </Button>
+                          ) : null}
+                          <div style={borderBox}>
+                            <br />
+
+                            {dataType.type === 'staps' ? (
+                              <>
+                                <Text>Step Description</Text>
+                                <br />
+                              </>
+                            ) : null}
+                            {dataType.type === 'stimulus' ? (
+                              <>
+                                <Text>Stimulus Description</Text>
+                                <br />
+                              </>
+                            ) : null}
+                            <Text style={{ padding: '8px' }}>
+                              <Icon type="left" />
+                              &nbsp; Trial 1 of 6 &nbsp;
+                              <Icon type="right" />
+                            </Text>
+                            <br />
+                            <br />
+                            {Incorect === true ? (
+                              prompt
+                            ) : (
+                              <div>
+                                <Button
+                                  style={correctbtn}
+                                  onClick={() => {
+                                    this.handlCorrect()
+                                  }}
+                                >
+                                  Correct&nbsp;&nbsp;
+                                  <Badge
+                                    count={10}
+                                    style={{
+                                      backgroundColor: '#f5f6fb',
+                                      color: 'black',
+                                      borderRadius: '5px',
+                                    }}
+                                  />{' '}
+                                  <br />
+                                </Button>
+                                <br />
+
+                                <br />
+                                <Button
+                                  style={IncorectBtn}
+                                  onClick={() => {
+                                    this.handleIncorectbtn()
+                                  }}
+                                >
+                                  Incorrect &nbsp;&nbsp;
+                                  <Badge
+                                    count={10}
+                                    style={{
+                                      backgroundColor: '#f5f6fb',
+                                      color: 'black',
+                                      borderRadius: '5px',
+                                    }}
+                                  />{' '}
+                                  <br />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
 
                           <br />
-                          <Button
-                            style={IncorectBtn}
-                            onClick={() => {
-                              this.handleIncorectbtn()
-                            }}
-                          >
-                            Incorrect &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <Badge count={10} style={{ backgroundColor: 'grey' }} /> <br />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                    {dataType.type === 'staps' ? <Staps data={dataType.data} /> : null}
-                    {dataType.type === 'stimulus' ? <Stimulus data={dataType.data} /> : null}
+                          <br />
+                          <div style={{ textAlign: 'right', marginTop: '140px' }}>
+                            <Button onClick={() => this.handleLeft()}>
+                              <Icon type="left" />
+                            </Button>
+                            &nbsp;&nbsp;&nbsp;
+                            <Button onClick={() => this.handleRight()}>
+                              <Icon type="right" />
+                            </Button>
+                          </div>
+                          <br />
+                        </Card>
+                      </Col>
+                    </Card>
+                  </Col>
+
+                  {/* {span === 11 ? (
+                    <Col span={span} style={Box}>
+                      <div>empty</div>
+                    </Col>
+                  ) : null} */}
+                  {/* <Col span={1}>
                     <br />
-                    <br />
-                    <div style={{ textAlign: 'right' }}>
-                      <Button onClick={() => this.handleLeft()}>
-                        <Icon type="left" />
-                      </Button>
-                      &nbsp;&nbsp;&nbsp;
-                      <Button onClick={() => this.handleRight()}>
-                        <Icon type="right" />
-                      </Button>
-                    </div>
-                    <br />
-                  </div>
+                    <Title
+                      style={{
+                        float: 'left',
+                        width: '100%',
+                        height: '40px',
+                        marginTop: '34px',
+                        backgroundColor: '#f2f4f8',
+                        color: '#1d90fa',
+                      }}
+                      onClick={() => {
+                        this.handleArow()
+                      }}
+                    >
+                      {' '}
+                      <Icon type="thunderbolt" />
+                    </Title>
+                  </Col> */}
                 </Card>
-              </Col>
-              {span === 8 ? (
-                <Col span={span} style={Box}>
-                  <div>empty</div>
-                </Col>
-              ) : null}
-              <Col span={1}>
-                <br />
-                <Title
-                  style={{
-                    float: 'left',
-                    width: '100%',
-                    height: '40px',
-                    marginTop: '34px',
-                    backgroundColor: '#f2f4f8',
-                    color: '#1d90fa',
-                  }}
-                  onClick={() => {
-                    this.handleArow()
-                  }}
+                <Drawer
+                  title="Basic Drawer"
+                  height="60%"
+                  placement="bottom"
+                  closable={false}
+                  onClose={this.onClose}
+                  visible={this.state.visible}
+                  getContainer={false}
+                  style={{ position: 'absolute' }}
                 >
-                  {' '}
-                  <Icon type="thunderbolt" />
-                </Title>
+                  <p>Some contents...</p>
+                </Drawer>
+                <Drawer
+                  title="Basic Drawer"
+                  width="40%"
+                  placement="left"
+                  closable={false}
+                  onClose={this.onTargetClose}
+                  visible={this.state.targetVisible}
+                  getContainer={false}
+                  style={{ position: 'absolute' }}
+                >
+                  <p>Some contents...</p>
+                </Drawer>
               </Col>
-              <Col span={7} style={{ padding: '20px' }}>
+
+              <Col span={7} style={{ maxHeight: '600px', overflow: 'auto', paddingLeft: '10px' }}>
                 <SessionClock />
                 <Title type="secondary" level={4} style={{ textAlign: 'left' }}>
                   Upcoming target <Icon type="align-right" style={{ float: 'right' }} />

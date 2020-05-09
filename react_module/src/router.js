@@ -67,7 +67,7 @@ const routes = [
   },
   {
     path: '/partners/viewstaffs',
-    component: loadable(() => import('views/StaffTable')),
+    component: loadable(() => import('pages/staffs/view_staffs')),
   },
 
   // targets
@@ -191,6 +191,18 @@ const routes = [
   {
     path: '/family/',
     component: loadable(() => import('views/family/family')),
+  },
+  {
+    path: '/targetsAllocationToSession/',
+    component: loadable(() => import('pages/target_allocation_to_session')),
+  },
+  {
+    path: '/target/allocation',
+    component: loadable(() => import('pages/target_alocation/targetAllocation')),
+  },
+  {
+    path: '/sessionrecording',
+    component: loadable(() => import('pages/sessionrecording')),
   },
 ]
 

@@ -106,14 +106,19 @@ class FamilyMembers extends React.Component {
                         <Avatar
                           shape="square"
                           src={this.getIcons(relation.name)}
-                          style={{ margin: '10px', width: '50px', height: '50px', opacity: '0.3' }}
+                          style={{
+                            marginTop: '50px',
+                            width: '50px',
+                            height: '50px',
+                            opacity: '0.3',
+                          }}
                         />
-                        <div style={{ textAlign: 'left' }}>
+                        <div style={{ textAlign: 'left', marginTop: '50px', marginLeft: '10px' }}>
                           <Text style={{ fontWeight: '300', fontSize: '14px', display: 'block' }}>
                             {relation.name}
                           </Text>
                           <Text type="secondary" style={{ fontSize: '10px' }}>
-                            Personal Details & time spen with kunal
+                            Personal Details & time 1 spen with kunal
                           </Text>
                         </div>
                       </Button>
