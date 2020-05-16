@@ -1,13 +1,13 @@
 import React from 'react'
 import { Helmet } from 'react-helmet'
-import { Table, Button, Form, Select, Icon, Input, Tabs } from 'antd';
+import { Table, Button, Form, Select, Icon, Input, Tabs } from 'antd'
 import Chat from 'components/CleanUIComponents/Chat'
 import Authorize from 'components/LayoutComponents/Authorize'
 import { GraphQLClient } from 'graphql-request'
 import TargetAllocate from 'components/CleanUIComponents/Targets'
 
 const FormItem = Form.Item
-const { TabPane } = Tabs;
+const { TabPane } = Tabs
 // const temp = [];
 
 const graphQLClient = new GraphQLClient('http://development.cogniable.us/apis/school/graphql', {
@@ -15,7 +15,7 @@ const graphQLClient = new GraphQLClient('http://development.cogniable.us/apis/sc
     database: 'india',
   },
 })
-const { Search } = Input;
+const { Search } = Input
 const column1 = [
   {
     title: 'Domain',
@@ -25,7 +25,7 @@ const column1 = [
     title: 'Target Name',
     dataIndex: 'node.targetMain.targetName',
   },
-];
+]
 
 const column2 = [
   {
@@ -40,68 +40,65 @@ const column2 = [
   {
     title: 'Status',
     dataIndex: 'node.targetStatus.statusName',
-    render: text => <span style={{ color: "green" }}>{text}</span>
+    render: text => <span style={{ color: 'green' }}>{text}</span>,
   },
   {
     title: 'Copy',
     dataIndex: 'copy',
     render: text => <a>{text}</a>,
   },
-];
+]
 
 const rowSelection1 = {
   onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
   },
   getCheckboxProps: record => ({
     disabled: record.name === 'Disabled User', // Column configuration not to be checked
     name: record.name,
   }),
-};
-
+}
 
 // rowSelection object indicates the need for row selection
 const rowSelection2 = {
   onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
   },
   getCheckboxProps: record => ({
     disabled: record.name === 'Disabled User', // Column configuration not to be checked
     name: record.name,
   }),
-};
+}
 
 class TargetView extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
-      searchlearner: "",
-      domain1: "",
-      domain2: "",
-      targetarea: "",
-      search: "",
-      targetname: "",
+      searchlearner: '',
+      domain1: '',
+      domain2: '',
+      targetarea: '',
+      search: '',
+      targetname: '',
       targettype: [],
       mcriteria: [],
-      date: "",
+      date: '',
       codes: [],
       status: [],
-      consdays: "",
-      trials: "",
-      steps: "",
-      // SelectedTarList:[],         
+      consdays: '',
+      trials: '',
+      steps: '',
+      // SelectedTarList:[],
       divShow: false,
       filterShow: false,
       LearnerList: [],
       SuggestedTarget: [],
       AllocatedTarget: [],
       DomainList: [],
-      targetArea: []
-
-    };
-    this.DomainChange = this.DomainChange.bind(this);
-
+      targetArea: [],
+    }
+    this.DomainChange = this.DomainChange.bind(this)
   }
 
   componentDidMount() {
@@ -146,15 +143,14 @@ class TargetView extends React.Component {
         codes: data.promptCodes,
         mcriteria: data.masteryCriteria,
         LearnerList: data.students.edges,
-        DomainList: data.domain
+        DomainList: data.domain,
       })
     })
   }
 
-
   handleSubmit = e => {
-    e.preventDefault();
-    const { form } = this.props;
+    e.preventDefault()
+    const { form } = this.props
 
     form.validateFields((error, values) => {
       if (!error) {
@@ -210,25 +206,26 @@ class TargetView extends React.Component {
         }
 
         graphQLClient.request(query, variables).then(data => {
-
           this.setState({
             SuggestedTarget: data.target.edges,
             AllocatedTarget: data.targetAllocates.edges,
           })
         })
-
       }
     })
-
   }
 
-  onhandleChange = (e) => { this.setState({ [e.target.name]: e.target.value }) };
+  onhandleChange = e => {
+    this.setState({ [e.target.name]: e.target.value })
+  }
 
   // setDate = (value) => { this.setState({ date: (new Date(value)).toISOString().slice(0, 10) }) }
 
   // selectDomain = (value) => { this.setState({ domain2: value }) }
 
-  selectTargetName = (value) => { this.setState({ targetname: value }) }
+  selectTargetName = value => {
+    this.setState({ targetname: value })
+  }
 
   // selectTargetType = (value) => { this.setState({ targettype: value }) }
 
@@ -238,42 +235,45 @@ class TargetView extends React.Component {
 
   // selectStatus = (value) => { this.setState({ status: value }) }
 
-  selectDays = (value) => { this.setState({ consdays: value }) }
+  selectDays = value => {
+    this.setState({ consdays: value })
+  }
 
-  selectDailytrials = (value) => { this.setState({ trials: value }) }
+  selectDailytrials = value => {
+    this.setState({ trials: value })
+  }
 
-  selectDays = (value) => { this.setState({ consdays: value }) }
+  selectDays = value => {
+    this.setState({ consdays: value })
+  }
 
-  selectsteps = (value) => { this.setState({ steps: value }) }
-
-
+  selectsteps = value => {
+    this.setState({ steps: value })
+  }
 
   handleChange = (pagination, filters, sorter) => {
-    console.log('Various parameters', pagination, filters, sorter);
+    console.log('Various parameters', pagination, filters, sorter)
     // this.setState({
     //     filteredInfo: filters,
     //     sortedInfo: sorter,
 
     // });
-  };
-
+  }
 
   // logic for div show or hide
   divShowHide = () => {
     this.setState({ divShow: true })
   }
 
-  consoleValue = (e, ) => {
-
-    e.preventDefault();
+  consoleValue = e => {
+    e.preventDefault()
     this.setState({
-      divShow: true
+      divShow: true,
     })
-
   }
 
   onFinish = values => {
-    console.log('Received values of form: ', values);
+    console.log('Received values of form: ', values)
   }
 
   DomainChange(domainid) {
@@ -297,7 +297,7 @@ class TargetView extends React.Component {
 
     graphQLClient.request(query3, variables).then(data => {
       this.setState({
-        targetArea: data.domainGet.targetArea.edges
+        targetArea: data.domainGet.targetArea.edges,
       })
     })
   }
@@ -305,33 +305,60 @@ class TargetView extends React.Component {
   filterToggle(toggle) {
     if (toggle) {
       this.setState({
-        filterShow: false
+        filterShow: false,
       })
-    }
-    else {
+    } else {
       this.setState({
-        filterShow: true
+        filterShow: true,
       })
     }
   }
-
-
 
   render() {
     // let { sortedInfo, filteredInfo } = this.state;
     // sortedInfo = sortedInfo || {};
     // filteredInfo = filteredInfo || {};
-    const { form } = this.props;
-    const { LearnerList, DomainList, targetArea, SuggestedTarget, AllocatedTarget } = this.state;
+    const { form } = this.props
+    const { LearnerList, DomainList, targetArea, SuggestedTarget, AllocatedTarget } = this.state
 
-    const { divShow, filterShow } = this.state;
-    const divClass = divShow ? "col-sm-8" : "col-sm-12";
+    const { divShow, filterShow } = this.state
+    const divClass = divShow ? 'col-sm-8' : 'col-sm-12'
     const detailsDiv = divShow ? { display: 'block', paddingLeft: '0' } : { display: 'none' }
-    const filterDiv = filterShow ? { display: 'block', padding: '0', marginBottom: '0', backgroundColor: 'inherit' } : { display: 'none' }
+    const filterDiv = filterShow
+      ? { display: 'block', padding: '0', marginBottom: '0', backgroundColor: 'inherit' }
+      : { display: 'none' }
     // const {Column} = Table;
     const filterOptionStyle = { display: 'inline-block', marginRight: '10px' }
-    const { searchlearner, domain1, domain2, targetarea, search, targetname, targettype, mcriteria, date, codes, status, consdays, trials, steps } = this.state
-    console.log(searchlearner, domain1, domain2, targetarea, search, targetname, date, codes, status, consdays, trials, steps)
+    const {
+      searchlearner,
+      domain1,
+      domain2,
+      targetarea,
+      search,
+      targetname,
+      targettype,
+      mcriteria,
+      date,
+      codes,
+      status,
+      consdays,
+      trials,
+      steps,
+    } = this.state
+    console.log(
+      searchlearner,
+      domain1,
+      domain2,
+      targetarea,
+      search,
+      targetname,
+      date,
+      codes,
+      status,
+      consdays,
+      trials,
+      steps,
+    )
     return (
       <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
         <Helmet title="Partner" />
@@ -375,14 +402,12 @@ class TargetView extends React.Component {
                                 placeholder="Select a Learner"
                                 optionFilterProp="children"
                               >
-                                {LearnerList.map(c =>
+                                {LearnerList.map(c => (
                                   <option value={c.node.id}>{c.node.firstname}</option>
-                                )}
-
-                              </Select>
+                                ))}
+                              </Select>,
                             )}
                           </FormItem>
-
                         </div>
                         <div className="col-lg-3">
                           <FormItem label="Domain">
@@ -397,17 +422,19 @@ class TargetView extends React.Component {
                                 optionFilterProp="children"
                                 onChange={this.DomainChange}
                               >
-                                {DomainList.map(c =>
+                                {DomainList.map(c => (
                                   <option value={c.id}>{c.domain}</option>
-                                )}
-                              </Select>
+                                ))}
+                              </Select>,
                             )}
                           </FormItem>
                         </div>
                         <div className="col-lg-3">
                           <FormItem label="Target Area">
                             {form.getFieldDecorator('target_area', {
-                              rules: [{ required: true, message: 'Please provide your Target Area!' }],
+                              rules: [
+                                { required: true, message: 'Please provide your Target Area!' },
+                              ],
                             })(
                               <Select
                                 id="product-edit-colors"
@@ -416,16 +443,16 @@ class TargetView extends React.Component {
                                 placeholder="Select a Target Area"
                                 optionFilterProp="children"
                               >
-                                {targetArea.map(c =>
+                                {targetArea.map(c => (
                                   <option value={c.node.id}>{c.node.Area}</option>
-                                )}
-                              </Select>
+                                ))}
+                              </Select>,
                             )}
                           </FormItem>
                         </div>
                         <div className="col-lg-3">
                           <FormItem label="Search">
-                            {form.getFieldDecorator('search', { initialValue: "" })(
+                            {form.getFieldDecorator('search', { initialValue: '' })(
                               <Input
                                 suffix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
                                 type="text"
@@ -461,7 +488,11 @@ class TargetView extends React.Component {
             <div className="card" style={filterDiv}>
               <div className="card-body" style={{ padding: '0', marginBottom: '0' }}>
                 <Form.Item label="" style={filterOptionStyle}>
-                  <Select style={{ width: '120px' }} placeholder="search learner" name="searchlearner">
+                  <Select
+                    style={{ width: '120px' }}
+                    placeholder="search learner"
+                    name="searchlearner"
+                  >
                     <Select.Option value="select">status</Select.Option>
                     <Select.Option value="active">Active</Select.Option>
                     <Select.Option value="in-active">In-active</Select.Option>
@@ -494,17 +525,17 @@ class TargetView extends React.Component {
               <div className="card-body">
                 <Button
                   type="primary"
-                  style={{ float: "right" }}
-                  onClick={(e) => this.consoleValue(e)}
+                  style={{ float: 'right' }}
+                  onClick={e => this.consoleValue(e)}
                 >
                   Allocate Targets
                 </Button>
-                <h4 style={{ backgroundColor: "inherit" }}>Suggested Targets</h4>
+                <h4 style={{ backgroundColor: 'inherit' }}>Suggested Targets</h4>
                 <Table
                   columns={column1}
                   dataSource={SuggestedTarget}
                   bordered
-                  rowKey={(record) => record.node.id}
+                  rowKey={record => record.node.id}
                   onChange={this.handleChange}
                   rowSelection={rowSelection1}
                 />
@@ -517,7 +548,7 @@ class TargetView extends React.Component {
                   columns={column2}
                   dataSource={AllocatedTarget}
                   bordered
-                  rowKey={(record) => record.node.id}
+                  rowKey={record => record.node.id}
                   onChange={this.handleChange}
                   rowSelection={rowSelection2}
                 />
@@ -528,9 +559,26 @@ class TargetView extends React.Component {
             <div className="card" style={{ minHeight: '600px' }}>
               <div className="card-body">
                 <div className="table-operations" style={{ marginBottom: '16px' }}>
-                  <Button style={{ marginRight: '-12px', float: 'right', border: 'none', padding: 'none' }} onClick={() => this.setState({ divShow: false })}>X</Button>
+                  <Button
+                    style={{
+                      marginRight: '-12px',
+                      float: 'right',
+                      border: 'none',
+                      padding: 'none',
+                    }}
+                    onClick={() => this.setState({ divShow: false })}
+                  >
+                    X
+                  </Button>
                 </div>
-                <TargetAllocate DomainList={DomainList} targettype={targettype} mcriteria={mcriteria} codes={codes} status={status} /> 
+                <TargetAllocate
+                  targets={[{ node: { targetMain: { targetName: 'hello' } } }]}
+                  DomainList={DomainList}
+                  targettype={targettype}
+                  mcriteria={mcriteria}
+                  codes={codes}
+                  status={status}
+                />
               </div>
             </div>
           </div>
@@ -539,7 +587,6 @@ class TargetView extends React.Component {
     )
   }
 }
-
 
 const TargetSearch = Form.create()(TargetView)
 export default TargetSearch

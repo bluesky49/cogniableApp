@@ -1,117 +1,121 @@
 import React from 'react'
 import { Helmet } from 'react-helmet'
-import { Table, Button,Form, Input, Checkbox } from 'antd';
+import { Table, Button, Form, Input, Checkbox } from 'antd'
 import Authorize from '../LayoutComponents/Authorize'
 // import style from '../learnerform.scss'
 
-
 const data = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
-    },
-    {
-      key: '4',
-      name: 'Jim Red',
-      age: 32,
-      address: 'London No. 2 Lake Park',
-    },
-    {
-        key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sidney No. 1 Lake Park',
-      },
-      {
-        key: '4',
-        name: 'Jim Red',
-        age: 32,
-        address: 'London No. 2 Lake Park',
-      },
-  ];
-
-
+  {
+    key: '1',
+    name: 'John Brown',
+    age: 32,
+    address: 'New York No. 1 Lake Park',
+  },
+  {
+    key: '2',
+    name: 'Jim Green',
+    age: 42,
+    address: 'London No. 1 Lake Park',
+  },
+  {
+    key: '3',
+    name: 'Joe Black',
+    age: 32,
+    address: 'Sidney No. 1 Lake Park',
+  },
+  {
+    key: '4',
+    name: 'Jim Red',
+    age: 32,
+    address: 'London No. 2 Lake Park',
+  },
+  {
+    key: '3',
+    name: 'Joe Black',
+    age: 32,
+    address: 'Sidney No. 1 Lake Park',
+  },
+  {
+    key: '4',
+    name: 'Jim Red',
+    age: 32,
+    address: 'London No. 2 Lake Park',
+  },
+]
 
 class LearnerForm extends React.Component {
-    state = {
-        filteredInfo: null,
-        sortedInfo: null,
-        divShow: false,
-        selectedName: ''
-    };
+  state = {
+    filteredInfo: null,
+    sortedInfo: null,
+    divShow: false,
+    selectedName: '',
+  }
 
-    handleChange = (pagination, filters, sorter) => {
-        console.log('Various parameters', pagination, filters, sorter);
-        this.setState({
-            filteredInfo: filters,
-            sortedInfo: sorter,
-            
-        });
-    };
-    
-    clearFilters = () => {
-        this.setState({ filteredInfo: null });
-    };
-    
-    clearAll = () => {
-        this.setState({
-            filteredInfo: null,
-            sortedInfo: null,
-        });
-    };
-    
-    setAgeSort = () => {
-        this.setState({
-            sortedInfo: {
-                order: 'descend',
-                columnKey: 'age',
-            },
-        });
-    };
+  handleChange = (pagination, filters, sorter) => {
+    console.log('Various parameters', pagination, filters, sorter)
+    this.setState({
+      filteredInfo: filters,
+      sortedInfo: sorter,
+    })
+  }
 
-    // logic for div show or hide
-    divShowHide = () => {
-        this.setState({divShow: true})
-    }
+  clearFilters = () => {
+    this.setState({ filteredInfo: null })
+  }
 
-    consoleValue = (e, text) => {
-        e.preventDefault();
-        this.setState({
-            selectedName: text,
-            divShow: true
-        })
+  clearAll = () => {
+    this.setState({
+      filteredInfo: null,
+      sortedInfo: null,
+    })
+  }
 
-    }
+  setAgeSort = () => {
+    this.setState({
+      sortedInfo: {
+        order: 'descend',
+        columnKey: 'age',
+      },
+    })
+  }
 
-    onFinish = values => {
-        console.log('Received values of form: ', values);
-    };
+  // logic for div show or hide
+  divShowHide = () => {
+    this.setState({ divShow: true })
+  }
+
+  consoleValue = (e, text) => {
+    e.preventDefault()
+    this.setState({
+      selectedName: text,
+      divShow: true,
+    })
+  }
+
+  onFinish = values => {
+    console.log('Received values of form: ', values)
+  }
 
   render() {
-    let { sortedInfo, filteredInfo } = this.state;
-    sortedInfo = sortedInfo || {};
-    filteredInfo = filteredInfo || {};
+    let { sortedInfo, filteredInfo } = this.state
+    sortedInfo = sortedInfo || {}
+    filteredInfo = filteredInfo || {}
     const columns = [
       {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        render: name => <a onClick={(e) => this.consoleValue(e, name)} onKeyPress={(e) => this.consoleValue(e, name)} role="button" tabIndex="0">{name}</a>,
-        
+        render: name => (
+          <a
+            onClick={e => this.consoleValue(e, name)}
+            onKeyPress={e => this.consoleValue(e, name)}
+            role="button"
+            tabIndex="0"
+          >
+            {name}
+          </a>
+        ),
+
         filters: [
           { text: 'Joe', value: 'Joe' },
           { text: 'Jim', value: 'Jim' },
@@ -144,12 +148,12 @@ class LearnerForm extends React.Component {
         sortOrder: sortedInfo.columnKey === 'address' && sortedInfo.order,
         ellipsis: true,
       },
-    ];
-    const {divShow} = this.state; 
-    const divClass = divShow ? "col-sm-8" : "col-sm-12";
-    const detailsDiv = divShow ? {display:'inline-block'} : {display:'none'} 
+    ]
+    const { divShow } = this.state
+    const divClass = divShow ? 'col-sm-8' : 'col-sm-12'
+    const detailsDiv = divShow ? { display: 'inline-block' } : { display: 'none' }
     // const {Column} = Table;
-    const {selectedName} = this.state;
+    const { selectedName } = this.state
     return (
       <Authorize roles={['admin']} redirect to="/dashboard/beta">
         <Helmet title="Partner" />
@@ -160,11 +164,17 @@ class LearnerForm extends React.Component {
           <div className={divClass}>
             <div className="card">
               <div className="card-body">
-                <div className="table-operations" style={{marginBottom: '16px'}}>
+                <div className="table-operations" style={{ marginBottom: '16px' }}>
                   {/* <Button style={{marginRight: '8px'}} onClick={this.divShowHide}>Show</Button> */}
-                  <Button style={{marginRight: '8px'}} onClick={this.setAgeSort}>Sort age</Button>
-                  <Button style={{marginRight: '8px'}} onClick={this.clearFilters}>Clear filters</Button>
-                  <Button style={{marginRight: '8px'}} onClick={this.clearAll}>Clear filters and sorters</Button>
+                  <Button style={{ marginRight: '8px' }} onClick={this.setAgeSort}>
+                    Sort age
+                  </Button>
+                  <Button style={{ marginRight: '8px' }} onClick={this.clearFilters}>
+                    Clear filters
+                  </Button>
+                  <Button style={{ marginRight: '8px' }} onClick={this.clearAll}>
+                    Clear filters and sorters
+                  </Button>
                 </div>
                 <Table columns={columns} dataSource={data} onChange={this.handleChange} />
               </div>
@@ -173,8 +183,18 @@ class LearnerForm extends React.Component {
           <div className="col-sm-4" style={detailsDiv}>
             <div className="card">
               <div className="card-body">
-                <div className="table-operations" style={{marginBottom: '16px'}}>
-                  <Button style={{marginRight: '-12px', float:'right', border:'none', padding:'none'}} onClick={() => this.setState({divShow:false})}>X</Button>
+                <div className="table-operations" style={{ marginBottom: '16px' }}>
+                  <Button
+                    style={{
+                      marginRight: '-12px',
+                      float: 'right',
+                      border: 'none',
+                      padding: 'none',
+                    }}
+                    onClick={() => this.setState({ divShow: false })}
+                  >
+                    X
+                  </Button>
                 </div>
                 <div>
                   <Form
@@ -193,11 +213,7 @@ class LearnerForm extends React.Component {
                       name="password"
                       rules={[{ required: true, message: 'Please input your Password!' }]}
                     >
-                      <Input
-                       
-                        type="password"
-                        placeholder="Password"
-                      />
+                      <Input type="password" placeholder="Password" />
                     </Form.Item>
                     <Form.Item>
                       <Form.Item name="remember" valuePropName="checked" noStyle>

@@ -1,5 +1,59 @@
 @import 'assets/styles/mixins.scss';
 
+.targetAllocation {
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #e5e5e5;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #6d6d6d;
+  }
+
+  .heading {
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 10px;
+  }
+
+  .detailsButton {
+    background-color: rgb(249, 249, 249);
+    border: 1px solid rgb(228, 233, 240);
+    color: rgb(0, 0, 0);
+    height: 56px;
+    font-size: 16px;
+  }
+
+  .clearAllButton {
+    background-color: white;
+    border: 1px dashed $btn-primary-color;
+    color: $btn-primary-color;
+    height: 40px;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .targetListHeding {
+    margin-bottom: 30px;
+    height: 40px;
+
+    .search {
+      span {
+        font-size: 25px;
+        color: black;
+      }
+    }
+  }
+}
+
 .card {
   background-color: $white;
   border-radius: 3px;
@@ -11,9 +65,9 @@
 }
 
 .content {
-  padding-left: rem(15);
+  padding: rem(10);
   position: relative;
-  border: 1px solid #f4f6f8;
+  //border: 1px solid #f4f6f8;
 }
 
 .flag {

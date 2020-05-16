@@ -13,7 +13,7 @@ class Providers extends React.Component {
             <i className={`${styles.menuIcon} icmn-plus`} /> Add new network provider
           </Link>
         </Menu.Item>
-        
+
         <Menu.Divider />
         <Menu.Item>
           <Link to="/">

@@ -1,8 +1,7 @@
-import React from 'react';
-import { Form, Input, Button,Radio } from 'antd';
+import React from 'react'
+import { Form, Input, Button, Radio } from 'antd'
 
-
-const { TextArea } = Input;
+const { TextArea } = Input
 const layout = {
   labelCol: {
     span: 8,
@@ -10,40 +9,34 @@ const layout = {
   wrapperCol: {
     span: 14,
   },
-};
+}
 const tailLayout = {
   wrapperCol: {
     offset: 8,
     span: 14,
   },
-};
+}
 
 class IntakeForm extends React.Component {
-  formRef = React.createRef();
+  formRef = React.createRef()
 
-  
-  handleChange = (e) => {
+  handleChange = e => {
     this.setState({
-        [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     })
-  };
-  
+  }
 
   onFinish = values => {
-    console.log(values);
-  };
+    console.log(values)
+  }
 
   onReset = () => {
-    this.formRef.current.resetFields();
-  };
-
- 
+    this.formRef.current.resetFields()
+  }
 
   render() {
     return (
       <Form {...layout} ref={this.formRef} name="control-ref" onFinish={this.onFinish}>
-        
-
         <Form.Item
           name="firstName"
           label="First Name"
@@ -55,7 +48,6 @@ class IntakeForm extends React.Component {
         >
           <Input />
         </Form.Item>
-
 
         <Form.Item
           name="middleName"
@@ -69,7 +61,6 @@ class IntakeForm extends React.Component {
           <Input />
         </Form.Item>
 
-
         <Form.Item
           name="lastName"
           label="Last Name"
@@ -82,7 +73,6 @@ class IntakeForm extends React.Component {
           <Input />
         </Form.Item>
 
-
         <Form.Item name="radio-group" label="Current School">
           <Radio.Group>
             <Radio value="a">Level 1</Radio>
@@ -91,11 +81,9 @@ class IntakeForm extends React.Component {
           </Radio.Group>
         </Form.Item>
 
-        
         <Form.Item
           name="PfirstName"
           label="Primary Family Contact First Name"
-          
           rules={[
             {
               required: true,
@@ -108,7 +96,6 @@ class IntakeForm extends React.Component {
         <Form.Item
           name="PlastName"
           label="Last Name"
-          
           rules={[
             {
               required: true,
@@ -117,7 +104,6 @@ class IntakeForm extends React.Component {
         >
           <Input />
         </Form.Item>
-
 
         <Form.Item
           name="relationChild"
@@ -130,7 +116,6 @@ class IntakeForm extends React.Component {
         >
           <Input />
         </Form.Item>
-
 
         <Form.Item
           name="phone"
@@ -150,31 +135,23 @@ class IntakeForm extends React.Component {
           rules={[
             {
               required: true,
-              type: "email"
+              type: 'email',
             },
           ]}
         >
           <Input />
         </Form.Item>
 
-        
-        <Form.Item
-          label="Address"
-        >
+        <Form.Item label="Address">
           <div>
             <div style={{ margin: '0px' }} />
-            <TextArea
-              placeholder="Address"
-              autoSize={{ minRows: 2, maxRows: 5 }}
-            />
+            <TextArea placeholder="Address" autoSize={{ minRows: 2, maxRows: 5 }} />
           </div>
         </Form.Item>
-
 
         <Form.Item
           name="PlastName"
           label="Apt/Suite/Unit"
-          
           rules={[
             {
               required: true,
@@ -184,21 +161,17 @@ class IntakeForm extends React.Component {
           <Input />
         </Form.Item>
 
-
-
-
-        <Form.Item 
+        <Form.Item
           name="zipcode"
           label="Zipcode"
           rules={[
             {
               required: true,
-            }
-          ]} 
+            },
+          ]}
         >
           <Input />
         </Form.Item>
-
 
         <Form.Item
           name="otherMembers"
@@ -212,27 +185,17 @@ class IntakeForm extends React.Component {
           <Input />
         </Form.Item>
 
-
-
-
-
-
-
-
         <Form.Item {...tailLayout}>
-          <Button type="primary" htmlType="submit"> 
+          <Button type="primary" htmlType="submit">
             Submit
           </Button>
 
           <Button htmlType="primary" onClick={this.onReset} className="ml-4">
             cancel
           </Button>
-          
         </Form.Item>
-
-
       </Form>
-    );
+    )
   }
 }
 

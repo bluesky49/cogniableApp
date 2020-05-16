@@ -10,14 +10,14 @@ class Others extends React.Component {
       <Menu selectable={false}>
         <Menu.Item>
           <Link to="/">
-            <i className={`${styles.menuIcon} icmn-plus`} /> Add new 
+            <i className={`${styles.menuIcon} icmn-plus`} /> Add new
           </Link>
         </Menu.Item>
-        
+
         <Menu.Divider />
         <Menu.Item>
           <Link to="/">
-            <i className={`${styles.menuIcon} icmn-paragraph-left`} /> View all 
+            <i className={`${styles.menuIcon} icmn-paragraph-left`} /> View all
           </Link>
         </Menu.Item>
       </Menu>

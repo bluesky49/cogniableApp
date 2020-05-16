@@ -21,17 +21,20 @@
 
 import React from 'react'
 import { Helmet } from 'react-helmet'
-import { Button, Drawer } from 'antd'
+import { Button, Drawer, Input } from 'antd'
 import Sortable from 'react-sortablejs'
 import { connect } from 'react-redux'
+import { PlusOutlined } from '@ant-design/icons'
 import style from './style.module.scss'
 import Authorize from '../../components/LayoutComponents/Authorize'
 import SessionDetails from './sessiondetails'
+import TargetCard from './TargetCard'
 
 @connect(({ user, sessiontargetallocation }) => ({ user, sessiontargetallocation }))
 class ExtraAppsJiraAgileBoard extends React.Component {
   state = {
     visible: false,
+    searchTargetText: '',
   }
 
   componentWillMount() {
@@ -42,6 +45,10 @@ class ExtraAppsJiraAgileBoard extends React.Component {
         studentId: 'U3R1ZGVudFR5cGU6MTYz',
       },
     })
+  }
+
+  clearAll = session => {
+    console.log('session==>', session)
   }
 
   showDrawer = session => {
@@ -73,6 +80,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
     let rawString = []
     if (session === 'Morning') {
       rawString = localStorage.getItem('Morning').split('|')
+      console.log('rawString==>', rawString)
       console.log(rawString)
       id = MorningSession.id
     }
@@ -102,6 +110,29 @@ class ExtraAppsJiraAgileBoard extends React.Component {
     console.log(morningSession, afternoonSession, eveningSession, a_s)
   }
 
+  handleChangeSearchText = ({ target: { value } }) => {
+    console.log('=handleChangeSearchText==>', value)
+    this.setState({
+      searchTargetText: value,
+    })
+  }
+
+  searchTarget = value => {
+    console.log('searchTarget==>', value)
+  }
+
+  deleteMorningSession = id => {
+    console.log('deleteMorningSession==>', id)
+  }
+
+  deleteAfternoonSession = id => {
+    console.log('deleteMorningSession==>', id)
+  }
+
+  deleteEveningSession = id => {
+    console.log('deleteMorningSession==>', id)
+  }
+
   render() {
     const {
       sessiontargetallocation: {
@@ -114,6 +145,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
       },
     } = this.props
 
+    const { Search } = Input
     if (loading) {
       return 'loading targets...'
     }
@@ -125,60 +157,24 @@ class ExtraAppsJiraAgileBoard extends React.Component {
 
     AllocatedTargetsList.map(item => {
       allocatedTargetsListDivs.push(
-        <div
-          className={item.node.id}
-          id={item.node.id}
-          style={{
-            backgroundColor: 'white',
-            borderRadius: '3px',
-            boxShadow: '0 3px 5px rgba(22, 22, 53, 0.16)',
-            marginBottom: 15,
-            padding: 5,
-            minHeight: 40,
-            cursor: 'move',
-          }}
+        <TargetCard
           key={item.node.id}
-        >
-          <div className={style.content}>
-            <div className={`${style.flag} bg-primary`} />
-            <div className="d-flex flex-wrap-reverse align-items-center">
-              <h5 className="text-dark font-size-18 mt-2 mr-auto">
-                {item.node.targetAllcatedDetails.targetName}
-              </h5>
-              <i className="fe fe-arrow-right-circle text-danger font-size-30 flex-shrink-0" />
-            </div>
-          </div>
-        </div>,
+          id={item.node.id}
+          text={item.node.targetAllcatedDetails.targetName}
+        />,
       )
     })
 
     if (MorningSession && MorningSession.targets.edges.length > 0) {
       MorningSession.targets.edges.map(item => {
         morningSessionDiv.push(
-          <div
-            className={item.node.id}
-            id={item.node.id}
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '3px',
-              boxShadow: '0 3px 5px rgba(22, 22, 53, 0.16)',
-              marginBottom: 15,
-              padding: 5,
-              minHeight: 40,
-              cursor: 'move',
-            }}
+          <TargetCard
+            showDelete
+            onDelete={() => this.deleteMorningSession(item.node.id)}
             key={item.node.id}
-          >
-            <div className={style.content}>
-              <div className={`${style.flag} bg-primary`} />
-              <div className="d-flex flex-wrap-reverse align-items-center">
-                <h5 className="text-dark font-size-18 mt-2 mr-auto">
-                  {item.node.targetAllcatedDetails.targetName}
-                </h5>
-                <i className="fe fe-arrow-right-circle text-danger font-size-30 flex-shrink-0" />
-              </div>
-            </div>
-          </div>,
+            id={item.node.id}
+            text={item.node.targetAllcatedDetails.targetName}
+          />,
         )
       })
     }
@@ -186,30 +182,13 @@ class ExtraAppsJiraAgileBoard extends React.Component {
     if (AfternoonSession && AfternoonSession.targets.edges.length > 0) {
       AfternoonSession.targets.edges.map(item => {
         afternoonSessionDiv.push(
-          <div
-            className={item.node.id}
-            id={item.node.id}
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '3px',
-              boxShadow: '0 3px 5px rgba(22, 22, 53, 0.16)',
-              marginBottom: 15,
-              padding: 5,
-              minHeight: 40,
-              cursor: 'move',
-            }}
+          <TargetCard
+            showDelete
+            onDelete={() => this.deleteAfternoonSession(item.node.id)}
             key={item.node.id}
-          >
-            <div className={style.content}>
-              <div className={`${style.flag} bg-primary`} />
-              <div className="d-flex flex-wrap-reverse align-items-center">
-                <h5 className="text-dark font-size-18 mt-2 mr-auto">
-                  {item.node.targetAllcatedDetails.targetName}
-                </h5>
-                <i className="fe fe-arrow-right-circle text-danger font-size-30 flex-shrink-0" />
-              </div>
-            </div>
-          </div>,
+            id={item.node.id}
+            text={item.node.targetAllcatedDetails.targetName}
+          />,
         )
       })
     }
@@ -217,49 +196,46 @@ class ExtraAppsJiraAgileBoard extends React.Component {
     if (EveningSession && EveningSession.targets.edges.length > 0) {
       EveningSession.targets.edges.map(item => {
         eveningSessionDiv.push(
-          <div
-            className={item.node.id}
-            id={item.node.id}
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '3px',
-              boxShadow: '0 3px 5px rgba(22, 22, 53, 0.16)',
-              marginBottom: 15,
-              padding: 5,
-              minHeight: 40,
-              cursor: 'move',
-            }}
+          <TargetCard
+            showDelete
+            onDelete={() => this.deleteEveningSession(item.node.id)}
             key={item.node.id}
-          >
-            <div className={style.content}>
-              <div className={`${style.flag} bg-primary`} />
-              <div className="d-flex flex-wrap-reverse align-items-center">
-                <h5 className="text-dark font-size-18 mt-2 mr-auto">
-                  {item.node.targetAllcatedDetails.targetName}
-                </h5>
-                <i className="fe fe-arrow-right-circle text-danger font-size-30 flex-shrink-0" />
-              </div>
-            </div>
-          </div>,
+            id={item.node.id}
+            text={item.node.targetAllcatedDetails.targetName}
+          />,
         )
       })
     }
 
     const targetSortableStyle = { height: 540, overflow: 'auto' }
-    const sessionsSortableStyle = { height: 500, overflow: 'auto', marginTop: '10px' }
-    const detailsButton = { backgroundColor: '#f4f6f8' }
+    const sessionsSortableStyle = { height: 400, overflow: 'auto', marginTop: '10px' }
 
     return (
-      <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
-        <div>
+      <div>
+        <div className={style.targetAllocation}>
           <Helmet title="Jira Agile Board" />
+          <div className={style.heading}>
+            <span>Target List</span>
+          </div>
 
           <div className="row">
             <div className="col-lg-3 col-md-6">
               {/* <button onClick={this.printDetails}>Print</button> */}
-              <div className="card bg-light py-3 px-2">
-                <h3 className="font-weight-bold text-dark font-size-18 mb-3">Targets</h3>
+
+              <div className={style.targetListHeding}>
+                <Search
+                  className={style.search}
+                  placeholder="Search Targets"
+                  onSearch={this.searchTarget}
+                  onChange={this.handleChangeSearchText}
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              <div className="card bg-light">
+                {/* <h3 className="font-weight-bold text-dark font-size-18 mb-3">Targets</h3> */}
                 <Sortable
+                  className="py-4 px-4"
                   options={{
                     group: {
                       name: 'shared',
@@ -284,7 +260,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                         // return to.el.children.some(item => item.id === node.item.id)
                       },
                       add: function(/* *Event */ evt) {
-                        console.log('trigger')
+                        console.log('trigger==>', evt)
                       },
                     },
                   }}
@@ -295,10 +271,10 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                 </Sortable>
               </div>
             </div>
-            {MorningSession ? (
+            {MorningSession || true ? (
               <div className="col-lg-3 col-md-6">
-                <div className="card py-3 px-2" style={{ border: '1px solid #f4f6f8' }}>
-                  <h3 className="font-weight-bold text-dark font-size-18 mb-3">
+                <div className={style.targetListHeding}>
+                  <h3 className="font-weight-bold text-dark font-size-20">
                     Morning Session{' '}
                     <span style={{ float: 'right' }}>
                       <Button onClick={() => this.saveSessionTargets('Morning')} type="link">
@@ -306,14 +282,16 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                       </Button>
                     </span>{' '}
                   </h3>
+                </div>
+                <div className="card py-3 px-2" style={{ border: '1px solid #f4f6f8' }}>
                   <Button
                     type="dashed"
-                    style={detailsButton}
+                    className={style.detailsButton}
                     onClick={() => this.showDrawer('Morning')}
                     block
                   >
                     {' '}
-                    Session details & Host
+                    <PlusOutlined /> Add Details & Hosts
                   </Button>
                   <Sortable
                     options={{
@@ -388,15 +366,25 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                   >
                     {morningSessionDiv}
                   </Sortable>
+                  <div>
+                    <Button
+                      type="dashed"
+                      className={style.clearAllButton}
+                      onClick={() => this.clearAll('Morning')}
+                      block
+                    >
+                      Clear All
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
               ''
             )}
-            {AfternoonSession ? (
+            {AfternoonSession || true ? (
               <div className="col-lg-3 col-md-6">
-                <div className="card py-3 px-2" style={{ border: '1px solid #f4f6f8' }}>
-                  <h3 className="font-weight-bold text-dark font-size-18 mb-3">
+                <div className={style.targetListHeding}>
+                  <h3 className="font-weight-bold text-dark font-size-20">
                     Afternoon Session{' '}
                     <span style={{ float: 'right' }}>
                       <Button onClick={() => this.saveSessionTargets('Afternoon')} type="link">
@@ -404,14 +392,16 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                       </Button>
                     </span>{' '}
                   </h3>
+                </div>
+                <div className="card py-3 px-2" style={{ border: '1px solid #f4f6f8' }}>
                   <Button
                     type="dashed"
-                    style={detailsButton}
+                    className={style.detailsButton}
                     onClick={() => this.showDrawer('Afternoon')}
                     block
                   >
                     {' '}
-                    Session details & Host
+                    <PlusOutlined /> Add Details & Hosts
                   </Button>
                   <Sortable
                     options={{
@@ -491,15 +481,25 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                   >
                     {afternoonSessionDiv}
                   </Sortable>
+                  <div>
+                    <Button
+                      type="dashed"
+                      className={style.clearAllButton}
+                      onClick={() => this.clearAll('Afternoon')}
+                      block
+                    >
+                      Clear All
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
               ''
             )}
-            {EveningSession ? (
+            {EveningSession || true ? (
               <div className="col-lg-3 col-md-6">
-                <div className="card py-3 px-2" style={{ border: '1px solid #f4f6f8' }}>
-                  <h3 className="font-weight-bold text-dark font-size-18 mb-3">
+                <div className={style.targetListHeding}>
+                  <h3 className="font-weight-bold text-dark font-size-20">
                     Evening Session{' '}
                     <span style={{ float: 'right' }}>
                       <Button onClick={() => this.saveSessionTargets('Evening')} type="link">
@@ -507,14 +507,16 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                       </Button>
                     </span>{' '}
                   </h3>
+                </div>
+                <div className="card py-3 px-2" style={{ border: '1px solid #f4f6f8' }}>
                   <Button
                     type="dashed"
-                    style={detailsButton}
+                    className={style.detailsButton}
                     onClick={() => this.showDrawer('Evening')}
                     block
                   >
                     {' '}
-                    Session details & Host
+                    <PlusOutlined /> Add Details & Hosts
                   </Button>
                   <Sortable
                     options={{
@@ -583,6 +585,17 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                   >
                     {eveningSessionDiv}
                   </Sortable>
+
+                  <div>
+                    <Button
+                      type="dashed"
+                      className={style.clearAllButton}
+                      onClick={() => this.clearAll('Evening')}
+                      block
+                    >
+                      Clear All
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -600,7 +613,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
             <SessionDetails key={CurrentSession} />
           </Drawer>
         </div>
-      </Authorize>
+      </div>
     )
   }
 }

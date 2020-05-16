@@ -1,31 +1,22 @@
-import React from 'react';
-import {
-    Form,
-    Input,
-    Button,
-    DatePicker,
-    InputNumber,
-  } from 'antd';
-
+import React from 'react'
+import { Form, Input, Button, DatePicker, InputNumber } from 'antd'
 
 class EditHrDetails extends React.Component {
-   render() {
-    const itemStyle = {marginBottom:'0'}
-    
+  render() {
+    const itemStyle = { marginBottom: '0' }
 
     return (
       <Form
         layout={{
-          labelCol: {span: 4 },
+          labelCol: { span: 4 },
           wrapperCol: { span: 14 },
         }}
         initialValues={{
-        size:'small',
+          size: 'small',
         }}
         // onValuesChange={onFormLayoutChange}
-        size='small'
+        size="small"
       >
-        
         <Form.Item label="Offer Date" style={itemStyle}>
           <DatePicker />
         </Form.Item>
@@ -80,6 +71,6 @@ class EditHrDetails extends React.Component {
         </Form.Item>
       </Form>
     )
-        }
-    }
-    export default EditHrDetails
+  }
+}
+export default EditHrDetails

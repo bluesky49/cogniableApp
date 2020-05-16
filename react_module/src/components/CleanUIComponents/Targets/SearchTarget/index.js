@@ -11,8 +11,8 @@ class SearchTarget extends React.Component {
   render() {
     const { form } = this.props
     return (
-    <div className="row">
-      <div className="col-lg-8"></div>
+      <div className="row">
+        <div className="col-lg-8" />
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem label="Username">
             {form.getFieldDecorator('userName', {
@@ -46,18 +46,18 @@ class SearchTarget extends React.Component {
               href="javascript: void(0);"
             >
               Forgot password?
-          </a>
+            </a>
           </FormItem>
           <div className="form-actions">
             <Button type="primary" htmlType="submit" className="login-form-button">
               Sign in
-          </Button>
+            </Button>
             <span className="ml-3 register-link">
               <a href="javascript: void(0);" className="text-primary utils__link--underlined">
                 Register
-            </a>{' '}
-            if you don&#39;t have account
-          </span>
+              </a>{' '}
+              if you don&#39;t have account
+            </span>
           </div>
           <div className="form-group">
             <p>Use another service to Log In</p>
@@ -78,7 +78,6 @@ class SearchTarget extends React.Component {
           </div>
         </Form>
       </div>
-    </div >
     )
   }
 }

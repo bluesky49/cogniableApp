@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { typography, Progress, Button, Icon } from 'antd'
+import { typography } from 'antd'
 
 class Stimulus extends Component {
   render() {

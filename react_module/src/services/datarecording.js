@@ -1,13 +1,14 @@
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable consistent-return */
-import { notification } from 'antd';
-import { gql } from "apollo-boost";
+import { notification } from 'antd'
+import { gql } from 'apollo-boost'
 import client from '../apollo/config'
 
 export async function getTargets(payload) {
-    const {learner} = payload;
-    return client.query({
-        query: gql`{
+  const { learner } = payload
+  return client
+    .query({
+      query: gql`{
             targetAllocates(
                 studentId:"${learner}"
             )
@@ -55,17 +56,17 @@ export async function getTargets(payload) {
                     }
                 }
             }
-        }`
+        }`,
     })
     .then(result => {
-        return result
+      return result
     })
-    .catch(error => { 
-        error.graphQLErrors.map((item) => { 
-            return notification.error({
-                message: 'Somthing want wrong',
-                description: item.message,
-            }); 
+    .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
         })
-    });
+      })
+    })
 }

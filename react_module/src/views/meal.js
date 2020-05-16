@@ -19,8 +19,8 @@ import { ArrowRightOutlined, PlusOutlined, FilterOutlined } from '@ant-design/ic
 import Iframe from 'react-iframe'
 import { connect } from 'react-redux'
 import { gql } from 'apollo-boost'
+import MealForm from 'components/meal_and_medical/mealform'
 import client from '../apollo/config'
-import MealForm from '../components/meal_and_medical/mealform'
 
 const { Panel } = Collapse
 const { RangePicker } = DatePicker

@@ -10,6 +10,8 @@ import { createHashHistory } from 'history'
 import reducers from 'redux/reducers'
 import sagas from 'redux/sagas'
 import Router from 'router'
+import { ApolloProvider } from '@apollo/react-hooks'
+import client from 'apollo/config'
 import Localization from 'components/LayoutComponents/Localization'
 import * as serviceWorker from './serviceWorker'
 
@@ -27,11 +29,13 @@ const store = createStore(reducers(history), compose(applyMiddleware(...middlewa
 sagaMiddleware.run(sagas)
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Localization>
-      <Router history={history} />
-    </Localization>
-  </Provider>,
+  <ApolloProvider client={client}>
+    <Provider store={store}>
+      <Localization>
+        <Router history={history} />
+      </Localization>
+    </Provider>
+  </ApolloProvider>,
   document.getElementById('root'),
 )
 

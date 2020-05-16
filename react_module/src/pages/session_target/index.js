@@ -5,15 +5,12 @@ import { LikeOutlined } from '@ant-design/icons'
 import styles from './style.module.scss'
 import data from './data.json'
 
-
 // const { next } = Carousel;
 
 class YouTubeFeed extends React.Component {
-
   state = {
     partitions: data.partitions,
   }
-
 
   // next() {
   //   this.carousel.next();
@@ -22,7 +19,6 @@ class YouTubeFeed extends React.Component {
   // previous() {
   //   this.carousel.prev();
   // }
-
 
   render() {
     const { partitions } = this.state
@@ -54,7 +50,11 @@ class YouTubeFeed extends React.Component {
                       <img className={`${styles.titleThumb} mr-3`} src={partition.cover} alt="" />
                     )}
                     {partition.name}
-                    <a href="javascript: void(0)" style={{ float: 'right' }} className={`${styles.headerLink} ml-4`}>
+                    <a
+                      href="javascript: void(0)"
+                      style={{ float: 'right' }}
+                      className={`${styles.headerLink} ml-4`}
+                    >
                       Start Session <i className="icmn icmn-arrow-right2" />
                     </a>
                   </h2>
@@ -69,16 +69,19 @@ class YouTubeFeed extends React.Component {
                           <div className={styles.itemDescr}>
                             <span className={styles.itemName}>{video.name}</span>
                             <span className={styles.itemAuthor}>5 Trails Per Day</span>
-                            <span className={styles.itemAuthor}><Progress percent={30} /></span>
+                            <span className={styles.itemAuthor}>
+                              <Progress percent={30} />
+                            </span>
                             <span className={`${styles.itemViews} text-muted`}>
                               <span>Visual Perception </span>
-                              <span style={{ float: 'right' }}>1000 <LikeOutlined /></span>
+                              <span style={{ float: 'right' }}>
+                                1000 <LikeOutlined />
+                              </span>
                             </span>
                           </div>
                         </a>
                       </li>
                     ))}
-
                   </ul>
                 </div>
               ))}

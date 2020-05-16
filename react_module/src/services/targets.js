@@ -7,9 +7,8 @@ const graphQLClient = new GraphQLClient('http://development.cogniable.us/apis/sc
   },
 })
 
-
 export default async function GetLearners() {
-    const query = `query {students {
+  const query = `query {students {
         edges {
             node {
             id,
@@ -18,12 +17,12 @@ export default async function GetLearners() {
         }
     }}`
 
-    return graphQLClient.request(query)
-  .then(data => {
-        return data;
-  })
-  .catch(err => {
-      return err;    
-  })
-  
-  }
+  return graphQLClient
+    .request(query)
+    .then(data => {
+      return data
+    })
+    .catch(err => {
+      return err
+    })
+}

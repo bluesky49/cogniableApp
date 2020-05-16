@@ -2,7 +2,7 @@ import actions from './actions'
 
 const initialState = {
   Loading: true,
-  LearnerId: '', 
+  LearnerId: '',
   LongTermGoalsList: [],
   SelectedType: '',
   LongTermObject: null,
@@ -14,7 +14,6 @@ const initialState = {
   GoalAssessmentList: [],
   GoalResponsibleList: [],
   StaffList: [],
-  
 }
 
 export default function goalsReducer(state = initialState, action) {

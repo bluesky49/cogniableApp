@@ -47,6 +47,10 @@ const routes = [
     path: '/dashboard/clinic_admin',
     component: loadable(() => import('pages/dashboard/clinic_admin')),
   },
+  {
+    path: '/dashboard/therapist_admin',
+    component: loadable(() => import('pages/dashboard/therapist_admin')),
+  },
 
   // Partners
   {
@@ -92,6 +96,10 @@ const routes = [
   {
     path: '/targets/abc',
     component: loadable(() => import('pages/targets/ABC')),
+  },
+  {
+    path: '/targets/allocation',
+    component: loadable(() => import('pages/targets/targetAlocation')),
   },
   {
     path: '/targets/session_target',
@@ -156,7 +164,31 @@ const routes = [
 
   {
     path: '/mealData/',
-    component: loadable(() => import('views/meal')),
+    component: loadable(() => import('pages/meal/index')),
+  },
+  {
+    path: '/toiletData/',
+    component: loadable(() => import('pages/ToiletData/index')),
+  },
+  {
+    path: '/appointmentData/',
+    component: loadable(() => import('pages/appointmentdata/index')),
+  },
+  {
+    path: '/BehaviourData/',
+    component: loadable(() => import('pages/BehaviourData/index')),
+  },
+  {
+    path: '/mandData/',
+    component: loadable(() => import('pages/mandData/index')),
+  },
+  // {
+  //   path: '/family/',
+  //   component: loadable(() => import('views/family')),
+  // },
+  {
+    path: '/profileSetting/',
+    component: loadable(() => import('pages/ProfileSetting/index')),
   },
   // {
   //   path: '/family/',
@@ -164,7 +196,7 @@ const routes = [
   // },
   {
     path: '/medicalData/',
-    component: loadable(() => import('views/medicalView')),
+    component: loadable(() => import('pages/MadicalData/index')),
   },
   {
     path: '/toilet/',
@@ -178,11 +210,10 @@ const routes = [
     path: '/mand/',
     component: loadable(() => import('views/MandData')),
   },
-
   // By me
   {
     path: '/dashboard/alpha/',
-    component: loadable(() => import('views/parent/ParentDashboard')),
+    component: loadable(() => import('views/parent/ParentDashboard/')),
   },
   {
     path: '/parent/sessionrecording',
@@ -192,13 +223,18 @@ const routes = [
     path: '/family/',
     component: loadable(() => import('views/family/family')),
   },
+  // clinic
+  {
+    path: '/cliniccariculam',
+    component: loadable(() => import('pages/clinic/clinicCariculam')),
+  },
   {
     path: '/targetsAllocationToSession/',
     component: loadable(() => import('pages/target_allocation_to_session')),
   },
   {
     path: '/target/allocation',
-    component: loadable(() => import('pages/target_alocation/targetAllocation')),
+    component: loadable(() => import('pages/targets/targetAlocation')),
   },
   {
     path: '/sessionrecording',

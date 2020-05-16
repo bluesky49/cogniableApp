@@ -1,11 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React, { Fragment } from 'react'
-import { Row, Col, Card, Button, Input, Form, Select, Icon, Typography, Avatar } from 'antd'
+import { Row, Col, Card, Button, Input, Form, Select, Icon, Typography, Avatar, Tag } from 'antd'
 import { connect } from 'react-redux'
+import { PlusOutlined } from '@ant-design/icons'
 import fatherAndSon from '../../images/fatherAndSon.jpg'
 import dawn from '../../icons/dawn.png'
 import afternoonsun from '../../icons/afternoon.svg'
 import moon from '../../icons/moon.png'
+import TimeSpend from './TimeSpend'
 
 @connect(({ user, family }) => ({ user, family }))
 class FamilyBasicForm extends React.Component {
@@ -21,7 +23,9 @@ class FamilyBasicForm extends React.Component {
       afternoon: 0,
       evening: 0,
       newMember: false,
+      siblingsArray: [],
       siblingsCount: 0,
+      grandParentsArray: [],
       grandParentsCount: 0,
     }
   }
@@ -55,12 +59,14 @@ class FamilyBasicForm extends React.Component {
             }
             return null
           })
-          const siblingsCount = family.familyMembers.reverse().filter(val => {
+          const siblingsArray = family.familyMembers.filter(val => {
             return val.node.relationship.name === 'Sibling'
-          }).length
-          const grandParentsCount = family.familyMembers
-            .reverse()
-            .filter(val => val.node.relationship.name === 'Grand Parents').length
+          })
+          const siblingsCount = siblingsArray.length
+          const grandParentsArray = family.familyMembers.filter(
+            val => val.node.relationship.name === 'Grand Parents',
+          )
+          const grandParentsCount = grandParentsArray.length
           obj = {
             relationId: processData.relationId,
             relationName: processData.relationName,
@@ -71,16 +77,20 @@ class FamilyBasicForm extends React.Component {
             evening: e,
             newMember: false,
             currentIndex: 0,
+            siblingsArray,
             siblingsCount,
             grandParentsCount,
+            grandParentsArray,
           }
         } else {
-          const siblingsCount = family.familyMembers
-            .reverse()
-            .filter(val => val.node.relationship.name === 'Sibling').length
-          const grandParentsCount = family.familyMembers
-            .reverse()
-            .filter(val => val.node.relationship.name === 'Grand Parents').length
+          const siblingsArray = family.familyMembers.filter(
+            val => val.node.relationship.name === 'Sibling',
+          )
+          const siblingsCount = siblingsArray.length
+          const grandParentsArray = family.familyMembers.filter(
+            val => val.node.relationship.name === 'Grand Parents',
+          )
+          const grandParentsCount = grandParentsArray.length
           obj = {
             relationId: processData.relationId,
             relationName: processData.relationName,
@@ -91,17 +101,21 @@ class FamilyBasicForm extends React.Component {
             evening: 0,
             newMember: false,
             currentIndex: 0,
+            siblingsArray,
             siblingsCount,
             grandParentsCount,
+            grandParentsArray,
           }
         }
       } else {
-        const siblingsCount = family.familyMembers
-          .reverse()
-          .filter(val => val.node.relationship.name === 'Sibling').length
-        const grandParentsCount = family.familyMembers
-          .reverse()
-          .filter(val => val.node.relationship.name === 'Grand Parents').length
+        const siblingsArray = family.familyMembers.filter(
+          val => val.node.relationship.name === 'Sibling',
+        )
+        const siblingsCount = siblingsArray.length
+        const grandParentsArray = family.familyMembers.filter(
+          val => val.node.relationship.name === 'Grand Parents',
+        )
+        const grandParentsCount = grandParentsArray.length
         obj = {
           relationId: '',
           relationName: '',
@@ -112,8 +126,10 @@ class FamilyBasicForm extends React.Component {
           evening: 0,
           newMember: false,
           currentIndex: 0,
+          siblingsArray,
           siblingsCount,
           grandParentsCount,
+          grandParentsArray,
         }
       }
       form.setFieldsValue({ name: obj.memberName })
@@ -139,15 +155,15 @@ class FamilyBasicForm extends React.Component {
   handleNextMember = index => {
     const { relationName, siblingsCount } = this.state
     const { family, form } = this.props
-    const indexLength = family.familyMembers
-      .reverse()
-      .filter(val => relationName === val.node.relationship.name).length
+    const indexLength = family.familyMembers.filter(
+      val => relationName === val.node.relationship.name,
+    ).length
     if (index === indexLength) {
       index = 0
     }
-    const memberDataUpdate = family.familyMembers
-      .reverse()
-      .filter(val => relationName === val.node.relationship.name)[index]
+    const memberDataUpdate = family.familyMembers.filter(
+      val => relationName === val.node.relationship.name,
+    )[index]
     let [m, a, e] = [0, 0, 0]
 
     if (memberDataUpdate) {
@@ -180,6 +196,9 @@ class FamilyBasicForm extends React.Component {
 
     const { memberId, morning, evening, afternoon, relationId } = this.state
     const { dispatch, user, form } = this.props
+
+    const studentId = localStorage.getItem('studentId')
+
     console.log(form.getFieldValue('name'))
     if (memberId) {
       dispatch({
@@ -197,7 +216,8 @@ class FamilyBasicForm extends React.Component {
       dispatch({
         type: 'family/CREATE_NEW',
         payload: {
-          studentId: user.studentId,
+          studentId,
+          // studentId: user.studentId,
           memberName: form.getFieldValue('name'),
           relationId,
           morning,
@@ -244,16 +264,116 @@ class FamilyBasicForm extends React.Component {
     }))
   }
 
+  addNewSibling = () => {
+    const { memberClickHandler, family, form } = this.props
+    const relationshipId = family.relations.filter(d => d.name === 'Sibling')
+    if (relationshipId.length > 0) {
+      memberClickHandler(relationshipId[0].id, relationshipId[0].name, true)
+      this.setState(state => ({
+        memberId: null,
+        relationId: relationshipId[0].id,
+        memberData: {
+          ...state.memberData,
+          memberName: '',
+        },
+        memberName: '',
+      }))
+    }
+    form.setFieldsValue({ name: '' })
+  }
+
+  addNewGrandParent = () => {
+    const { memberClickHandler, family, form } = this.props
+    const relationshipId = family.relations.filter(d => d.name === 'Grand Parents')
+    if (relationshipId.length > 0) {
+      memberClickHandler(relationshipId[0].id, relationshipId[0].name, true)
+      this.setState(state => ({
+        memberId: null,
+        relationId: relationshipId[0].id,
+        memberData: {
+          ...state.memberData,
+          memberName: '',
+        },
+        memberName: '',
+      }))
+    }
+    form.setFieldsValue({ name: '' })
+  }
+
   render() {
     const { processData, family, form } = this.props
-    const { isLoaded, morning, evening, afternoon, relationName, currentIndex } = this.state
+    const {
+      isLoaded,
+      morning,
+      evening,
+      afternoon,
+      relationName,
+      currentIndex,
+      siblingsArray,
+      grandParentsArray,
+      relationId,
+      memberName,
+    } = this.state
+
+    const { CheckableTag } = Tag
     const { Text, Paragraph } = Typography
     if (isLoaded) {
       return <div>Loding...</div>
     }
     return (
       <Form onSubmit={e => this.handleMemberSubmit(e)}>
-        <Card>
+        <div className="name-card">
+          <Row className="relationship">
+            <Col sm={20}>
+              <Text>{relationName}</Text>
+            </Col>
+          </Row>
+          {relationName === 'Sibling' ? (
+            <div className="siblings">
+              {siblingsArray.map((sib, index) => {
+                return (
+                  <CheckableTag
+                    className="tag"
+                    key={sib.node.id}
+                    checked={currentIndex === index}
+                    onChange={() => {
+                      this.handleNextMember(index)
+                    }}
+                  >
+                    {sib.node.memberName}
+                  </CheckableTag>
+                )
+              })}
+              <Tag className="tag" onClick={this.addNewSibling}>
+                <PlusOutlined />
+              </Tag>
+            </div>
+          ) : (
+            <></>
+          )}
+          {relationName === 'Grand Parents' ? (
+            <div className="siblings">
+              {grandParentsArray.map((sib, index) => {
+                return (
+                  <CheckableTag
+                    className="tag"
+                    key={sib.node.id}
+                    checked={currentIndex === index}
+                    onChange={() => {
+                      this.handleNextMember(index)
+                    }}
+                  >
+                    {sib.node.memberName}
+                  </CheckableTag>
+                )
+              })}
+              <Tag className="tag" onClick={this.addNewGrandParent}>
+                <PlusOutlined />
+              </Tag>
+            </div>
+          ) : (
+            <></>
+          )}
           <Row
             type="flex"
             style={{
@@ -263,23 +383,16 @@ class FamilyBasicForm extends React.Component {
             }}
           >
             <Col sm={6}>
-              <img src={fatherAndSon} alt="" style={{ width: '100%', height: '100%' }} />
+              <img src={fatherAndSon} alt="" className="member-image" />
             </Col>
             <Col sm={16}>
               <Row
                 type="flex"
                 justify="center"
                 align="middle"
-                style={{ padding: '0 10px', flexDirection: 'column', height: '100%' }}
+                style={{ padding: '10px 10px', flexDirection: 'column' }}
               >
-                <Form.Item
-                  label=""
-                  style={{
-                    width: '100%',
-                    boxShadow: '0 1px 5px rgba(0,0,0,0.1)',
-                    borderRadius: '4px',
-                  }}
-                >
+                <Form.Item label="" className="form-item">
                   {form.getFieldDecorator('name', {
                     rules: [{ required: true, message: 'Please Select Name!' }],
                   })(
@@ -291,22 +404,17 @@ class FamilyBasicForm extends React.Component {
                     />,
                   )}
                 </Form.Item>
-                <Form.Item
-                  label=""
-                  style={{
-                    width: '100%',
-                    boxShadow: '0 1px 5px rgba(0,0,0,0.1)',
-                    borderRadius: '4px',
-                  }}
-                >
+                <Form.Item label="" className="form-item">
                   {form.getFieldDecorator('relation', {
                     rules: [{ required: true, message: 'Please Select Name!' }],
                   })(
                     <Fragment>
-                      {processData.newMember ? (
+                      {processData.newMember && processData.relationName === 'Other Members' ? (
                         <Select
                           placeholder="Select relation with student"
                           onChange={e => this.handleSelect(e)}
+                          value={relationId}
+                          className="relation-select"
                         >
                           <Select.Option value={family && family.relations[2].id}>
                             {family && family.relations[2].name}
@@ -323,13 +431,15 @@ class FamilyBasicForm extends React.Component {
                           name="Relation"
                           placeholder="Relationship"
                           value={relationName}
+                          disabled
                           style={{ width: '100%', height: '40px' }}
                         />
                       )}
                     </Fragment>,
                   )}
                 </Form.Item>
-                {relationName === 'Sibling' || relationName === 'Grand Parents' ? (
+                {(relationName === 'Sibling' || relationName === 'Grand Parents') &&
+                !processData.newMember ? (
                   <Button
                     onClick={() => {
                       this.handleNextMember(currentIndex + 1)
@@ -341,7 +451,7 @@ class FamilyBasicForm extends React.Component {
               </Row>
             </Col>
           </Row>
-        </Card>
+        </div>
         <Row
           style={{
             margin: '20px 0',
@@ -351,91 +461,35 @@ class FamilyBasicForm extends React.Component {
           }}
         >
           <Col>
-            <Text style={{ fontSize: '14px', fontWeight: '600' }}>Time spent with kunal</Text>
-            <Paragraph type="secondary" style={{ fontSize: '10px' }}>
+            <Text className="time-spend">Time spent with kunal</Text>
+            <Paragraph type="secondary" className="how-much-time">
               How much time do you spent with kunal
             </Paragraph>
           </Col>
-          <Col
-            style={{
-              margin: '5px 0',
-              padding: '14px',
-              borderRadius: '4px',
-              backgroundColor: '#F2F4F8',
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Text style={{ fontSize: '16px' }}>
-              <Avatar shape="square" src={dawn} style={{ opacity: '0.5' }} />
-              &nbsp;Morning
-            </Text>
-            <div>
-              <Icon
-                type="minus"
-                style={{ color: 'blue' }}
-                onClick={() => this.handleTime('m', -1)}
-              />
-              <Text style={{ fontSize: '16px' }}>&nbsp;&nbsp;{morning}hr&nbsp;&nbsp;</Text>
-              <Icon type="plus" style={{ color: 'blue' }} onClick={() => this.handleTime('m', 1)} />
-            </div>
-          </Col>
-          <Col
-            style={{
-              margin: '5px 0',
-              padding: '14px',
-              borderRadius: '4px',
-              backgroundColor: '#F2F4F8',
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Text style={{ fontSize: '16px' }}>
-              <Avatar shape="square" src={afternoonsun} style={{ opacity: '0.5' }} />
-              &nbsp;Afternoon
-            </Text>
-            <div>
-              <Icon
-                type="minus"
-                style={{ color: 'blue' }}
-                onClick={() => this.handleTime('a', -1)}
-              />
-              <Text style={{ fontSize: '16px' }}>&nbsp;&nbsp;{afternoon}hr&nbsp;&nbsp;</Text>
-              <Icon type="plus" style={{ color: 'blue' }} onClick={() => this.handleTime('a', 1)} />
-            </div>
-          </Col>
-          <Col
-            style={{
-              margin: '5px 0',
-              padding: '14px',
-              borderRadius: '4px',
-              backgroundColor: '#F2F4F8',
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Text style={{ fontSize: '16px' }}>
-              <Avatar shape="square" src={moon} style={{ opacity: '0.5' }} />
-              &nbsp; Evening
-            </Text>
-            <div>
-              <Icon
-                type="minus"
-                style={{ color: 'blue' }}
-                onClick={() => this.handleTime('e', -1)}
-              />
-              <Text style={{ fontSize: '16px' }}>&nbsp;&nbsp;{evening}hr&nbsp;&nbsp;</Text>
-              <Icon type="plus" style={{ color: 'blue' }} onClick={() => this.handleTime('e', 1)} />
-            </div>
-          </Col>
+          <TimeSpend
+            image={dawn}
+            daySlot="Morning"
+            time={morning}
+            onDecrement={() => this.handleTime('m', -1)}
+            onIncrement={() => this.handleTime('m', 1)}
+          />
+          <TimeSpend
+            image={afternoonsun}
+            daySlot="Afternoon"
+            time={afternoon}
+            onDecrement={() => this.handleTime('a', -1)}
+            onIncrement={() => this.handleTime('a', 1)}
+          />
+          <TimeSpend
+            image={moon}
+            daySlot="Evening"
+            time={evening}
+            onDecrement={() => this.handleTime('e', -1)}
+            onIncrement={() => this.handleTime('e', 1)}
+          />
         </Row>
-        <Button
-          type="primary"
-          htmlType="submit"
-          style={{ float: 'right', padding: '10px 20px', height: 'auto' }}
-        >
-          <Icon type="save" />
-          <Text style={{ color: 'lightblue', fontSize: '10px' }}>SAVE DETAILS</Text>
+        <Button type="primary" htmlType="submit" className="save-btn">
+          SAVE DETAILS
         </Button>
       </Form>
     )

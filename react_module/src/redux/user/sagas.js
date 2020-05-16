@@ -20,6 +20,7 @@ import actions from './actions'
 // })
 
 export function* LOGIN({ payload }) {
+  console.log('entered')
   yield put({
     type: 'user/SET_STATE',
     payload: {

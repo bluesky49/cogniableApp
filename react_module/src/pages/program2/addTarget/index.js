@@ -1,22 +1,23 @@
-import {Drawer, Form, Button, Col, Row, Input, Select, DatePicker} from 'antd';
-import {PlusOutlined} from '@ant-design/icons';
+import React from 'react'
+import { Drawer, Form, Button, Col, Row, Input, Select, DatePicker } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 
-const {Option} = Select;
+const { Option } = Select
 
-class DrawerForm extends React.Component {
-  state = {visible: false};
+export default class DrawerForm extends React.Component {
+  state = { visible: false }
 
   showDrawer = () => {
     this.setState({
       visible: true,
-    });
-  };
+    })
+  }
 
   onClose = () => {
     this.setState({
       visible: false,
-    });
-  };
+    })
+  }
 
   render() {
     return (
@@ -28,15 +29,16 @@ class DrawerForm extends React.Component {
           title="Create a new account"
           width={720}
           onClose={this.onClose}
+          // eslint-disable-next-line react/destructuring-assignment
           visible={this.state.visible}
-          bodyStyle={{paddingBottom: 80}}
+          bodyStyle={{ paddingBottom: 80 }}
           footer={
             <div
               style={{
                 textAlign: 'right',
               }}
             >
-              <Button onClick={this.onClose} style={{marginRight: 8}}>
+              <Button onClick={this.onClose} style={{ marginRight: 8 }}>
                 Cancel
               </Button>
               <Button onClick={this.onClose} type="primary">
@@ -51,7 +53,7 @@ class DrawerForm extends React.Component {
                 <Form.Item
                   name="name"
                   label="Name"
-                  rules={[{required: true, message: 'Please enter user name'}]}
+                  rules={[{ required: true, message: 'Please enter user name' }]}
                 >
                   <Input placeholder="Please enter user name" />
                 </Form.Item>
@@ -60,10 +62,10 @@ class DrawerForm extends React.Component {
                 <Form.Item
                   name="url"
                   label="Url"
-                  rules={[{required: true, message: 'Please enter url'}]}
+                  rules={[{ required: true, message: 'Please enter url' }]}
                 >
                   <Input
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                     addonBefore="http://"
                     addonAfter=".com"
                     placeholder="Please enter url"
@@ -76,7 +78,7 @@ class DrawerForm extends React.Component {
                 <Form.Item
                   name="owner"
                   label="Owner"
-                  rules={[{required: true, message: 'Please select an owner'}]}
+                  rules={[{ required: true, message: 'Please select an owner' }]}
                 >
                   <Select placeholder="Please select an owner">
                     <Option value="xiao">Xiaoxiao Fu</Option>
@@ -88,7 +90,7 @@ class DrawerForm extends React.Component {
                 <Form.Item
                   name="type"
                   label="Type"
-                  rules={[{required: true, message: 'Please choose the type'}]}
+                  rules={[{ required: true, message: 'Please choose the type' }]}
                 >
                   <Select placeholder="Please choose the type">
                     <Option value="private">Private</Option>
@@ -102,9 +104,7 @@ class DrawerForm extends React.Component {
                 <Form.Item
                   name="approver"
                   label="Approver"
-                  rules={[
-                    {required: true, message: 'Please choose the approver'},
-                  ]}
+                  rules={[{ required: true, message: 'Please choose the approver' }]}
                 >
                   <Select placeholder="Please choose the approver">
                     <Option value="jack">Jack Ma</Option>
@@ -116,12 +116,10 @@ class DrawerForm extends React.Component {
                 <Form.Item
                   name="dateTime"
                   label="DateTime"
-                  rules={[
-                    {required: true, message: 'Please choose the dateTime'},
-                  ]}
+                  rules={[{ required: true, message: 'Please choose the dateTime' }]}
                 >
                   <DatePicker.RangePicker
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                     getPopupContainer={trigger => trigger.parentNode}
                   />
                 </Form.Item>
@@ -139,18 +137,13 @@ class DrawerForm extends React.Component {
                     },
                   ]}
                 >
-                  <Input.TextArea
-                    rows={4}
-                    placeholder="please enter url description"
-                  />
+                  <Input.TextArea rows={4} placeholder="please enter url description" />
                 </Form.Item>
               </Col>
             </Row>
           </Form>
         </Drawer>
       </div>
-    );
+    )
   }
 }
-
-default export DrawerForm

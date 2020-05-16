@@ -13,7 +13,7 @@ class Staff extends React.Component {
             <i className={`${styles.menuIcon} icmn-plus`} /> Add new Staff
           </Link>
         </Menu.Item>
-        
+
         <Menu.Divider />
         <Menu.Item>
           <Link to="/partners/viewstaffs">

@@ -1,35 +1,23 @@
-import React from 'react';
-import {
-    Form,
-    InputNumber,
-    Button,
-    Select,
-    DatePicker,
-  } from 'antd';
-
+import React from 'react'
+import { Form, InputNumber, Button, Select, DatePicker } from 'antd'
 
 class CredentiallingInfo extends React.Component {
-   render() {
-   
-
-    
-
+  render() {
     return (
       <Form
         labelCol={{
-        span: 8,
+          span: 8,
         }}
         wrapperCol={{
-        span: 14,
+          span: 14,
         }}
         layout="horizontal"
         initialValues={{
-        size:'small',
+          size: 'small',
         }}
         // onValuesChange={onFormLayoutChange}
-        size='small'
+        size="small"
       >
-        
         <Form.Item label="Credential Agency">
           <Select>
             <Select.Option value="demo">1</Select.Option>
@@ -41,13 +29,13 @@ class CredentiallingInfo extends React.Component {
             <Select.Option value="demo">completed</Select.Option>
             <Select.Option value="demo">Pending</Select.Option>
           </Select>
-        </Form.Item>        
+        </Form.Item>
         <Form.Item label="Applicaiton Submitted Date">
           <DatePicker />
         </Form.Item>
         <Form.Item label="Application Approved Date">
           <DatePicker />
-        </Form.Item>  
+        </Form.Item>
         <Form.Item label="Reference No.">
           <InputNumber />
         </Form.Item>
@@ -63,6 +51,6 @@ class CredentiallingInfo extends React.Component {
         </Form.Item>
       </Form>
     )
-        }
-    }
-    export default CredentiallingInfo
+  }
+}
+export default CredentiallingInfo

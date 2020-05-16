@@ -70,7 +70,7 @@ class DataRecording extends React.Component {
     const targetBlockStyle = { height: '450px', overflow: 'auto' }
 
     return (
-      <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
+      <div>
         <Helmet title="Session" />
         <Row>
           <Col xs={24} sm={18} md={18} lg={18} xl={18} style={style2}>
@@ -84,7 +84,7 @@ class DataRecording extends React.Component {
             </div>
           </Col>
         </Row>
-      </Authorize>
+      </div>
     )
   }
 }

@@ -1,26 +1,22 @@
-import React from 'react';
-import {Helmet} from 'react-helmet';
+import React from 'react'
+import { Helmet } from 'react-helmet'
 // import { Scrollbars } from 'react-custom-scrollbars';
-import SortableTree from 'react-sortable-tree';
-import {Tabs, Input, Button, Icon, Spin, Popover} from 'antd';
-import {Scrollbars} from 'react-custom-scrollbars';
-import {
-  EditOutlined,
-  CalendarOutlined,
-  FolderAddOutlined,
-} from '@ant-design/icons';
-import 'react-sortable-tree/style.css';
-import parse from 'html-react-parser';
-import {gql} from 'apollo-boost';
-import client from '../../apollo/config';
+import SortableTree from 'react-sortable-tree'
+import { Tabs, Input, Button, Icon, Spin, Popover } from 'antd'
+import { Scrollbars } from 'react-custom-scrollbars'
+import { EditOutlined, CalendarOutlined, FolderAddOutlined } from '@ant-design/icons'
+import 'react-sortable-tree/style.css'
+import parse from 'html-react-parser'
+import { gql } from 'apollo-boost'
+import client from '../../apollo/config'
 // import Table6 from 'components/kit-widgets/Tables/6'
 // import Chart4 from 'components/kit-widgets/Charts/4'
 // import Chart4v1 from 'components/kit-widgets/Charts/4v1'
 // import Chart4v2 from 'components/kit-widgets/Charts/4v2'
-import styles from './style.module.scss';
+import styles from './style.module.scss'
 
-const {TabPane} = Tabs;
-const {Search} = Input;
+const { TabPane } = Tabs
+const { Search } = Input
 
 // const menu1 = (
 //   <Menu>
@@ -41,9 +37,9 @@ const {Search} = Input;
 
 class ExtraAppsTodoistList extends React.Component {
   constructor(props) {
-    super(props);
-    this.ProgramAreaInput = React.createRef();
-    this.TargetNameInput = React.createRef();
+    super(props)
+    this.ProgramAreaInput = React.createRef()
+    this.TargetNameInput = React.createRef()
   }
 
   state = {
@@ -53,37 +49,39 @@ class ExtraAppsTodoistList extends React.Component {
     treeData: [],
     treeDataLoad: false,
     visible: false,
-  };
+  }
 
   componentDidMount() {
     client
       .query({
-        query: gql`{
-              programArea {
-                edges {
-                  node {
-                    id
-                    name
+        query: gql`
+          {
+            programArea {
+              edges {
+                node {
+                  id
+                  name
                 }
               }
             }
-            }`,
+          }
+        `,
       })
       .then(result => {
         this.setState({
           programArea: result.data.programArea.edges,
           defaultProgram: result.data.programArea.edges[0].node.id,
-        });
+        })
         if (result.data.programArea.edges[0]) {
-          this.programchange(result.data.programArea.edges[0].node.id);
+          this.programchange(result.data.programArea.edges[0].node.id)
         } else {
           this.setState({
             programArea: [],
             treeData: [],
             domain: [],
-          });
+          })
         }
-      });
+      })
   }
 
   programchange = key => {
@@ -104,22 +102,22 @@ class ExtraAppsTodoistList extends React.Component {
       .then(result => {
         this.setState({
           domain: result.data.domain.edges,
-        });
+        })
         if (result.data.domain.edges[0]) {
-          this.Domainchange(result.data.domain.edges[0].node.id);
+          this.Domainchange(result.data.domain.edges[0].node.id)
         } else {
           this.setState({
             treeData: [],
             domain: [],
-          });
+          })
         }
-      });
-  };
+      })
+  }
 
   Domainchange = domain => {
     this.setState({
       treeDataLoad: false,
-    });
+    })
     client
       .query({
         query: gql`{
@@ -152,54 +150,54 @@ class ExtraAppsTodoistList extends React.Component {
     }`,
       })
       .then(result => {
-        const dataTree = [];
-        const targetarea = result.data.targetArea.edges;
+        const dataTree = []
+        const targetarea = result.data.targetArea.edges
 
         targetarea.map(area => {
-          const tar = [];
+          const tar = []
           area.node.targetMain.edges.map(target => {
-            const tamp = {};
+            const tamp = {}
 
-            tamp.name = target.node.targetName;
+            tamp.name = target.node.targetName
             if (target.node.targetsSet.edges[0]) {
-              tamp.tarInstr = target.node.targetsSet.edges[0].node.targetInstr;
+              tamp.tarInstr = target.node.targetsSet.edges[0].node.targetInstr
             } else {
-              tamp.tarInstr = '';
+              tamp.tarInstr = ''
             }
-            tar.push(tamp);
-            return null;
-          });
+            tar.push(tamp)
+            return null
+          })
           dataTree.push({
             name: area.node.Area,
             children: tar,
-          });
+          })
 
-          return null;
-        });
+          return null
+        })
         this.setState({
           treeData: dataTree,
-        });
+        })
         this.setState({
           treeDataLoad: true,
-        });
-      });
-  };
+        })
+      })
+  }
 
   hide = () => {
     this.setState({
       visible: false,
-    });
-  };
+    })
+  }
 
   handleVisibleChange = visible => {
-    this.setState({visible});
-  };
+    this.setState({ visible })
+  }
 
   AddProgramArea = e => {
-    const program = e.target.value;
+    const program = e.target.value
 
     if (e.which === 13 && program !== '') {
-      let {programArea} = this.state;
+      let { programArea } = this.state
       client
         .mutate({
           mutation: gql`mutation {programArea(input:{name:"${program}"})
@@ -218,34 +216,27 @@ class ExtraAppsTodoistList extends React.Component {
               id: result.data.programArea.ProgramArea.id,
               name: program,
             },
-          });
+          })
 
           this.setState({
             programArea,
-          });
-        });
-      this.ProgramAreaInput.current.value = '';
-      this.hide();
+          })
+        })
+      this.ProgramAreaInput.current.value = ''
+      this.hide()
     }
-  };
+  }
 
   AddTargetName = e => {
-    const program = e.target.value;
-    console.log(program);
+    const program = e.target.value
+    console.log(program)
     // if (e.which === 13 && program !== '') {
     //
     // }
-  };
+  }
 
   render() {
-    const {
-      treeData,
-      programArea,
-      domain,
-      defaultProgram,
-      treeDataLoad,
-      visible,
-    } = this.state;
+    const { treeData, programArea, domain, defaultProgram, treeDataLoad, visible } = this.state
 
     return (
       <div>
@@ -292,10 +283,7 @@ class ExtraAppsTodoistList extends React.Component {
             <div className="card-body">
               <div className={styles.sidebar}>
                 <div className={styles.sidebarHeader}>
-                  <Search
-                    placeholder="input search text"
-                    style={{width: '100%'}}
-                  />
+                  <Search placeholder="input search text" style={{ width: '100%' }} />
                 </div>
 
                 <Tabs tabPosition="right" onChange={this.Domainchange}>
@@ -313,11 +301,11 @@ class ExtraAppsTodoistList extends React.Component {
                   ))}
                 </Tabs>
               </div>
-              <div className="height-600" style={{marginLeft: '320px'}}>
-                {treeDataLoad ?
+              <div className="height-600" style={{ marginLeft: '320px' }}>
+                {treeDataLoad ? (
                   <Scrollbars
                     autoHide
-                    renderThumbVertical={({...props}) => (
+                    renderThumbVertical={({ ...props }) => (
                       <div
                         {...props}
                         style={{
@@ -333,43 +321,58 @@ class ExtraAppsTodoistList extends React.Component {
                       treeData={treeData}
                       onChange={tree => this.setState({ treeData: tree })}
                       generateNodeProps={({ node }) => ({
-                        title: (
-                          <span>{node.name}</span>
-                        ),
+                        title: <span>{node.name}</span>,
                         buttons: [
                           node.children ? (
                             <>
-                              <Button><EditOutlined /></Button>
+                              <Button>
+                                <EditOutlined />
+                              </Button>
                               <Popover
-                                content={<Input size="default" placeholder="Add Target Name" onKeyPress={e => this.AddTargetName(e)} ref={this.ProgramAreaInput} />}
+                                content={
+                                  <Input
+                                    size="default"
+                                    placeholder="Add Target Name"
+                                    onKeyPress={e => this.AddTargetName(e)}
+                                    ref={this.ProgramAreaInput}
+                                  />
+                                }
                                 title="Add Target Name"
                                 trigger="click"
                               >
-                                <Button><FolderAddOutlined /></Button>
+                                <Button>
+                                  <FolderAddOutlined />
+                                </Button>
                               </Popover>
-
                             </>
-                        ): (
-                          <>
-                            <Popover content={parse(node.tarInstr)} trigger="click" placement="rightTop" title="Target Instruction">
-                              <Button>
-                                <CalendarOutlined />
-                              </Button>
-                            </Popover>
-                          </>
-                        ),
-                          ]
+                          ) : (
+                            <>
+                              <Popover
+                                content={parse(node.tarInstr)}
+                                trigger="click"
+                                placement="rightTop"
+                                title="Target Instruction"
+                              >
+                                <Button>
+                                  <CalendarOutlined />
+                                </Button>
+                              </Popover>
+                            </>
+                          ),
+                        ],
                       })}
                     />
-                  </Scrollbars> :  <Spin />
-                }
+                  </Scrollbars>
+                ) : (
+                  <Spin />
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
-export default ExtraAppsTodoistList;
+export default ExtraAppsTodoistList

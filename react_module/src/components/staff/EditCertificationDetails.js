@@ -1,33 +1,23 @@
-import React from 'react';
-import {
-    Form,
-    Input,
-    Button,
-    Select,
-    DatePicker,
-  } from 'antd';
-
+import React from 'react'
+import { Form, Input, Button, Select, DatePicker } from 'antd'
 
 class EditCertificationDetails extends React.Component {
-   render() {
-    const itemStyle = {marginBottom:'0'}
-
-    
+  render() {
+    const itemStyle = { marginBottom: '0' }
 
     return (
       <Form
         layout={{
-          labelCol: {span: 4 },
+          labelCol: { span: 4 },
           wrapperCol: { span: 14 },
         }}
         initialValues={{
-        size:'small',
+          size: 'small',
         }}
         // onValuesChange={onFormLayoutChange}
-        size='small'
+        size="small"
       >
-        
-        <Form.Item label="Certification Area" style={itemStyle}> 
+        <Form.Item label="Certification Area" style={itemStyle}>
           <Select>
             <Select.Option value="demo">1</Select.Option>
             <Select.Option value="demo">2</Select.Option>
@@ -41,7 +31,7 @@ class EditCertificationDetails extends React.Component {
             <Select.Option value="demo">completed</Select.Option>
             <Select.Option value="demo">Pending</Select.Option>
           </Select>
-        </Form.Item>        
+        </Form.Item>
         <Form.Item label="App Submitted Date" style={itemStyle}>
           <DatePicker />
         </Form.Item>
@@ -53,7 +43,7 @@ class EditCertificationDetails extends React.Component {
         </Form.Item>
         <Form.Item label="Validity End Date" style={itemStyle}>
           <DatePicker />
-        </Form.Item>       
+        </Form.Item>
         <Form.Item label="Remarks" style={itemStyle}>
           <Input />
         </Form.Item>
@@ -63,6 +53,6 @@ class EditCertificationDetails extends React.Component {
         </Form.Item>
       </Form>
     )
-        }
-    }
-    export default EditCertificationDetails
+  }
+}
+export default EditCertificationDetails

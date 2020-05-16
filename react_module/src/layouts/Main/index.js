@@ -20,8 +20,6 @@ const mapStateToProps = ({ settings }) => ({
 @withRouter
 @connect(mapStateToProps)
 class MainLayout extends React.PureComponent {
-  
-
   render() {
     const {
       children,
@@ -43,7 +41,7 @@ class MainLayout extends React.PureComponent {
       >
         <BackTop />
         <Menu />
-        
+
         <Settings />
         <Layout>
           <Layout.Header>

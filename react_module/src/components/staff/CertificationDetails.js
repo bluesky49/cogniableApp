@@ -1,35 +1,23 @@
-import React from 'react';
-import {
-    Form,
-    Input,
-    Button,
-    Select,
-    DatePicker,
-  } from 'antd';
-
+import React from 'react'
+import { Form, Input, Button, Select, DatePicker } from 'antd'
 
 class CertificationDetails extends React.Component {
-   render() {
-   
-
-    
-
+  render() {
     return (
       <Form
         labelCol={{
-        span: 8,
+          span: 8,
         }}
         wrapperCol={{
-        span: 14,
+          span: 14,
         }}
         layout="horizontal"
         initialValues={{
-        size:'small',
+          size: 'small',
         }}
         // onValuesChange={onFormLayoutChange}
-        size='small'
+        size="small"
       >
-        
         <Form.Item label="Certification Area">
           <Select>
             <Select.Option value="demo">1</Select.Option>
@@ -44,7 +32,7 @@ class CertificationDetails extends React.Component {
             <Select.Option value="demo">completed</Select.Option>
             <Select.Option value="demo">Pending</Select.Option>
           </Select>
-        </Form.Item>        
+        </Form.Item>
         <Form.Item label="App Submitted Date">
           <DatePicker />
         </Form.Item>
@@ -56,7 +44,7 @@ class CertificationDetails extends React.Component {
         </Form.Item>
         <Form.Item label="Validity End Date">
           <DatePicker />
-        </Form.Item>       
+        </Form.Item>
         <Form.Item label="Remarks">
           <Input />
         </Form.Item>
@@ -66,6 +54,6 @@ class CertificationDetails extends React.Component {
         </Form.Item>
       </Form>
     )
-        }
-    }
-    export default CertificationDetails
+  }
+}
+export default CertificationDetails

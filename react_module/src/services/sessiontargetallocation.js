@@ -12,15 +12,15 @@ export async function getAllocatedTargets(payload) {
     .query({
       query: gql`
         query {
-            targetAllocates(studentId:"${payload.studentId}", targetStatus:"U3RhdHVzVHlwZToz") { 
+            targetAllocates(studentId:"${payload.studentId}", targetStatus:"U3RhdHVzVHlwZToz") {
                 edges {
                     node {
                         id,
-                        targetInstr, 
+                        targetInstr,
                         targetAllcatedDetails{
                             id,
                             targetName,
-                        }   
+                        }
                     }
                 }
             },
@@ -47,8 +47,6 @@ export async function getAllocatedTargets(payload) {
                         id
                         itemRequired,
                         duration,
-                        feedback,
-                        rating,
                         sessionName {
                             id
                             name
@@ -84,12 +82,12 @@ export async function getAllocatedTargets(payload) {
                                     }
                                 }
                             }
-                        },                        
+                        },
                         targets{
                             edges{
                                 node{
                                     id,
-                                    time, 
+                                    time,
                                     targetInstr,
                                     date,
                                     targetAllcatedDetails{
@@ -120,10 +118,10 @@ export async function updateSessionTargets(payload) {
     .mutate({
       mutation: gql`mutation {
             updateSessionTargets(input:{
-                sessionId:"${payload.id}", 
+                sessionId:"${payload.id}",
                 targetsList:[${payload.targetList}]
             })
-            { 
+            {
                 status
                 session {
                     id
@@ -166,12 +164,12 @@ export async function updateSessionTargets(payload) {
                                 }
                             }
                         }
-                    },                        
+                    },
                     targets{
                         edges{
                             node{
                                 id,
-                                time, 
+                                time,
                                 targetInstr,
                                 date,
                                 targetAllcatedDetails{
@@ -218,12 +216,12 @@ export async function updateSessionDetails(objects) {
       mutation: gql`mutation {
             updateMasterSession(input:{
                 pk:"${sessionObject.id}",
-                duration:"${sessionObject.duration}", 
-                itemRequired:"${payload.values.items}", 
+                duration:"${sessionObject.duration}",
+                itemRequired:"${payload.values.items}",
                 instruction:[${inst}],
                 sessionHost:[${host}]
             })
-            { 
+            {
                 details {
                     id
                     itemRequired,
@@ -265,12 +263,12 @@ export async function updateSessionDetails(objects) {
                                 }
                             }
                         }
-                    },                        
+                    },
                     targets{
                         edges{
                             node{
                                 id,
-                                time, 
+                                time,
                                 targetInstr,
                                 date,
                                 targetAllcatedDetails{

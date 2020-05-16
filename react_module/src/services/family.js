@@ -66,7 +66,6 @@ export async function getFamilyDetails() {
                                               }
                                           duration
                                           }
-                                    
                                       }
                                   }
                                 }
@@ -92,15 +91,15 @@ export async function createNewMember(payload) {
   return apolloClient
     .mutate({
       mutation: gql`mutation {
-            familyMember(input:{student:"${payload.studentId}=", memberName:"${payload.memberName}", relationship:"${payload.relationId}", timeSpent:[
+            familyMember(input:{student:${payload.studentId}, memberName:"${payload.memberName}", relationship:"${payload.relationId}", timeSpent:[
                     {session:"U2Vzc2lvbk5hbWVUeXBlOjE=", duration:"${payload.morning} Hours"},
                     {session:"U2Vzc2lvbk5hbWVUeXBlOjI=", duration:"${payload.afternoon} Hours"},
                     {session:"U2Vzc2lvbk5hbWVUeXBlOjM=", duration:"${payload.evening} Hours"}
                 ]})
-               { 
+               {
                    familyMember
                    {
-                           id,                   
+                           id,
                           memberName,
                           relationship{
                               id,
@@ -116,7 +115,7 @@ export async function createNewMember(payload) {
                                           name
                                       }
                                       duration
-                                  }                        
+                                  }
                              }
                           }
                        }
@@ -144,17 +143,17 @@ export async function editMember(payload) {
     .mutate({
       mutation: gql`mutation {
                    editFamily(input:{id:"${payload.memberId}=",
-                    memberName:"${payload.memberName}", 
-                    relationship:"${payload.relationId}", 
+                    memberName:"${payload.memberName}",
+                    relationship:"${payload.relationId}",
             timeSpent:[
                 {session:"U2Vzc2lvbk5hbWVUeXBlOjE=", duration:"${payload.morning} hours"},
                 {session:"U2Vzc2lvbk5hbWVUeXBlOjI=", duration:"${payload.afternoon} hours"},
-                {session:"U2Vzc2lvbk5hbWVUeXBlOjM=", duration:"${payload.evening} hours"} 
+                {session:"U2Vzc2lvbk5hbWVUeXBlOjM=", duration:"${payload.evening} hours"}
             ]})
-           { 
+           {
                details
                {
-                   id,                   
+                   id,
                   memberName,
                   relationship{
                       id,
@@ -170,7 +169,7 @@ export async function editMember(payload) {
                                   name
                               }
                               duration
-                          }                        
+                          }
                      }
                   }
                }

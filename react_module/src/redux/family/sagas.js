@@ -35,7 +35,7 @@ export function* GetSessionAndRelations() {
   })
 }
 
-export function* GetFamilyDetails() {
+export function* GetFamilyDetail() {
   yield put({
     type: 'family/SET_STATE',
     payload: {
@@ -136,7 +136,7 @@ export function* EditMember({ payload }) {
 export default function* rootSaga() {
   yield all([
     takeEvery(actions.SESSION_RELATIONS, GetSessionAndRelations),
-    takeEvery(actions.FAMILY_DETAILS, GetFamilyDetails),
+    takeEvery(actions.FAMILY_DETAILS, GetFamilyDetail),
     takeEvery(actions.CREATE_NEW, CreateNewMember),
     takeEvery(actions.EDIT_MEMBER, EditMember),
   ])

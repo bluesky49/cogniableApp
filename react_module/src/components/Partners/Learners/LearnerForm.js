@@ -12,25 +12,19 @@ import {
   InputNumber,
   TreeSelect,
   Switch,
-} from 'antd';
+} from 'antd'
 import Authorize from '../../LayoutComponents/Authorize'
 // import style from '../learnerform.scss'
 
-
-
-
-
 class LearnerForm extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.state = {
-    };
-
+    this.state = {}
   }
 
   render() {
-    const { TabPane } = Tabs;
+    const { TabPane } = Tabs
     return (
       <Authorize roles={['admin']} redirect to="/dashboard/beta">
         <Helmet title="Partner" />
@@ -41,7 +35,6 @@ class LearnerForm extends React.Component {
           <div className="col-sm-7">
             <div className="card">
               <div className="card-body">
-
                 <Tabs type="card">
                   <TabPane tab="Excel Upload" key="1">
                     Content of Tab Pane 1
@@ -50,9 +43,7 @@ class LearnerForm extends React.Component {
                     <Form
                       labelCol={{
                         span: 6,
-                        
                       }}
-                      
                       wrapperCol={{
                         span: 14,
                       }}
@@ -61,10 +52,8 @@ class LearnerForm extends React.Component {
                         size: 'middle',
                       }}
                       // onValuesChange={onFormLayoutChange}
-                      size='middle'
-                      
-
-                    >                    
+                      size="middle"
+                    >
                       <Form.Item label="Input">
                         <Input />
                       </Form.Item>

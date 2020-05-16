@@ -12,17 +12,15 @@ import Authorize from 'components/LayoutComponents/Authorize'
 
 class LearnerView extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.state = {
-    };
-
+    this.state = {}
   }
 
   render() {
     // const { TabPane } = Tabs;
     return (
-      <Authorize roles={["school_admin"]} redirect to="/dashboard/beta">
+      <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
         <Helmet title="Partner" />
         {/* <div className="utils__title utils__title--flat mb-3">
           <strong className="text-uppercase font-size-16">Create Learner</strong>
@@ -31,7 +29,6 @@ class LearnerView extends React.Component {
           <div className="col-sm-7">
             <div className="card">
               <div className="card-body">
-
                 {/* <Tabs type="card">
                   <TabPane tab="Excel Upload" key="1">
                     <br />
@@ -58,8 +55,6 @@ class LearnerView extends React.Component {
                 <hr />
                 <br />
                 <BasicInformationForm />
-
-
               </div>
             </div>
           </div>

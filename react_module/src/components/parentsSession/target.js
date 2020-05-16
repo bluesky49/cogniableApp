@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
-import { Card, Progress, Typography } from 'antd'
+import { Card } from 'antd'
 
 class Target extends Component {
   render() {
-    const { Text } = Typography
     const { Meta } = Card
     let progress = ['#FF9C52', '#4BAEA0', '#FF8080', '0', '0', '0', '0', '0']
     progress = progress.map(data => {

@@ -7,18 +7,29 @@
 /* eslint-disable react/no-access-state-in-setstate */
 /* eslint-disable no-underscore-dangle */
 import React from 'react'
-import { Form, Input,Spin, Button, Select, DatePicker, Row, Col, Collapse, notification } from 'antd'
+import {
+  Form,
+  Input,
+  Spin,
+  Button,
+  Select,
+  DatePicker,
+  Row,
+  Col,
+  Collapse,
+  notification,
+} from 'antd'
 import { GraphQLClient } from 'graphql-request'
 import { connect } from 'react-redux'
-import { gql } from "apollo-boost";
+import { gql } from 'apollo-boost'
 import client from '../../apollo/config'
 
-const { Panel } = Collapse;
-const { TextArea } = Input;
+const { Panel } = Collapse
+const { TextArea } = Input
 
 const FormItem = Form.Item
 const { Option } = Select
- 
+
 const layout = {
   labelCol: {
     span: 8,
@@ -26,13 +37,13 @@ const layout = {
   wrapperCol: {
     span: 16,
   },
-};
+}
 const tailLayout = {
   wrapperCol: {
     offset: 8,
     span: 14,
   },
-};
+}
 
 const graphQLClient = new GraphQLClient('https://development.cogniable.us/apis/school/graphql', {
   headers: {
@@ -47,25 +58,25 @@ class ManuallyTarget extends React.Component {
   // }
 
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
-      suggestedSd: [],    
-      suggestedStep: [],    
+      suggestedSd: [],
+      suggestedStep: [],
       fetchingstep: false,
-      fetchingsd:false,
-      targetId: "",
+      fetchingsd: false,
+      targetId: '',
 
       targetList: ['1', '2', '3'],
       targetLength: 1,
-      targetInitialValue: 1
-    };
+      targetInitialValue: 1,
+    }
 
     // this.DomainChange = this.DomainChange.bind(this);
   }
 
-  fetchSd = (value) => {
-    this.setState({ suggestedSd: [], fetchingsd: true });
+  fetchSd = value => {
+    this.setState({ suggestedSd: [], fetchingsd: true })
 
     const query = `query {
       targetSd(first:8, sd_Icontains:"${value}")
@@ -77,18 +88,17 @@ class ManuallyTarget extends React.Component {
       }
       }
   }`
- 
-  graphQLClient.request(query).then(data => {
-    this.setState({
-      suggestedSd: data.targetSd.edges,
-      fetchingsd:false
-    })
-  })
 
+    graphQLClient.request(query).then(data => {
+      this.setState({
+        suggestedSd: data.targetSd.edges,
+        fetchingsd: false,
+      })
+    })
   }
 
-  fetchStep = (value) => {
-    this.setState({ suggestedStep: [], fetchingstep: true });
+  fetchStep = value => {
+    this.setState({ suggestedStep: [], fetchingstep: true })
 
     const query = `query {
       targetStep(first:8, step_Icontains:"${value}")
@@ -100,14 +110,14 @@ class ManuallyTarget extends React.Component {
       }
       }
   }`
- 
-  graphQLClient.request(query).then(data => {
-    this.setState({
-      suggestedStep: data.targetStep.edges,
-      fetchingstep:false
+
+    graphQLClient.request(query).then(data => {
+      this.setState({
+        suggestedStep: data.targetStep.edges,
+        fetchingstep: false,
+      })
     })
-  })
-}
+  }
 
   // changeTarget = () =>{
   //   const {form, targets} = this.props;
@@ -146,19 +156,19 @@ class ManuallyTarget extends React.Component {
   //           createTargetAllocate(
   //             input:{
   //               targetData:{
-  //                 shortTerm:"${goal.id}", 
-  //                 targetId:"${targets[this.state.targetInitialValue -1].node.id}", 
-  //                 studentId:"${learnerId}", 
-  //                 targetStatus:"${values.target_status}", 
-  //                 goalName:"${values.targetname}", 
-  //                 sd:[${sdList}], 
-                  
+  //                 shortTerm:"${goal.id}",
+  //                 targetId:"${targets[this.state.targetInitialValue -1].node.id}",
+  //                 studentId:"${learnerId}",
+  //                 targetStatus:"${values.target_status}",
+  //                 goalName:"${values.targetname}",
+  //                 sd:[${sdList}],
+
   //                 steps:[${stepsListSelected}],
-  //                 prerequisit:[], 
-  //                 date:"${values.date_baseline._d.toISOString().slice(0,10)}", 
-  //                 targetInstr:"${values.objectives}", 
-  //                 goodPractices:"", 
-  //                 precaution:"", 
+  //                 prerequisit:[],
+  //                 date:"${values.date_baseline._d.toISOString().slice(0,10)}",
+  //                 targetInstr:"${values.objectives}",
+  //                 goodPractices:"",
+  //                 precaution:"",
   //                 masteryCriteria:"${values.mcriteria}"
   //               }
   //             }
@@ -179,14 +189,14 @@ class ManuallyTarget extends React.Component {
   //         notification.success({
   //           message: 'Target Allocated Successfully',
   //         });
-  //         form.resetFields(); 
+  //         form.resetFields();
   //       })
-  //       .catch(err => { 
-  //         err.graphQLErrors.map((item) => { 
+  //       .catch(err => {
+  //         err.graphQLErrors.map((item) => {
   //           return notification.error({
   //             message: 'Somthing want wrong',
   //             description: item.message,
-  //           }); 
+  //           });
   //         })
   //       })
 
@@ -195,8 +205,9 @@ class ManuallyTarget extends React.Component {
 
   // };
 
-  DomainChange = (domainid) => {
-    client.query({
+  DomainChange = domainid => {
+    client
+      .query({
         query: gql`{
             target(
                 domain:"${domainid}",
@@ -218,47 +229,49 @@ class ManuallyTarget extends React.Component {
                     }
                 }
             }
-        }`
-    })
-    .then(result => {
+        }`,
+      })
+      .then(result => {
         // console.log(result.data.target.edges[0].node.targetMain.id)
         this.setState({
-            targetId: result.data.target.edges[0].node.id
+          targetId: result.data.target.edges[0].node.id,
         })
-    })
-    .catch(error => { 
-        error.graphQLErrors.map((item) => { 
-            return notification.error({
-                message: 'Somthing want wrong getting target area',
-                description: item.message,
-            }); 
+      })
+      .catch(error => {
+        error.graphQLErrors.map(item => {
+          return notification.error({
+            message: 'Somthing want wrong getting target area',
+            description: item.message,
+          })
         })
-    });
-  
-}
+      })
+  }
 
-handleTargetSubmit = (e) => {
-    e.preventDefault();
+  handleTargetSubmit = e => {
+    e.preventDefault()
 
-    const { form, goals:{LearnerId, ShortTermObject} } = this.props;
+    const {
+      form,
+      goals: { LearnerId, ShortTermObject },
+    } = this.props
 
     form.validateFields((error, values) => {
       if (!error) {
-
         const stepsListSelected = []
-        if (values.steps){
-          values.steps.map((item) => stepsListSelected.push(`"${item.label}"`))
+        if (values.steps) {
+          values.steps.map(item => stepsListSelected.push(`"${item.label}"`))
         }
 
         const sdList = []
-        if (values.sd){
-          values.sd.map((item) => sdList.push(`"${item.label}"`))
+        if (values.sd) {
+          values.sd.map(item => sdList.push(`"${item.label}"`))
         }
 
         console.log(values.sd, values.steps)
 
-        client.mutate({
-          mutation: gql`mutation{
+        client
+          .mutate({
+            mutation: gql`mutation{
             createTargetAllocate(
               input:{
                 targetData:{
@@ -271,7 +284,7 @@ handleTargetSubmit = (e) => {
                   
                   steps:[${stepsListSelected}],
                   
-                  date:"${values.date_baseline._d.toISOString().slice(0,10)}", 
+                  date:"${values.date_baseline._d.toISOString().slice(0, 10)}", 
                   targetInstr:"${values.objectives}", 
                   goodPractices:"", 
                   precaution:"", 
@@ -289,88 +302,77 @@ handleTargetSubmit = (e) => {
                 }
               }
             }
-          }`
-        })
-        .then(result => {
-          notification.success({
-            message: 'Target Allocated Successfully',
-          });
-          form.resetFields(); 
-        })
-        .catch(err => { 
-          err.graphQLErrors.map((item) => { 
-            return notification.error({
-              message: 'Somthing want wrong',
-              description: item.message,
-            }); 
+          }`,
           })
-        })
-
+          .then(result => {
+            notification.success({
+              message: 'Target Allocated Successfully',
+            })
+            form.resetFields()
+          })
+          .catch(err => {
+            err.graphQLErrors.map(item => {
+              return notification.error({
+                message: 'Somthing want wrong',
+                description: item.message,
+              })
+            })
+          })
       }
     })
-
-  };
-
-
+  }
 
   render() {
-    const { form, DomainList, targettype, mcriteria, codes, status, programArea } = this.props;
-    const { suggestedSd, fetchingsd, fetchingstep, suggestedStep } = this.state;
-    const itemStyle = {marginBottom:"5px"}
-   
+    const { form, DomainList, targettype, mcriteria, codes, status, programArea } = this.props
+    const { suggestedSd, fetchingsd, fetchingstep, suggestedStep } = this.state
+    const itemStyle = { marginBottom: '5px' }
+
     return (
       <>
         <br />
         <Form {...layout} onSubmit={this.handleTargetSubmit} className="target-form">
-
-            <FormItem label="Program Area" style={itemStyle}>
-                {form.getFieldDecorator('programArea',
-                )(
-                <Select
-                    id="product-edit-colors"
-                    showSearch
-                    style={{ width: '100%' }}
-                    placeholder="Select Program area"
-                    optionFilterProp="children"
-                >
-                    {programArea.map(c =>
-                    <Option value={c.id}>{c.name}</Option>
-                    )}
-                </Select>
-                )}
-            </FormItem>
-            <FormItem label="Domain">
-                {form.getFieldDecorator('domain', {
-                    rules: [{ required: true, message: 'Please provide your domain!' }],
-                })(
-                    <Select
-                        id="product-edit-colors"
-                        showSearch
-                        style={{ width: '100%' }}
-                        placeholder="Select a domain"
-                        optionFilterProp="children"
-                        onChange={this.DomainChange}
-                    >
-                        {DomainList.map(c => <option value={c.node.id}>{c.node.domain}</option>)}
-                    </Select>
-                )}
-            </FormItem>
+          <FormItem label="Program Area" style={itemStyle}>
+            {form.getFieldDecorator('programArea')(
+              <Select
+                id="product-edit-colors"
+                showSearch
+                style={{ width: '100%' }}
+                placeholder="Select Program area"
+                optionFilterProp="children"
+              >
+                {programArea.map(c => (
+                  <Option value={c.id}>{c.name}</Option>
+                ))}
+              </Select>,
+            )}
+          </FormItem>
+          <FormItem label="Domain">
+            {form.getFieldDecorator('domain', {
+              rules: [{ required: true, message: 'Please provide your domain!' }],
+            })(
+              <Select
+                id="product-edit-colors"
+                showSearch
+                style={{ width: '100%' }}
+                placeholder="Select a domain"
+                optionFilterProp="children"
+                onChange={this.DomainChange}
+              >
+                {DomainList.map(c => (
+                  <option value={c.node.id}>{c.node.domain}</option>
+                ))}
+              </Select>,
+            )}
+          </FormItem>
 
           <FormItem label="Target Name" style={itemStyle}>
             {form.getFieldDecorator('targetname', {
               rules: [{ required: true, message: 'Please provide your Target Name!' }],
-            })(
-              <Input
-                type="text"
-                placeholder="Target Name"
-              />,
-            )}
+            })(<Input type="text" placeholder="Target Name" />)}
           </FormItem>
 
-
           <FormItem label="Target Type" style={itemStyle}>
-            {form.getFieldDecorator('targettype',
-            )(
+            {form.getFieldDecorator('targettype')(
               <Select
                 id="product-edit-colors"
                 showSearch
@@ -378,10 +380,10 @@ handleTargetSubmit = (e) => {
                 placeholder="Select a target type"
                 optionFilterProp="children"
               >
-                {targettype.map(c =>
+                {targettype.map(c => (
                   <option value={c.id}>{c.typeTar}</option>
-                )}
-              </Select>
+                ))}
+              </Select>,
             )}
           </FormItem>
 
@@ -396,19 +398,20 @@ handleTargetSubmit = (e) => {
                 placeholder="Select a mcriteria"
                 optionFilterProp="children"
               >
-                {mcriteria.map(c =>
-                  <option value={c.id}>Response Percentage:{c.responsePercentage}%,Consecutive Days:{c.consecutiveDays}, Min Trial:{c.minTrial}</option>
-                )}
-              </Select>
+                {mcriteria.map(c => (
+                  <option value={c.id}>
+                    Response Percentage:{c.responsePercentage}%,Consecutive Days:{c.consecutiveDays}
+                    , Min Trial:{c.minTrial}
+                  </option>
+                ))}
+              </Select>,
             )}
           </FormItem>
 
           <FormItem label="Date Baseline" style={itemStyle}>
             {form.getFieldDecorator('date_baseline', {
               rules: [{ required: true, message: 'Please provide your Date Baseline!' }],
-            })(
-              <DatePicker name="date" />
-            )}
+            })(<DatePicker name="date" />)}
           </FormItem>
 
           <FormItem label="Custom Prompt Codes" style={itemStyle}>
@@ -422,10 +425,10 @@ handleTargetSubmit = (e) => {
                 placeholder="Select a codes"
                 optionFilterProp="children"
               >
-                {codes.map(c =>
+                {codes.map(c => (
                   <option value={c.id}>{c.promptName}</option>
-                )}
-              </Select>
+                ))}
+              </Select>,
             )}
           </FormItem>
 
@@ -440,66 +443,63 @@ handleTargetSubmit = (e) => {
                 placeholder="Select a Status"
                 optionFilterProp="children"
               >
-                {status.map(c =>
+                {status.map(c => (
                   <option value={c.id}>{c.statusName}</option>
-                )}
-              </Select>
+                ))}
+              </Select>,
             )}
           </FormItem>
           <FormItem label="Desired Daily Trials" style={itemStyle}>
             {form.getFieldDecorator('trials', {
               rules: [{ required: true, message: 'Please provide your Desired Daily Trials!' }],
-            })(
-              <Input />
-            )}
+            })(<Input />)}
           </FormItem>
           <FormItem label="Steps" style={itemStyle}>
-            {form.getFieldDecorator('steps',
-            )(
+            {form.getFieldDecorator('steps')(
               <Select
                 mode="tags"
-                labelInValue                      
+                labelInValue
                 placeholder="Select steps"
                 notFoundContent={fetchingstep ? <Spin size="small" /> : null}
                 filterOption={false}
-                onSearch={this.fetchStep}                   
+                onSearch={this.fetchStep}
                 style={{ width: '100%' }}
               >
                 {suggestedStep.map(d => (
                   <Option key={d.node.id}>{d.node.step}</Option>
                 ))}
-              </Select>
+              </Select>,
             )}
           </FormItem>
           <FormItem label="SD" style={itemStyle}>
-            {form.getFieldDecorator('sd',)(
+            {form.getFieldDecorator('sd')(
               <Select
                 mode="tags"
-                labelInValue                      
+                labelInValue
                 placeholder="Select SD"
                 notFoundContent={fetchingsd ? <Spin size="small" /> : null}
                 filterOption={false}
-                onSearch={this.fetchSd}                   
+                onSearch={this.fetchSd}
                 style={{ width: '100%' }}
               >
                 {suggestedSd.map(d => (
                   <Option key={d.node.id}>{d.node.sd}</Option>
                 ))}
-              </Select>
+              </Select>,
             )}
           </FormItem>
 
           <FormItem label="Teaching objectives" style={itemStyle}>
             {form.getFieldDecorator('objectives', {
               rules: [{ required: true, message: 'Please provide your SD!' }],
-            })(
-              <TextArea autoSize={{ minRows: 3 }} />
-            )}
+            })(<TextArea autoSize={{ minRows: 3 }} />)}
           </FormItem>
 
           <FormItem {...tailLayout}>
-            <Button htmlType="submit" type="primary">Submit</Button> &nbsp;&nbsp;
-          
+            <Button htmlType="submit" type="primary">
+              Submit
+            </Button>{' '}
+            &nbsp;&nbsp;
           </FormItem>
         </Form>
       </>

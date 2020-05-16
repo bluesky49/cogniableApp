@@ -1,0 +1,13 @@
+.section1 {
+  @media (min-width: 576px) {
+    padding-left: 0 !important;
+  }
+}
+
+.sidebar {
+  margin-top: 30px;
+  @media (min-width: 576px) {
+    padding-right: 0 !important;
+    margin-top: 0;
+  }
+}

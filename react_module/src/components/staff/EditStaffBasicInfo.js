@@ -4,50 +4,47 @@
 /* eslint-disable no-lone-blocks */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-self-compare */
-import React from 'react';
-import { Form, Input, Button, Select, DatePicker} from 'antd';
-import moment from 'moment';
-import { gql } from "apollo-boost";
+import React from 'react'
+import { Form, Input, Button, Select, DatePicker } from 'antd'
+import moment from 'moment'
+import { gql } from 'apollo-boost'
 import client from '../../apollo/config'
 
-const { TextArea } = Input;
+const { TextArea } = Input
 
 class EditStaffBasicInfo extends React.Component {
-  constructor(props){
-    super(props);
+  constructor(props) {
+    super(props)
 
     this.state = {
-      isLoaded: true, 
+      isLoaded: true,
       staffId: this.props.userinfo.employeeId,
       dateOfJoining: this.props.userinfo.dateOfJoining,
-      role:this.props.userinfo.userRole.id,
-      designation:this.props.userinfo.designation,
-      clinicLocation:null,
-      firstname:this.props.userinfo.name,
-      lastname:this.props.userinfo.surname,
-      email:this.props.userinfo.email,
+      role: this.props.userinfo.userRole.id,
+      designation: this.props.userinfo.designation,
+      clinicLocation: null,
+      firstname: this.props.userinfo.name,
+      lastname: this.props.userinfo.surname,
+      email: this.props.userinfo.email,
       gender: this.props.userinfo.gender,
-      contactNumber:this.props.userinfo.contactNo,
-      address:this.props.userinfo.localAddress,
-      maritalStatus:null,
-      dob:this.props.userinfo.dob,
-      emergencyName:this.props.userinfo.emergencyName,
-      emergencyContactNumber:this.props.userinfo.emergencyContact,
-      emergencyRelation:'',
-      qualification:'',
-      workExprience:'',     
+      contactNumber: this.props.userinfo.contactNo,
+      address: this.props.userinfo.localAddress,
+      maritalStatus: null,
+      dob: this.props.userinfo.dob,
+      emergencyName: this.props.userinfo.emergencyName,
+      emergencyContactNumber: this.props.userinfo.emergencyContact,
+      emergencyRelation: '',
+      qualification: '',
+      workExprience: '',
 
-      clinicLocationList:[],
+      clinicLocationList: [],
       userRoleList: [],
-      
-    };
-
+    }
   }
 
-  componentDidMount(){
-
+  componentDidMount() {
     console.log(this.props.userinfo.clinicLocation)
-    if (!this.props.userinfo.clinicLocation == null){
+    if (!this.props.userinfo.clinicLocation == null) {
       // this.setState({
       //   clinicLocation:this.props.userinfo.clinicLocation.id
       // })
@@ -55,96 +52,129 @@ class EditStaffBasicInfo extends React.Component {
       console.log(typeof null)
     }
 
-    client.query({
-      query: gql`
-        {schoolLocation {
-          edges {
-            node {
-              id,
-              location
+    client
+      .query({
+        query: gql`
+          {
+            schoolLocation {
+              edges {
+                node {
+                  id
+                  location
+                }
+              }
+            }
+            userRole {
+              id
+              name
             }
           }
-        },
-        userRole {
-          id,
-          name,
-        }
-      }`
+        `,
       })
       .then(result => {
         this.setState({
           isLoaded: false,
           clinicLocationList: result.data.schoolLocation.edges,
           userRoleList: result.data.userRole,
-        });
-      });
-
+        })
+      })
   }
 
-  handleChange = (e) => {this.setState({[e.target.name]: e.target.value})};
+  handleChange = e => {
+    this.setState({ [e.target.name]: e.target.value })
+  }
 
-  setDateOfJoining = (value) => {this.setState({dateOfJoining : (new Date(value)).toISOString().slice(0,10)})}
+  setDateOfJoining = value => {
+    this.setState({ dateOfJoining: new Date(value).toISOString().slice(0, 10) })
+  }
 
-  selectRole = (value) => {this.setState({role:value})}
+  selectRole = value => {
+    this.setState({ role: value })
+  }
 
-  selectClinicLocation = (value) => {this.setState({clinicLocation:value})}
+  selectClinicLocation = value => {
+    this.setState({ clinicLocation: value })
+  }
 
-  selectGender = (value) => {this.setState({gender:value})}
+  selectGender = value => {
+    this.setState({ gender: value })
+  }
 
-  selectMeritalStatus = (value) => {this.setState({maritalStatus:value})}
+  selectMeritalStatus = value => {
+    this.setState({ maritalStatus: value })
+  }
 
-  setDob = (value) => {this.setState({dob : (new Date(value)).toISOString().slice(0,10)})}
+  setDob = value => {
+    this.setState({ dob: new Date(value).toISOString().slice(0, 10) })
+  }
 
   onFinish = values => {
-    console.log(values);
-  };
+    console.log(values)
+  }
 
   onReset = () => {
-    this.formRef.current.resetFields();   
-  };
+    this.formRef.current.resetFields()
+  }
 
-   render() {
-   
-    const itemStyle = {marginBottom:'0'}
-    const { userinfo } = this.props;
-    const dateFormat = 'YYYY-MM-DD';
+  render() {
+    const itemStyle = { marginBottom: '0' }
+    const { userinfo } = this.props
+    const dateFormat = 'YYYY-MM-DD'
     const timeFormat = 'h:mm A'
 
-    
+    const {
+      staffId,
+      designation,
+      firstname,
+      lastname,
+      email,
+      contactNumber,
+      address,
+      emergencyName,
+      emergencyContactNumber,
+      emergencyRelation,
+      qualification,
+      workExprience,
+      isLoaded,
+      clinicLocationList,
+      userRoleList,
+      dateOfJoining,
+      dob,
+      role,
+      clinicLocation,
+    } = this.state
 
-    const {staffId, designation, firstname, lastname, email, contactNumber, address, emergencyName, emergencyContactNumber, emergencyRelation,
-      qualification, workExprience, isLoaded, clinicLocationList, userRoleList, dateOfJoining, dob, role, clinicLocation } = this.state;
-    
     console.log(clinicLocation, 1)
-    
-    if (isLoaded){
-      return <div>Loding...</div>;
+
+    if (isLoaded) {
+      return <div>Loding...</div>
     }
 
     return (
       <Form
         layout={{
-          labelCol: {span: 4 },
+          labelCol: { span: 4 },
           wrapperCol: { span: 14 },
         }}
         ref={this.formRef}
         name="control-ref"
         onFinish={this.onFinish}
       >
-
         <Form.Item style={itemStyle} label="Staff ID">
           <Input name="staffId" onChange={this.handleChange} value={staffId} />
         </Form.Item>
         <Form.Item style={itemStyle} label="Date of Joining">
-          {dateOfJoining ? 
+          {dateOfJoining ? (
             <DatePicker onChange={this.setDateOfJoining} defaultValue={moment(dateOfJoining)} />
-          :
+          ) : (
             <DatePicker onChange={this.setDateOfJoining} />
-          }
+          )}
         </Form.Item>
         <Form.Item style={itemStyle} label="Role">
           <Select onSelect={this.selectRole} defaultValue={role}>
-            {userRoleList.map((item) => <Select.Option value={item.id}>{item.name}</Select.Option>)}
+            {userRoleList.map(item => (
+              <Select.Option value={item.id}>{item.name}</Select.Option>
+            ))}
           </Select>
         </Form.Item>
         <Form.Item style={itemStyle} label="Designation">
@@ -152,14 +182,15 @@ class EditStaffBasicInfo extends React.Component {
         </Form.Item>
         <Form.Item style={itemStyle} label="Clinic Location">
           <Select onSelect={this.selectClinicLocation} value={clinicLocation}>
-            {clinicLocationList.map((item) => <Select.Option value={item.node.id}>{item.node.location}</Select.Option>)} 
+            {clinicLocationList.map(item => (
+              <Select.Option value={item.node.id}>{item.node.location}</Select.Option>
+            ))}
           </Select>
         </Form.Item>
-        
-        
+
         <Form.Item style={itemStyle} label="First Name">
           <Input name="firstname" onChange={this.handleChange} value={firstname} />
-        </Form.Item>        
+        </Form.Item>
         <Form.Item style={itemStyle} label="Last Name">
           <Input name="lastname" onChange={this.handleChange} value={lastname} />
         </Form.Item>
@@ -176,7 +207,7 @@ class EditStaffBasicInfo extends React.Component {
         <Form.Item style={itemStyle} label="Contact no.">
           <Input name="contactNumber" onChange={this.handleChange} value={contactNumber} />
         </Form.Item>
-        
+
         <Form.Item style={itemStyle} label="Address">
           <TextArea
             placeholder="Address"
@@ -192,14 +223,14 @@ class EditStaffBasicInfo extends React.Component {
             <Select.Option value="Married">Married</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item style={itemStyle} label="D.O.B">          
-          {dob ? 
+        <Form.Item style={itemStyle} label="D.O.B">
+          {dob ? (
             <DatePicker onChange={this.setDob} defaultValue={moment(dob)} />
-          :
+          ) : (
             <DatePicker onChange={this.setDob} />
-          }
+          )}
         </Form.Item>
-        
+
         <Form.Item style={itemStyle} label="Emergency Contact Name">
           <Input name="emergencyName" onChange={this.handleChange} value={emergencyName} />
         </Form.Item>
@@ -207,7 +238,11 @@ class EditStaffBasicInfo extends React.Component {
           <Input name="emergencyRelation" onChange={this.handleChange} value={emergencyRelation} />
         </Form.Item>
         <Form.Item style={itemStyle} label="Emergency contact no.">
-          <Input name="emergencyContactNumber" onChange={this.handleChange} value={emergencyContactNumber} />
+          <Input
+            name="emergencyContactNumber"
+            onChange={this.handleChange}
+            value={emergencyContactNumber}
+          />
         </Form.Item>
 
         <Form.Item style={itemStyle} label="Qualification">
@@ -216,10 +251,14 @@ class EditStaffBasicInfo extends React.Component {
         <Form.Item style={itemStyle} label="Work Exprience">
           <Input name="workExprience" onChange={this.handleChange} value={workExprience} />
         </Form.Item>
-        
+
         <Form.Item style={itemStyle}>
-          <Button type="primary" htmlType="submit">Submit</Button>
-          <Button onClick={this.onReset} className="ml-4">Cancel</Button>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+          <Button onClick={this.onReset} className="ml-4">
+            Cancel
+          </Button>
         </Form.Item>
       </Form>
     )
