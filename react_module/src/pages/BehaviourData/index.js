@@ -129,7 +129,7 @@ export default () => {
   return (
     <Authorize roles={['school_admin', 'parents']} redirect to="/dashboard/beta">
       <Helmet title="Dashboard Alpha" />
-      <Layout style={{ backgroundColor: '#F2F4F8', padding: '0px' }}>
+      <Layout style={{ padding: '0px' }}>
         <Content style={{ padding: '0px 20px', maxWidth: 1300, width: '100%', margin: '0px auto' }}>
           <Row gutter={[46, 0]}>
             <Col span={16}>

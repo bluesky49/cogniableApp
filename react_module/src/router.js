@@ -51,20 +51,11 @@ const routes = [
     path: '/dashboard/therapist_admin',
     component: loadable(() => import('pages/dashboard/therapist_admin')),
   },
-
+  {
+    path: '/dashboard/alpha/',
+    component: loadable(() => import('views/parent/ParentDashboard/')),
+  },
   // Partners
-  {
-    path: '/partners/laerners',
-    component: loadable(() => import('components/Partners/Learners/LearnerForm')),
-  },
-  {
-    path: '/partners/staff',
-    component: loadable(() => import('views/StaffView')),
-  },
-  {
-    path: '/partners/learner',
-    component: loadable(() => import('views/LearnerView')),
-  },
   {
     path: '/partners/viewlearners',
     component: loadable(() => import('pages/learners/view_learners')),
@@ -81,11 +72,6 @@ const routes = [
     exact: true,
   },
   {
-    path: '/targets/suggest_target2',
-    component: loadable(() => import('pages/targets/demo')),
-    exact: true,
-  },
-  {
     path: '/targets/program',
     component: loadable(() => import('pages/program')),
   },
@@ -94,11 +80,7 @@ const routes = [
     component: loadable(() => import('pages/program2')),
   },
   {
-    path: '/targets/abc',
-    component: loadable(() => import('pages/targets/ABC')),
-  },
-  {
-    path: '/targets/allocation',
+    path: '/target/allocation',
     component: loadable(() => import('pages/targets/targetAlocation')),
   },
   {
@@ -131,43 +113,14 @@ const routes = [
     path: '/targets/appointment',
     component: loadable(() => import('pages/appointment')),
   },
-  // Table Responsive
-  {
-    path: '/therapy/tables',
-    component: loadable(() => import('views/LearnerTable')),
-  },
-  // Target Type Mapping
-  {
-    path: '/therapy/targetmapping',
-    component: loadable(() => import('views/TargetTypeMapping')),
-  },
-  // Data Recording
-  {
-    path: '/therapy/sessionrecording',
-    component: loadable(() => import('views/DataRecording')),
-  },
-  {
-    path: '/therapy/learnernamebinder/goals',
-    component: loadable(() => import('views/Goals')),
-  },
-  // parent settings
-  {
-    path: '/parent/settings',
-    component: loadable(() => import('views/ParentSettings')),
-  },
 
-  //
-  {
-    path: '/parent/familymember',
-    component: loadable(() => import('views/FamilyMembers')),
-  },
-
+  // Daily Vitals
   {
     path: '/mealData/',
     component: loadable(() => import('pages/meal/index')),
   },
   {
-    path: '/toiletData/',
+    path: '/toilet/',
     component: loadable(() => import('pages/ToiletData/index')),
   },
   {
@@ -175,54 +128,28 @@ const routes = [
     component: loadable(() => import('pages/appointmentdata/index')),
   },
   {
-    path: '/BehaviourData/',
+    path: '/decel/',
     component: loadable(() => import('pages/BehaviourData/index')),
   },
   {
-    path: '/mandData/',
+    path: '/mand/',
     component: loadable(() => import('pages/mandData/index')),
   },
-  // {
-  //   path: '/family/',
-  //   component: loadable(() => import('views/family')),
-  // },
-  {
-    path: '/profileSetting/',
-    component: loadable(() => import('pages/ProfileSetting/index')),
-  },
-  // {
-  //   path: '/family/',
-  //   component: loadable(() => import('views/family')),
-  // },
   {
     path: '/medicalData/',
     component: loadable(() => import('pages/MadicalData/index')),
   },
   {
-    path: '/toilet/',
-    component: loadable(() => import('views/ToiletView')),
-  },
-  {
-    path: '/decel/',
-    component: loadable(() => import('views/decel')),
-  },
-  {
-    path: '/mand/',
-    component: loadable(() => import('views/MandData')),
-  },
-  // By me
-  {
-    path: '/dashboard/alpha/',
-    component: loadable(() => import('views/parent/ParentDashboard/')),
-  },
-  {
-    path: '/parent/sessionrecording',
-    component: loadable(() => import('views/parent/videoSession')),
-  },
-  {
     path: '/family/',
     component: loadable(() => import('views/family/family')),
   },
+
+  // Settings
+  {
+    path: '/profileSetting/',
+    component: loadable(() => import('pages/ProfileSetting/index')),
+  },
+
   // clinic
   {
     path: '/cliniccariculam',
@@ -231,10 +158,6 @@ const routes = [
   {
     path: '/targetsAllocationToSession/',
     component: loadable(() => import('pages/target_allocation_to_session')),
-  },
-  {
-    path: '/target/allocation',
-    component: loadable(() => import('pages/targets/targetAlocation')),
   },
   {
     path: '/sessionrecording',
