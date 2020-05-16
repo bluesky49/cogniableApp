@@ -28,11 +28,13 @@ class Target extends Component {
   componentDidMount() {
     const {
       dispatch,
-      sessionrecording: { Disabled, TargetActiveId, TargetActiveIndex },
+      sessionrecording: { loading, Disabled, TargetActiveId, TargetActiveIndex },
     } = this.props
-    document.getElementById(TargetActiveId).click()
-    document.getElementsByClassName('targetElements')[TargetActiveIndex].style.border =
-      '2px solid #bae7ff'
+    if (!loading) {
+      document.getElementById(TargetActiveId).click()
+      document.getElementsByClassName('targetElements')[TargetActiveIndex].style.border =
+        '2px solid #bae7ff'
+    }
   }
 
   resetCorrectIncorrectButtonStyle = () => {
