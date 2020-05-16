@@ -1,8 +1,8 @@
 import React from 'react'
-import { CloseCircleOutlined } from '@ant-design/icons'
+import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons'
 import style from './style.module.scss'
 
-const TargetCard = ({ id = '', text = '', showDelete = false, onDelete }) => {
+const TargetCard = ({ id = '', text = '', showDelete = false, onDelete, srNo }) => {
   const cardStyle = {
     backgroundColor: 'white',
     borderRadius: '10px',
@@ -28,7 +28,8 @@ const TargetCard = ({ id = '', text = '', showDelete = false, onDelete }) => {
       {showDelete ? (
         <div style={closeBtnStyle}>
           {/* <CloseOutlined /> */}
-          <CloseCircleOutlined onClick={onDelete} />
+          {/* <CloseCircleOutlined onClick={onDelete} /> */}
+          {srNo}
         </div>
       ) : (
         <></>

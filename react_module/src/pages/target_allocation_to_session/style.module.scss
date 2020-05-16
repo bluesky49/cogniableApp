@@ -102,3 +102,24 @@
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+.deleteButton {
+  height: 50px;
+  text-align: center;
+  border-radius: 12px;
+  justify-content: center;
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #121212;
+  color: #121212;
+  font-size: 15px;
+
+  :hover {
+    color: red;
+  }
+
+  div {
+    display: none;
+  }
+}

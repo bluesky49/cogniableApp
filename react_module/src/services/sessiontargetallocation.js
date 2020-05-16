@@ -127,8 +127,6 @@ export async function updateSessionTargets(payload) {
                     id
                     itemRequired,
                     duration,
-                    feedback,
-                    rating,
                     sessionName {
                         id
                         name
@@ -226,8 +224,6 @@ export async function updateSessionDetails(objects) {
                     id
                     itemRequired,
                     duration,
-                    feedback,
-                    rating,
                     sessionName {
                         id
                         name

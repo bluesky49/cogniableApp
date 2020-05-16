@@ -29,6 +29,7 @@ import style from './style.module.scss'
 import Authorize from '../../components/LayoutComponents/Authorize'
 import SessionDetails from './sessiondetails'
 import TargetCard from './TargetCard'
+import DeleteACard from './DeleteACard'
 
 @connect(({ user, sessiontargetallocation }) => ({ user, sessiontargetallocation }))
 class ExtraAppsJiraAgileBoard extends React.Component {
@@ -74,24 +75,28 @@ class ExtraAppsJiraAgileBoard extends React.Component {
   saveSessionTargets = session => {
     const {
       dispatch,
-      sessiontargetallocation: { MorningSession, AfternoonSession, EveningSession, CurrentSession },
+      sessiontargetallocation: {
+        MorningSession,
+        AfternoonSession,
+        EveningSession,
+        CurrentSession,
+        MorningSessionId,
+        AfternoonSessionId,
+        EveningSessionId,
+      },
     } = this.props
     let id = null
     let rawString = []
     if (session === 'Morning') {
       rawString = localStorage.getItem('Morning').split('|')
-      console.log('rawString==>', rawString)
-      console.log(rawString)
-      id = MorningSession.id
+      id = MorningSessionId
     }
     if (session === 'Afternoon') {
       rawString = localStorage.getItem('Afternoon').split('|')
-      console.log(rawString)
       id = AfternoonSession.id
     }
     if (session === 'Evening') {
       rawString = localStorage.getItem('Evening').split('|')
-      console.log(rawString)
       id = EveningSession.id
     }
 
@@ -111,7 +116,6 @@ class ExtraAppsJiraAgileBoard extends React.Component {
   }
 
   handleChangeSearchText = ({ target: { value } }) => {
-    console.log('=handleChangeSearchText==>', value)
     this.setState({
       searchTargetText: value,
     })
@@ -119,18 +123,6 @@ class ExtraAppsJiraAgileBoard extends React.Component {
 
   searchTarget = value => {
     console.log('searchTarget==>', value)
-  }
-
-  deleteMorningSession = id => {
-    console.log('deleteMorningSession==>', id)
-  }
-
-  deleteAfternoonSession = id => {
-    console.log('deleteMorningSession==>', id)
-  }
-
-  deleteEveningSession = id => {
-    console.log('deleteMorningSession==>', id)
   }
 
   render() {
@@ -169,8 +161,6 @@ class ExtraAppsJiraAgileBoard extends React.Component {
       MorningSession.targets.edges.map(item => {
         morningSessionDiv.push(
           <TargetCard
-            showDelete
-            onDelete={() => this.deleteMorningSession(item.node.id)}
             key={item.node.id}
             id={item.node.id}
             text={item.node.targetAllcatedDetails.targetName}
@@ -180,11 +170,11 @@ class ExtraAppsJiraAgileBoard extends React.Component {
     }
 
     if (AfternoonSession && AfternoonSession.targets.edges.length > 0) {
-      AfternoonSession.targets.edges.map(item => {
+      AfternoonSession.targets.edges.map((item, index) => {
         afternoonSessionDiv.push(
           <TargetCard
-            showDelete
-            onDelete={() => this.deleteAfternoonSession(item.node.id)}
+            // showDelete
+            // srNo={index + 1}
             key={item.node.id}
             id={item.node.id}
             text={item.node.targetAllcatedDetails.targetName}
@@ -197,8 +187,6 @@ class ExtraAppsJiraAgileBoard extends React.Component {
       EveningSession.targets.edges.map(item => {
         eveningSessionDiv.push(
           <TargetCard
-            showDelete
-            onDelete={() => this.deleteEveningSession(item.node.id)}
             key={item.node.id}
             id={item.node.id}
             text={item.node.targetAllcatedDetails.targetName}
@@ -211,7 +199,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
     const sessionsSortableStyle = { height: 400, overflow: 'auto', marginTop: '10px' }
 
     return (
-      <div>
+      <Authorize roles={['school_admin', 'therapist']} redirect to="/dashboard/beta">
         <div className={style.targetAllocation}>
           <Helmet title="Jira Agile Board" />
           <div className={style.heading}>
@@ -243,12 +231,9 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                       // put: false, // Do not allow items to be put into this list
                       // forceFallback: true,
                       put: function(to, el, node) {
-                        console.log(node.id)
                         var check = true
                         for (var key in to.el.children) {
-                          // console.log(key);
                           if (to.el.children.hasOwnProperty(key)) {
-                            // console.log(key , to.el.children[key].id);
                             if (to.el.children[key].id === node.id) {
                               check = true
                             }
@@ -271,7 +256,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                 </Sortable>
               </div>
             </div>
-            {MorningSession || true ? (
+            {MorningSession ? (
               <div className="col-lg-3 col-md-6">
                 <div className={style.targetListHeding}>
                   <h3 className="font-weight-bold text-dark font-size-20">
@@ -293,17 +278,15 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                     {' '}
                     <PlusOutlined /> Add Details & Hosts
                   </Button>
+                  <DeleteACard />
                   <Sortable
                     options={{
                       group: {
                         name: 'shared',
                         put: function(to, el, node) {
-                          console.log(node.id)
                           var check = true
                           for (var key in to.el.children) {
-                            // console.log(key);
                             if (to.el.children.hasOwnProperty(key)) {
-                              // console.log(key , to.el.children[key].id);
                               if (to.el.children[key].id === node.id) {
                                 check = false
                               }
@@ -347,8 +330,6 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                         // Save the order of elements.
                         // @param {Sortable}  sortable
                         set: function(sortable) {
-                          console.log(sortable.el.childNodes)
-                          // console.log(sortable.el.childNodes[0].id)
                           let i = 0
                           const list = []
                           for (i = 0; i < sortable.el.childNodes.length; i++) {
@@ -366,7 +347,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                   >
                     {morningSessionDiv}
                   </Sortable>
-                  <div>
+                  {/* <div>
                     <Button
                       type="dashed"
                       className={style.clearAllButton}
@@ -375,13 +356,13 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                     >
                       Clear All
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ) : (
               ''
             )}
-            {AfternoonSession || true ? (
+            {AfternoonSession ? (
               <div className="col-lg-3 col-md-6">
                 <div className={style.targetListHeding}>
                   <h3 className="font-weight-bold text-dark font-size-20">
@@ -403,6 +384,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                     {' '}
                     <PlusOutlined /> Add Details & Hosts
                   </Button>
+                  <DeleteACard />
                   <Sortable
                     options={{
                       group: {
@@ -447,8 +429,6 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                         // Save the order of elements.
                         // @param {Sortable}  sortable
                         set: function(sortable) {
-                          console.log(sortable.el.childNodes)
-                          // console.log(sortable.el.childNodes[0].id)
                           let i = 0
                           const list = []
                           for (i = 0; i < sortable.el.childNodes.length; i++) {
@@ -481,7 +461,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                   >
                     {afternoonSessionDiv}
                   </Sortable>
-                  <div>
+                  {/* <div>
                     <Button
                       type="dashed"
                       className={style.clearAllButton}
@@ -490,13 +470,13 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                     >
                       Clear All
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ) : (
               ''
             )}
-            {EveningSession || true ? (
+            {EveningSession ? (
               <div className="col-lg-3 col-md-6">
                 <div className={style.targetListHeding}>
                   <h3 className="font-weight-bold text-dark font-size-20">
@@ -518,6 +498,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                     {' '}
                     <PlusOutlined /> Add Details & Hosts
                   </Button>
+                  <DeleteACard />
                   <Sortable
                     options={{
                       group: {
@@ -566,8 +547,6 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                         // Save the order of elements.
                         // @param {Sortable}  sortable
                         set: function(sortable) {
-                          console.log(sortable.el.childNodes)
-                          // console.log(sortable.el.childNodes[0].id)
                           let i = 0
                           const list = []
                           for (i = 0; i < sortable.el.childNodes.length; i++) {
@@ -586,7 +565,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                     {eveningSessionDiv}
                   </Sortable>
 
-                  <div>
+                  {/* <div>
                     <Button
                       type="dashed"
                       className={style.clearAllButton}
@@ -595,7 +574,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                     >
                       Clear All
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ) : (
@@ -613,7 +592,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
             <SessionDetails key={CurrentSession} />
           </Drawer>
         </div>
-      </div>
+      </Authorize>
     )
   }
 }
