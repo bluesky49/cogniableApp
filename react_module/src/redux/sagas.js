@@ -6,7 +6,6 @@ import goals from './goals/sagas'
 import staffs from './staffs/sagas'
 import learners from './learners/sagas'
 import settings from './settings/sagas'
-import datarecording from './datarecording/sagas'
 import sessionrecording from './sessionrecording/sagas'
 import sessiontargetallocation from './sessiontargetallocation/sagas'
 
@@ -19,7 +18,6 @@ export default function* rootSaga() {
     family(),
     learners(),
     settings(),
-    datarecording(),
     sessionrecording(),
     sessiontargetallocation(),
   ])

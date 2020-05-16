@@ -4,7 +4,6 @@ import user from './user/reducers'
 import family from './family/reducers'
 import menu from './menu/reducers'
 import settings from './settings/reducers'
-import datarecording from './datarecording/reducers'
 import goals from './goals/reducers'
 import learners from './learners/reducers'
 import staffs from './staffs/reducers'
@@ -17,7 +16,6 @@ export default history =>
     user,
     menu,
     settings,
-    datarecording,
     goals,
     family,
     learners,

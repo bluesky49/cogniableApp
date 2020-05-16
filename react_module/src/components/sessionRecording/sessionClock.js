@@ -15,19 +15,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import React from 'react'
-import {
-  Row,
-  Col,
-  Select,
-  Form,
-  Collapse,
-  Tree,
-  Icon,
-  DatePicker,
-  notification,
-  Empty,
-  Button,
-} from 'antd'
+import { Icon, Button } from 'antd'
 import { connect } from 'react-redux'
 import Timer from 'react-compound-timer'
 
@@ -41,20 +29,114 @@ class SessionClock extends React.Component {
 
   startSession = time => {
     console.log(time)
-    const ts = new Date(time)
-    console.log(ts.toLocaleTimeString())
+    // const ts = new Date(time)
+    // console.log(ts.toLocaleTimeString())
+
+    const { dispatch } = this.props
+
+    dispatch({
+      type: 'sessionrecording/START_SESSION',
+      payload: {
+        duration: time,
+      },
+    })
+    // enable target recording block
+    dispatch({
+      type: 'sessionrecording/SET_STATE',
+      payload: {
+        Disabled: false,
+      },
+    })
   }
 
-  pauseSession = time => {}
+  pauseSession = time => {
+    const { dispatch } = this.props
 
-  endSession = time => {}
+    dispatch({
+      type: 'sessionrecording/PAUSE_SESSION',
+      payload: {
+        duration: time,
+      },
+    })
+    // disable target recording block
+    dispatch({
+      type: 'sessionrecording/SET_STATE',
+      payload: {
+        Disabled: true,
+      },
+    })
+  }
+
+  resumeSession = time => {
+    const { dispatch } = this.props
+
+    dispatch({
+      type: 'sessionrecording/RESUME_SESSION',
+      payload: {
+        duration: time,
+      },
+    })
+    // enable target recording block
+    dispatch({
+      type: 'sessionrecording/SET_STATE',
+      payload: {
+        Disabled: false,
+      },
+    })
+  }
+
+  endSession = time => {
+    const { dispatch } = this.props
+
+    dispatch({
+      type: 'sessionrecording/END_SESSION',
+      payload: {
+        duration: time,
+      },
+    })
+    // disable target recording block
+    dispatch({
+      type: 'sessionrecording/SET_STATE',
+      payload: {
+        Disabled: true,
+      },
+    })
+  }
+
+  updateTimeInReduxStore = time => {
+    const { dispatch } = this.props
+
+    dispatch({
+      type: 'sessionrecording/SET_STATE',
+      payload: {
+        CurrentSessionTime: time,
+      },
+    })
+  }
+
+  updateStartTrialInReduxStore = time => {
+    const { dispatch } = this.props
+
+    dispatch({
+      type: 'sessionrecording/SET_STATE',
+      payload: {
+        TrialStartTime: time,
+      },
+    })
+  }
 
   render() {
-    const SessionStatus = 'NotStarted'
+    const {
+      sessionrecording: { SessionStatus, ChildSession },
+    } = this.props
 
     return (
       <div style={{ padding: '10px' }}>
-        <Timer initialTime={0} startImmediately={false}>
+        <Timer
+          id="sessionClockTimer"
+          initialTime={ChildSession && ChildSession.duration ? ChildSession.duration : 0}
+          startImmediately={false}
+        >
           {({ start, resume, pause, stop, reset, getTime }) => (
             <React.Fragment>
               <h6 style={{ textAlign: 'center', fontSize: '30px' }}>
@@ -66,7 +148,14 @@ class SessionClock extends React.Component {
               </h6>
               <br />
               <div style={{ textAlign: 'center' }}>
-                {SessionStatus === 'NotStarted' ? (
+                <Button
+                  id="updateSessionCurrentTimeInStore"
+                  onClick={() => this.updateTimeInReduxStore(getTime())}
+                  style={{ display: 'hidden', border: 'none' }}
+                >
+                  &nbsp;
+                </Button>
+                {SessionStatus === 'Pending' ? (
                   <Button
                     onClick={() => {
                       start()
@@ -79,7 +168,7 @@ class SessionClock extends React.Component {
                 ) : (
                   ''
                 )}
-                {SessionStatus === 'Started' ? (
+                {SessionStatus === 'InProgress' ? (
                   <>
                     <Button
                       onClick={() => {
@@ -107,7 +196,7 @@ class SessionClock extends React.Component {
                     <Button
                       onClick={() => {
                         start()
-                        this.startSession(getTime())
+                        this.resumeSession(getTime())
                       }}
                     >
                       <Icon type="caret-right" />
@@ -117,17 +206,20 @@ class SessionClock extends React.Component {
                 ) : (
                   ''
                 )}
-                {SessionStatus === 'Ended' ? (
+                {SessionStatus === 'Completed' ? (
                   <>
                     <p>Session Completed!!</p>
                   </>
                 ) : (
                   ''
                 )}
-                {/* <Button onClick={pause}><Icon type="pause" /></Button>
-                                <Button onClick={resume}>Resume</Button> */}
-                {/* <Button onClick={() => { this.consoleTime(getTime()); stop(); }}><Icon type="stop" /></Button>
-                                <Button onClick={reset}><Icon type="undo" /></Button> */}
+                <Button
+                  id="updateStartTrialTimeInStore"
+                  onClick={() => this.updateStartTrialInReduxStore(getTime())}
+                  style={{ display: 'hidden', border: 'none' }}
+                >
+                  &nbsp;
+                </Button>
               </div>
             </React.Fragment>
           )}

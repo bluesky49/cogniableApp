@@ -12,7 +12,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable no-unused-expressions */
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable prefer-template */
 /* eslint-disable react/jsx-closing-tag-location */
 
 import React, { Component } from 'react'
@@ -22,19 +22,49 @@ import { connect } from 'react-redux'
 @connect(({ sessionrecording }) => ({ sessionrecording }))
 class TrialsList extends Component {
   render() {
-    const { dailyTrails } = this.props
+    const {
+      dailyTrails,
+      boxWidth,
+      id,
+      sdKey,
+      stepKey,
+      sessionrecording: { TargetResponse },
+    } = this.props
+    let object = TargetResponse[id].target
+    if (!(sdKey === '')) {
+      object = TargetResponse[id].sd[sdKey]
+    } else if (!(stepKey === '')) {
+      object = TargetResponse[id].step[stepKey]
+    }
+
+    const colorList = []
+    if (object.length > 0) {
+      object.map(item => {
+        if (item.trial === 'CORRECT') {
+          colorList.push('#4BAEA0')
+        }
+        if (item.trial === 'ERROR') {
+          colorList.push('#FF8080')
+        }
+        if (item.trial === 'PROMPT') {
+          colorList.push('#FF9C52')
+        }
+      })
+    }
 
     const Trials = []
     let i = 0
     for (i = 0; i < dailyTrails; i++) {
       Trials.push(
         <span
+          // className={'trial_'+id+'_'+i}
           style={{
             height: '15px',
             display: 'inline-block',
             lineHeight: '12px',
-            width: '20px',
+            width: boxWidth,
             border: '1px solid #999999',
+            backgroundColor: colorList[i] ? colorList[i] : '',
             paddingLeft: '20px',
             borderRadius: '2px',
             marginRight: '5px',
@@ -44,8 +74,6 @@ class TrialsList extends Component {
         </span>,
       )
     }
-
-    // const {sessionrecording: {loading, MasterSession}} = this.props;
 
     return <>{Trials}</>
   }
