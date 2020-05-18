@@ -163,6 +163,11 @@ const routes = [
     path: '/sessionrecording',
     component: loadable(() => import('pages/sessionrecording')),
   },
+  {
+    path: '/sessionsummary',
+    component: loadable(() => import('pages/session_summary')),
+    exact: true,
+  },
 ]
 
 class Router extends React.Component {

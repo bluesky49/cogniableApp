@@ -34,6 +34,7 @@ import {
   Empty,
   Button,
 } from 'antd'
+import { Redirect } from 'react-router-dom'
 import Authorize from 'components/LayoutComponents/Authorize'
 import { connect } from 'react-redux'
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
@@ -41,6 +42,7 @@ import TargetListBlock from '../../components/sessionRecording/targetListBlock'
 import SessionClock from '../../components/sessionRecording/sessionClock'
 import TrialsList from '../../components/sessionRecording/trialsList'
 import DataRecordingBlock from './dataRecordingBlock'
+import SessionSummary from '../session_summary/index'
 
 @connect(({ sessionrecording }) => ({ sessionrecording }))
 class DataRecording extends React.Component {
@@ -215,7 +217,7 @@ class DataRecording extends React.Component {
 
   render() {
     const {
-      sessionrecording: { loading, Disabled, MasterSession, TargetActiveIndex },
+      sessionrecording: { loading, Disabled, MasterSession, TargetActiveIndex, ChildSession },
     } = this.props
 
     const style2 = Disabled
@@ -245,6 +247,10 @@ class DataRecording extends React.Component {
 
     if (loading) {
       return 'Loading session data...'
+    }
+
+    if (!loading && ChildSession && ChildSession.id && ChildSession.status === 'COMPLETED') {
+      return <SessionSummary />
     }
 
     return (

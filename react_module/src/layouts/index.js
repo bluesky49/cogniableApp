@@ -60,6 +60,7 @@ class IndexLayout extends React.PureComponent {
     const isUserAuthorized = user.authorized
     const isUserLoading = user.loading
     const isLoginLayout = getLayout() === 'login'
+    const userRole = user.role
 
     const BootstrappedLayout = () => {
       // show loader when user in check authorization process, not authorized yet and not on login pages
@@ -71,8 +72,17 @@ class IndexLayout extends React.PureComponent {
         return <Redirect to="/user/login" />
       }
       // redirect to main dashboard when user on login page and authorized
-      if (isLoginLayout && isUserAuthorized) {
+      // if parent
+      if (isLoginLayout && isUserAuthorized && userRole === 'parents') {
         return <Redirect to="/dashboard/alpha" />
+      }
+      // if therapist
+      if (isLoginLayout && isUserAuthorized && userRole === 'therapist') {
+        return <Redirect to="/dashboard/therapist_admin" />
+      }
+      // if clinic admin
+      if (isLoginLayout && isUserAuthorized && userRole === 'school_admin') {
+        return <Redirect to="/dashboard/clinic_admin" />
       }
       // in other case render previously set layout
       return <Container>{children}</Container>
