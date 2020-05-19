@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import Authorize from 'components/LayoutComponents/Authorize'
 import { Row, Col, Button, Layout, Typography } from 'antd'
-import { FilterOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import { useQuery } from 'react-apollo'
 import gql from 'graphql-tag'
+import filterIcon from 'icons/filter.png'
+import Calendar from 'components/Calander'
 import MealCard from './MealCard'
-import Calendar from './Calander'
 import MealForm from './Mealform'
 import FilterCard from './FilterCard'
 
@@ -47,6 +47,13 @@ const MEAL = gql`
     }
   }
 `
+const STUDNET_INFO = gql`
+  query student($studentId: ID!) {
+    student(id: $studentId) {
+      firstname
+    }
+  }
+`
 
 export default () => {
   const [filter, setFilter] = useState(false)
@@ -59,6 +66,7 @@ export default () => {
   const [updateMealId, setUpdateMealId] = useState()
 
   const studentId = localStorage.getItem('studentId')
+
   const mealQuery = useQuery(MEAL, {
     variables: {
       studentId,
@@ -66,6 +74,12 @@ export default () => {
       endDate: date,
       mealType: mealType === 'All' ? '' : mealType,
       mealNameContain: mealNameSearchContent,
+    },
+  })
+
+  const { data: studnetInfo } = useQuery(STUDNET_INFO, {
+    variables: {
+      studentId,
     },
   })
 
@@ -104,12 +118,23 @@ export default () => {
       <Helmet title="Dashboard Alpha" />
       <Layout style={{ padding: '0px' }}>
         <Content style={{ padding: '0px 20px', maxWidth: 1300, width: '100%', margin: '0px auto' }}>
+          {studnetInfo && (
+            <Title
+              style={{
+                marginBottom: 30,
+                fontSize: 25,
+              }}
+            >
+              {studnetInfo.student.firstname}&apos;s Meal Data
+            </Title>
+          )}
+
           <Row gutter={[46, 0]}>
             <Col span={16}>
               <Calendar value={date} handleOnChange={handleSelectDate} />
               <div
                 style={{
-                  marginTop: 41,
+                  marginTop: 25,
                 }}
               >
                 <div
@@ -120,7 +145,7 @@ export default () => {
                   }}
                 >
                   <Button type="link" onClick={handleFilterToggle}>
-                    <FilterOutlined style={{ fontSize: 40 }} />
+                    <img src={filterIcon} style={{ width: 35, height: 35 }} alt="" />
                   </Button>
                 </div>
                 {filter && (

@@ -21,7 +21,7 @@ const CREATE_TOILET_DATA = gql`
   mutation recordToiletdata(
     $date: Date!
     $time: String!
-    $waterIntake: String!
+    $waterIntake: String
     $waterIntakeTime: String!
     $urination: Boolean!
     $bowel: Boolean!
@@ -59,9 +59,9 @@ const CREATE_TOILET_DATA = gql`
 
 const dateFormat = 'YYYY-MM-DD'
 
-const MealForm = ({ style, handleNewMealDate, setNewMealCreated }) => {
+const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDate }) => {
   const [waterIntake, setWaterIntake] = useState()
-  const [waterIntakeTime, setwaterIntakeTime] = useState()
+  const [waterIntakeTime, setwaterIntakeTime] = useState(moment())
   const [urination, setUrination] = useState(true)
   const [bowel, setBowel] = useState(true)
   const [prompted, setPrompted] = useState(true)
@@ -70,9 +70,9 @@ const MealForm = ({ style, handleNewMealDate, setNewMealCreated }) => {
   const [mutate, { data, error }] = useMutation(CREATE_TOILET_DATA, {
     variables: {
       studentId: user.id,
-      date: moment().format(dateFormat),
+      date: selectDate,
       time: moment().format('HH:mm'),
-      waterIntake: `${waterIntake} ml`,
+      waterIntake: waterIntake && `${waterIntake} ml`,
       waterIntakeTime: moment(waterIntakeTime).format('HH:mm'),
       urination,
       bowel,
@@ -88,12 +88,12 @@ const MealForm = ({ style, handleNewMealDate, setNewMealCreated }) => {
   useEffect(() => {
     if (data) {
       notification.success({
-        message: 'Meal Data',
-        description: 'Meal Data Added Successfully',
+        message: 'Toilet Data',
+        description: 'Toilet Data Added Successfully',
       })
-      handleNewMealDate(data.recordToiletdata.details.date)
+      handleNewToiletDate(data.recordToiletdata.details.date)
       console.log(data)
-      setNewMealCreated(true)
+      setNewToiletCreated(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
@@ -189,7 +189,7 @@ const MealForm = ({ style, handleNewMealDate, setNewMealCreated }) => {
         <TimePicker
           value={waterIntakeTime}
           onChange={value => setwaterIntakeTime(value)}
-          name="mealTime"
+          name="toiletTime"
           style={{ width: '100%' }}
           size="large"
         />
@@ -212,4 +212,4 @@ const MealForm = ({ style, handleNewMealDate, setNewMealCreated }) => {
   )
 }
 
-export default MealForm
+export default ToiletForm

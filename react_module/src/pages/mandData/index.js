@@ -65,11 +65,25 @@ const CREATE_NEW_MAND = gql`
   }
 `
 
+const STUDNET_INFO = gql`
+  query student($studentId: ID!) {
+    student(id: $studentId) {
+      firstname
+    }
+  }
+`
+
 export default () => {
   const [date, setDate] = useState(moment().format('YYYY-MM-DD'))
   const [newMandCreated, setNewMandCreated] = useState(false)
   const [mandTitle, setMandTitle] = useState('')
   const studentId = localStorage.getItem('studentId')
+  const { data: studnetInfo } = useQuery(STUDNET_INFO, {
+    variables: {
+      studentId,
+    },
+  })
+
   const { data, loading, error, refetch } = useQuery(MAND_DATA, {
     variables: {
       studentId,
@@ -128,10 +142,21 @@ export default () => {
   }
 
   return (
-    <Authorize roles={['school_admin', 'parents']} redirect to="/dashboard/beta">
+    <Authorize roles={['school_admin', 'therapist', 'parents']} redirect to="/dashboard/beta">
       <Helmet title="Dashboard Alpha" />
       <Layout style={{ padding: '0px' }}>
         <Content style={{ padding: '0px 20px', maxWidth: 1300, width: '100%', margin: '0px auto' }}>
+          {studnetInfo && (
+            <Title
+              style={{
+                marginBottom: 30,
+                fontSize: 25,
+              }}
+            >
+              {studnetInfo.student.firstname}&apos;s Meal Data
+            </Title>
+          )}
+
           <Row gutter={[46, 0]}>
             <Col span={16}>
               <Calendar value={date} handleOnChange={handleSelectDate} />
@@ -252,17 +277,14 @@ export default () => {
                   padding: '30px',
                 }}
               >
-                <Form
-                  onSubmit={e => SubmitForm(e, this)}
-                  name="control-ref"
-                  style={{ marginLeft: 0 }}
-                >
+                <Form onSubmit={e => SubmitForm(e)} name="control-ref" style={{ marginLeft: 0 }}>
                   <Form.Item label="Meal Name">
                     <Input
                       value={mandTitle}
                       onChange={e => setMandTitle(e.target.value)}
                       placeholder="Enter Mand Title"
                       name="mandTitle"
+                      required
                     />
                   </Form.Item>
 

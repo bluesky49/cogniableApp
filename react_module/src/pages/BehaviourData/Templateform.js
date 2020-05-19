@@ -1,25 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react'
-import {
-  Form,
-  Input,
-  Button,
-  Select,
-  DatePicker,
-  notification,
-  Radio,
-  InputNumber,
-  TimePicker,
-} from 'antd'
+import { Form, Input, Button, Select, notification } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
-import { useSelector } from 'react-redux'
 import gql from 'graphql-tag'
 import { useMutation, useQuery } from 'react-apollo'
-import moment from 'moment'
-import './behaviourForm.scss'
-import TextArea from 'antd/lib/input/TextArea'
+import './templateform.scss'
 
 const { Option } = Select
+const { TextArea } = Input
 
 const DANCLE_STATUS = gql`
   query {
@@ -102,6 +90,7 @@ const BehaviourForm = ({ style, setNewTamplateCreated, setNewTampletFromOpen }) 
   const [measurements, setMeasurements] = useState()
 
   const studentId = localStorage.getItem('studentId')
+  const durationMesId = 'RGVjZWxCZWhhdmlvck1lYXN1cmluZ3NUeXBlOjQ='
 
   const {
     data: dancleStatusData,
@@ -244,11 +233,14 @@ const BehaviourForm = ({ style, setNewTamplateCreated, setNewTampletFromOpen }) 
             console.log(measurements)
             setMeasurements(value)
           }}
+          defaultValue={[durationMesId]}
           size="large"
         >
           {dancleMeasurementData &&
             dancleMeasurementData.getBehaviourMeasurings.map(measurement => (
-              <Option value={measurement.id}>{measurement.measuringType}</Option>
+              <Option value={measurement.id} disabled={measurement.id === durationMesId}>
+                {measurement.measuringType}
+              </Option>
             ))}
         </Select>
       </Form.Item>

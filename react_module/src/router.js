@@ -53,7 +53,7 @@ const routes = [
   },
   {
     path: '/dashboard/alpha/',
-    component: loadable(() => import('views/parent/ParentDashboard/')),
+    component: loadable(() => import('pages/parent/ParentDashboard/')),
   },
   // Partners
   {
@@ -137,7 +137,7 @@ const routes = [
   },
   {
     path: '/medicalData/',
-    component: loadable(() => import('pages/MadicalData/index')),
+    component: loadable(() => import('pages/MedicalData/index')),
   },
   {
     path: '/family/',

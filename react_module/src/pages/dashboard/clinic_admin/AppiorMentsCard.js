@@ -1,35 +1,22 @@
-import React, { useState } from 'react'
-import { Typography, Button, Select, Form, Input, DatePicker, TimePicker } from 'antd'
-import { Scrollbars } from 'react-custom-scrollbars'
-import {
-  PlusOutlined,
-  WhatsAppOutlined,
-  ClockCircleOutlined,
-  CloseOutlined,
-} from '@ant-design/icons'
+import React, { useState, useEffect } from 'react'
+import { Typography, Button, Drawer } from 'antd'
+import { PlusOutlined, WhatsAppOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import gql from 'graphql-tag'
-import Drawer from 'rc-drawer'
-import { useQuery, useMutation } from 'react-apollo'
-import { useSelector } from 'react-redux'
+import { useQuery } from 'react-apollo'
 import defautProfileImg from './img/profile.jpg'
+import AppiorMentForm from './AppiorMentForm'
 
 const { Title, Text } = Typography
-const { Option } = Select
 
 const APPIORMENTS = gql`
   query {
-    upcoming_appointment: appointments(first: 2) {
+    upcoming_appointment: appointments(first: 5) {
       edges {
         node {
-          id
           start
           end
           title
-          location {
-            id
-            location
-          }
           therapist {
             name
           }
@@ -38,37 +25,8 @@ const APPIORMENTS = gql`
     }
   }
 `
-const CREATE_APPIORMENTS = gql`
-  mutation CreateAppointment(
-    $therapistId: ID!
-    $studentId: ID!
-    $locationId: ID!
-    $title: String!
-    $purposeAssignment: String!
-    $note: String!
-    $start: Date!
-    $end: Date!
-  ) {
-    CreateAppointment(
-      input: {
-        appointment: {
-          therapist: "U3RhZmZUeXBlOjc3"
-          student: "U3R1ZGVudFR5cGU6OTI="
-          location: "TG9jYXRpb25UeXBlOjM="
-          title: "fhgfhfg"
-          purposeAssignment: "fdgfdh"
-          note: "fghfgh"
-          start: "2020-04-23T11:00:51.180Z"
-          end: "2020-04-23T12:00:51.180Z"
-        }
-      }
-    ) {
-      appointment {
-        id
-      }
-    }
-  }
-`
+
+const timeFormat = 'HH:mm a'
 
 const AppointmentCard = ({ therapist, title, start, end, profileImg }) => {
   return (
@@ -113,7 +71,7 @@ const AppointmentCard = ({ therapist, title, start, end, profileImg }) => {
               color: '#000',
             }}
           >
-            {`${moment(start).format('HH-mm a')}-${moment(end).format('HH-mm a')}`}
+            {`${moment(start).format(timeFormat)}-${moment(end).format(timeFormat)}`}
           </Text>
         </div>
         <Text
@@ -131,23 +89,21 @@ const AppointmentCard = ({ therapist, title, start, end, profileImg }) => {
 }
 
 const AppiorMentsCard = ({ style }) => {
-  const [createNewAppiormentDrawer, setCreateNewAppiormentDrawer] = useState(false)
-  const [location, setLocalions] = useState()
-  const [purposeAssignment, setPurposeAssignment] = useState()
-  const [note, setNote] = useState()
-  const [start, setStart] = useState()
-  const [end, setEnd] = useState()
-  const [title, setTitle] = useState()
-  const [student, setStudent] = useState()
+  const [newAppiormentDrawer, setNewAppiormentDrawer] = useState(false)
+  const [newAppiormentCreated, setNewAppiormentCreated] = useState(false)
+
   const appiorments = useQuery(APPIORMENTS)
 
-  const [createAppiorments, { data: createAppiormentsData, createAppiormentsError }] = useMutation(
-    CREATE_APPIORMENTS,
-  )
-  const user = useSelector(state => state.user)
+  useEffect(() => {
+    if (newAppiormentCreated) {
+      appiorments.refetch()
+      setNewAppiormentCreated(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newAppiormentCreated])
 
-  const handelAddTargetAreaDrawer = () => {
-    setCreateNewAppiormentDrawer(state => !state)
+  const handelNewAppiormentDrawer = () => {
+    setNewAppiormentDrawer(state => !state)
   }
 
   return (
@@ -187,7 +143,7 @@ const AppiorMentsCard = ({ style }) => {
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          onClick={handelAddTargetAreaDrawer}
+          onClick={handelNewAppiormentDrawer}
         >
           <PlusOutlined style={{ fontSize: 24, marginTop: 5, marginLeft: 2, color: '#000' }} />
         </Button>
@@ -201,145 +157,57 @@ const AppiorMentsCard = ({ style }) => {
           padding: '14px 6px',
         }}
       >
-        {appiorments.error && <Text type="danger">Opp&apos;s some thing wrong </Text>}
-        <Scrollbars style={{ height: 219, padding: '0px 26px' }}>
-          {appiorments.loading && <div style={{ height: '100%' }}>Loading...</div>}
-          {appiorments.data &&
-            appiorments.data.upcoming_appointment.edges.map(({ node }, index) => {
-              return (
-                <>
-                  <AppointmentCard
-                    therapist={node.therapist.name}
-                    title={node.title}
-                    start={node.start}
-                    end={node.end}
-                    profileImg={node.profileImg}
+        {appiorments.error && (
+          <div style={{ minHeight: 585 }}>
+            <Text type="danger">Opp&apos;s some thing wrong</Text>
+          </div>
+        )}
+        {appiorments.loading && <div style={{ minHeight: 585 }}>Loading...</div>}
+        {appiorments.data &&
+          appiorments.data.upcoming_appointment.edges.map(({ node }, index) => {
+            const { length } = appiorments.data.upcoming_appointment.edges
+            return (
+              <>
+                <AppointmentCard
+                  therapist={node.therapist.name}
+                  title={node.title}
+                  start={node.start}
+                  end={node.end}
+                  profileImg={node.profileImg}
+                />
+                {index < length - 1 && (
+                  <hr
+                    style={{
+                      margin: '34px auto 0px',
+                      width: 'calc(100% - 64px)',
+                    }}
                   />
-                  {index === 0 && (
-                    <hr
-                      style={{
-                        margin: '34px auto 0px',
-                        width: 'calc(100% - 64px)',
-                      }}
-                    />
-                  )}
-                </>
-              )
-            })}
-        </Scrollbars>
+                )}
+              </>
+            )
+          })}
       </div>
       <Drawer
         handler={false}
-        className="drawer242"
-        levelMove={100}
         width="500px"
-        open={createNewAppiormentDrawer}
+        visible={newAppiormentDrawer}
         placement="right"
-        onMaskClick={handelAddTargetAreaDrawer}
-        onClose={handelAddTargetAreaDrawer}
+        onClose={handelNewAppiormentDrawer}
+        title="New Appiorment"
       >
         <div
           style={{
             background: '#fff',
             height: '100%',
             width: '100%',
-            padding: '30px 75px',
+            padding: '30px 40px',
+            paddingTop: 0,
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Title
-              style={{
-                fontSize: '22px',
-              }}
-            >
-              New Appiorment
-            </Title>
-            <Button type="link" onClick={handelAddTargetAreaDrawer}>
-              <CloseOutlined style={{ fontSize: 25, color: '#000' }} />
-            </Button>
-          </div>
-
-          <Form
-            name="basic"
-            onSubmit={() => {
-              createAppiorments({
-                variables: {
-                  therapistId: user.id,
-                  studentId: student,
-                  title,
-                  locationId: location,
-                  purposeAssignment,
-                  note,
-                  start,
-                  end,
-                },
-              })
-            }}
-          >
-            <Form.Item
-              label="Select User"
-              name="username"
-              rules={[{ required: true, message: 'Please input your username!' }]}
-            >
-              <Select>
-                <Option key="1">Hello</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              label="Purpose of Assignment"
-              name="password"
-              rules={[{ required: true, message: 'Please input your password!' }]}
-            >
-              <DatePicker />
-            </Form.Item>
-
-            <Form.Item
-              label="Date (Select one time or Recutting)"
-              name="password"
-              rules={[{ required: true, message: 'Please input your password!' }]}
-            >
-              <DatePicker />
-            </Form.Item>
-
-            <Form.Item
-              label="Time"
-              name="password"
-              rules={[{ required: true, message: 'Please input your password!' }]}
-            >
-              <TimePicker />
-              <TimePicker />
-            </Form.Item>
-
-            <Form.Item
-              label="Select Therefist"
-              name="username"
-              rules={[{ required: true, message: 'Please input your username!' }]}
-            >
-              <Select>
-                <Option key="1">Hello</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{
-                  width: 180,
-                  height: 40,
-                  background: '#0B35B3',
-                }}
-              >
-                Submit
-              </Button>
-            </Form.Item>
-          </Form>
+          <AppiorMentForm
+            setNewAppiormentCreated={setNewAppiormentCreated}
+            handelNewAppiormentDrawer={handelNewAppiormentDrawer}
+          />
         </div>
       </Drawer>
     </div>

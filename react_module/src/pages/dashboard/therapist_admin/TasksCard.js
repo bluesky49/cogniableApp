@@ -1,6 +1,5 @@
 import React from 'react'
 import { Typography } from 'antd'
-import { Scrollbars } from 'react-custom-scrollbars'
 import gql from 'graphql-tag'
 import { useQuery } from 'react-apollo'
 import defaultProfileImg from './img/profile.jpg'
@@ -9,7 +8,7 @@ const { Title, Text } = Typography
 
 const TASKS = gql`
   query {
-    tasks: tasks(first: 2) {
+    tasks: tasks(first: 5) {
       edges {
         node {
           id
@@ -133,6 +132,7 @@ const TasksCard = ({ style }) => {
           boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
           borderRadius: 10,
           padding: '14px 6px',
+          minHeight: 274,
         }}
       >
         {loading ? (
@@ -141,23 +141,28 @@ const TasksCard = ({ style }) => {
           <>
             {error && <Text type="danger">Opp&apos;s their is a error</Text>}
             {data && (
-              <Scrollbars style={{ height: 244, padding: '0px 26px' }}>
-                {data.tasks.edges.map(({ node }) => (
-                  <div key={node.id}>
-                    <TaskCard
-                      title={node.taskName}
-                      status={node.status.taskStatus}
-                      students={node.students.edges}
-                    />
-                    <hr
-                      style={{
-                        margin: '34px auto 0px',
-                        width: 'calc(100% - 64px)',
-                      }}
-                    />
-                  </div>
-                ))}
-              </Scrollbars>
+              <div>
+                {data.tasks.edges.map(({ node }, index) => {
+                  const { length } = data.tasks.edges
+                  return (
+                    <div key={node.id}>
+                      <TaskCard
+                        title={node.taskName}
+                        status={node.status.taskStatus}
+                        students={node.students.edges}
+                      />
+                      {index < length - 1 && (
+                        <hr
+                          style={{
+                            margin: '34px auto 0px',
+                            width: 'calc(100% - 64px)',
+                          }}
+                        />
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             )}
           </>
         )}

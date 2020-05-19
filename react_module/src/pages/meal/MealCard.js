@@ -95,7 +95,7 @@ const MealCard = ({
           style={{
             fontSize: 16,
             lineHeight: '26px',
-            color: '#FF6B6B',
+            color: foodType === 'Junk Food' ? '#FF6B6B' : 'green',
           }}
         >
           {foodType}

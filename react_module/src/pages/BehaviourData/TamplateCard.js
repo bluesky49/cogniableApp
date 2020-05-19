@@ -11,6 +11,8 @@ const TampletCard = ({
   status,
   envsNum,
   setNewRecordDrawer,
+  setSelectTamplate,
+  id,
 }) => {
   return (
     <div
@@ -88,6 +90,7 @@ const TampletCard = ({
           }}
           onClick={() => {
             setNewRecordDrawer(true)
+            setSelectTamplate(id)
           }}
         >
           <img
@@ -99,7 +102,7 @@ const TampletCard = ({
             }}
             alt=""
           />
-          Press to Record
+          Click to Record
         </Button>
       </div>
     </div>

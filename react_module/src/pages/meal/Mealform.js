@@ -33,6 +33,7 @@ const CREATE_MEAL = gql`
           mealType: $mealType
           waterIntake: $waterIntake
           foodType: $foodType
+          note: $note
         }
       }
     ) {
@@ -217,6 +218,7 @@ const MealForm = ({
       setMealTime(moment())
       setDate(moment())
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateMealData])
 
   useEffect(() => {
@@ -303,7 +305,7 @@ const MealForm = ({
           justifyContent: 'space-between',
         }}
       >
-        <Form.Item label="Meal Date">
+        <Form.Item label="Meal Date" rule={[]}>
           <DatePicker
             value={date}
             onChange={value => {
@@ -324,6 +326,7 @@ const MealForm = ({
           onChange={e => setMealName(e.target.value)}
           placeholder="Enter Meal Name"
           name="mealName"
+          style={{ color: '#000' }}
         />
       </Form.Item>
 
@@ -346,7 +349,6 @@ const MealForm = ({
 
       <Form.Item label="Food Type">
         <Select
-          showSearch
           style={{}}
           placeholder="Select Food Type"
           name="foodType"
@@ -354,11 +356,13 @@ const MealForm = ({
           size="large"
           onChange={value => setFoodType(value)}
           allowclear
+          showSearch
+          optionFilterProp="name"
         >
           {foodTypeQuery.data &&
             foodTypeQuery.data.getFoodType.map(type => {
               return (
-                <Option value={type.id} key={type.id}>
+                <Option value={type.id} key={type.id} name={type.name}>
                   {type.name}
                 </Option>
               )
@@ -373,6 +377,7 @@ const MealForm = ({
           value={waterIntake}
           type="number"
           addonAfter="ml"
+          min={0}
           onChange={e => setWaterIntake(e.target.value)}
         />
       </Form.Item>
@@ -384,8 +389,10 @@ const MealForm = ({
           onChange={e => setNote(e.target.value)}
           value={note}
           autoSize={{ minRows: 3 }}
+          style={{
+            color: '#000',
+          }}
         />
-        ,
       </Form.Item>
 
       <Form.Item>

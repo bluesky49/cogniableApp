@@ -5,28 +5,24 @@ import { Row, Col, Layout, Typography } from 'antd'
 import moment from 'moment'
 import { useQuery } from 'react-apollo'
 import gql from 'graphql-tag'
-import { useSelector } from 'react-redux'
 import Calendar from 'components/Calander'
-import MealCard from './ToiletCard'
-import MealForm from './Toiletform'
+import MedicalCard from './MedicalCard'
+import MedicalForm from './Medicalform'
 
 const { Content } = Layout
 const { Title } = Typography
 
-const TOILET_DATA = gql`
-  query getToiletData($date: Date!) {
-    getToiletData(student: "U3R1ZGVudFR5cGU6MTYz", date: $date, success: true) {
+const MEDICAL_DATA = gql`
+  query getMedication($date: Date!, $studentId: ID!) {
+    getMedication(student: $studentId, date: $date) {
       edges {
         node {
           id
-          date
-          time
-          lastWater
-          lastWaterTime
-          success
-          urination
-          bowel
-          prompted
+          condition
+          startDate
+          endDate
+          note
+          duration
         }
       }
     }
@@ -43,14 +39,13 @@ const STUDNET_INFO = gql`
 
 export default () => {
   const [date, setDate] = useState(moment().format('YYYY-MM-DD'))
-  const user = useSelector(state => state.user)
-  const [newToiletDate, setNewToiletDate] = useState(date)
-  const [newToiletDataCreated, setNewToiletDataCreated] = useState(false)
+  const [newMediDate, setNewMediDate] = useState(date)
+  const [newMediCreated, setNewMediCreated] = useState(false)
   const studentId = localStorage.getItem('studentId')
 
-  const { data, loading, error, refetch } = useQuery(TOILET_DATA, {
+  const { data, loading, error, refetch } = useQuery(MEDICAL_DATA, {
     variables: {
-      studentId: user.id,
+      studentId,
       date,
     },
   })
@@ -62,11 +57,11 @@ export default () => {
   })
 
   useEffect(() => {
-    if (newToiletDate === date && newToiletDataCreated) {
+    if (newMediDate === date && newMediCreated) {
       refetch()
-      setNewToiletDataCreated(false)
+      setNewMediCreated(false)
     }
-  }, [newToiletDate, refetch, date, newToiletDataCreated])
+  }, [newMediDate, refetch, date, newMediCreated])
 
   const handleSelectDate = newDate => {
     setDate(moment(newDate).format('YYYY-MM-DD'))
@@ -84,46 +79,31 @@ export default () => {
                 fontSize: 25,
               }}
             >
-              {studnetInfo.student.firstname}&apos;s Toilet Data
+              {studnetInfo.student.firstname}&apos;s Medical Data
             </Title>
           )}
           <Row gutter={[46, 0]}>
             <Col span={16}>
               <Calendar value={date} handleOnChange={handleSelectDate} />
-              <div
-                style={{
-                  marginTop: 41,
-                }}
-              >
-                <div
-                  style={{
-                    marginTop: 17,
-                  }}
-                >
-                  {loading ? (
-                    'Loading...'
-                  ) : (
-                    <>
-                      {error && <pre>{JSON.stringify(error, null, 2)}</pre>}
-                      {data &&
-                        data.getToiletData.edges.map(({ node }, index) => {
-                          return (
-                            <MealCard
-                              key={node.id}
-                              urination={node.urination}
-                              bowel={node.bowel}
-                              prompted={node.prompted}
-                              time={node.time}
-                              waterValue={node.waterIntake}
-                              style={{ marginTop: index === 0 ? 0 : 20 }}
-                            />
-                          )
-                        })}
-                    </>
-                  )}
+              <div style={{ marginTop: 41 }}>
+                <div style={{ marginTop: 17 }}>
+                  {loading && 'Loading...'}
+                  {error && <pre>{JSON.stringify(error, null, 2)}</pre>}
+                  {data &&
+                    data.getMedication.edges.map(({ node }, index) => (
+                      <MedicalCard
+                        key={node.id}
+                        condition={node.condition}
+                        note={node.note}
+                        startDate={node.startDate}
+                        endDate={node.endDate}
+                        style={{ marginTop: index === 0 ? 0 : 20 }}
+                      />
+                    ))}
                 </div>
               </div>
             </Col>
+
             <Col span={8}>
               <Title
                 style={{
@@ -132,7 +112,7 @@ export default () => {
                   lineHeight: '41px',
                 }}
               >
-                Record Toilet Data
+                New Medical Data
               </Title>
               <div
                 style={{
@@ -141,12 +121,11 @@ export default () => {
                   padding: '30px',
                 }}
               >
-                <MealForm
-                  handleNewToiletDate={newDate => {
-                    setNewToiletDate(newDate)
+                <MedicalForm
+                  handleNewMediDate={newDate => {
+                    setNewMediDate(newDate)
                   }}
-                  selectDate={date}
-                  setNewToiletCreated={setNewToiletDataCreated}
+                  setNewMediCreated={setNewMediCreated}
                 />
               </div>
             </Col>

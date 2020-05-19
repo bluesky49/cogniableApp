@@ -1,6 +1,5 @@
 import React from 'react'
-import { Typography } from 'antd'
-import { Scrollbars } from 'react-custom-scrollbars'
+import { Typography, Popover } from 'antd'
 import gql from 'graphql-tag'
 import { useQuery } from 'react-apollo'
 import defaultProfileImg from './img/profile.jpg'
@@ -9,7 +8,7 @@ const { Title, Text } = Typography
 
 const TASKS = gql`
   query {
-    tasks: tasks(first: 2) {
+    tasks: tasks(first: 5) {
       edges {
         node {
           id
@@ -22,14 +21,6 @@ const TASKS = gql`
               node {
                 firstname
                 lastname
-              }
-            }
-          }
-          assignWork {
-            edges {
-              node {
-                id
-                name
               }
             }
           }
@@ -71,16 +62,19 @@ const TaskCard = ({ title, status, students }) => {
           >
             {students.map(({ node }) => {
               return (
-                <img
-                  key={node.id}
-                  src={node.profileImg || defaultProfileImg}
-                  style={{
-                    width: 35,
-                    height: 28,
-                    borderRadius: 10,
-                  }}
-                  alt=""
-                />
+                <Popover content={<Text>{node.firstname}</Text>} placement="bottom">
+                  <img
+                    key={node.id}
+                    src={node.profileImg || defaultProfileImg}
+                    style={{
+                      width: 35,
+                      height: 28,
+                      borderRadius: 10,
+                      cursor: 'pointer',
+                    }}
+                    alt=""
+                  />
+                </Popover>
               )
             })}
           </div>
@@ -136,17 +130,18 @@ const TasksCard = ({ style }) => {
         }}
       >
         {error && <Text type="danger">Opp&apos;s their is a error</Text>}
-        <Scrollbars style={{ height: 185, minHeight: 185, padding: '0px 26px' }}>
-          {loading && <div style={{ height: '100%' }}>Loading...</div>}
-          {data &&
-            data.tasks.edges.map(({ node }, index) => (
+        {loading && <div style={{ height: '100%' }}>Loading...</div>}
+        {data &&
+          data.tasks.edges.map(({ node }, index) => {
+            const { length } = data.tasks.edges
+            return (
               <div key={node.id}>
                 <TaskCard
                   title={node.taskName}
                   status={node.status.taskStatus}
                   students={node.students.edges}
                 />
-                {index === 0 && (
+                {index < length - 1 && (
                   <hr
                     style={{
                       margin: '34px auto 0px',
@@ -155,8 +150,8 @@ const TasksCard = ({ style }) => {
                   />
                 )}
               </div>
-            ))}
-        </Scrollbars>
+            )
+          })}
       </div>
     </div>
   )

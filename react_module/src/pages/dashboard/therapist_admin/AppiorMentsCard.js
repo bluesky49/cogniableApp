@@ -1,24 +1,17 @@
 import React, { useState } from 'react'
-import { Typography, Button, Select, Form, Input, DatePicker, TimePicker } from 'antd'
-import { Scrollbars } from 'react-custom-scrollbars'
-import {
-  PlusOutlined,
-  WhatsAppOutlined,
-  ClockCircleOutlined,
-  CloseOutlined,
-} from '@ant-design/icons'
+import { Typography, Button, Drawer } from 'antd'
+import { PlusOutlined, WhatsAppOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import gql from 'graphql-tag'
-import Drawer from 'rc-drawer'
 import { useQuery } from 'react-apollo'
 import defautProfileImg from './img/profile.jpg'
+import AppiorMentForm from './AppiorMentForm'
 
 const { Title, Text } = Typography
-const { Option } = Select
 
 const APPIORMENTS = gql`
   query {
-    upcoming_appointment: appointments(first: 2) {
+    upcoming_appointment: appointments(first: 5) {
       edges {
         node {
           id
@@ -33,28 +26,6 @@ const APPIORMENTS = gql`
             name
           }
         }
-      }
-    }
-  }
-`
-const CREATE_APPIORMENTS = gql`
-  mutation {
-    CreateAppointment(
-      input: {
-        appointment: {
-          therapist: "U3RhZmZUeXBlOjc3"
-          student: "U3R1ZGVudFR5cGU6OTI="
-          location: "TG9jYXRpb25UeXBlOjM="
-          title: "fhgfhfg"
-          purposeAssignment: "fdgfdh"
-          note: "fghfgh"
-          start: "2020-04-23T11:00:51.180Z"
-          end: "2020-04-23T12:00:51.180Z"
-        }
-      }
-    ) {
-      appointment {
-        id
       }
     }
   }
@@ -103,7 +74,7 @@ const AppointmentCard = ({ therapist, title, start, end, profileImg }) => {
               color: '#000',
             }}
           >
-            {`${moment(start)}-${moment(end)}`}
+            {`${moment(start).format('HH:mm a')}-${moment(end).format('HH:mm a')}`}
           </Text>
         </div>
         <Text
@@ -122,12 +93,13 @@ const AppointmentCard = ({ therapist, title, start, end, profileImg }) => {
 
 const AppiorMentsCard = ({ style }) => {
   const [createNewAppiormentDrawer, setCreateNewAppiormentDrawer] = useState(false)
+  const [newAppiormentCreated, setNewAppiormentCreated] = useState(false)
   const appiorments = useQuery(APPIORMENTS)
 
   // const {mutate, newAppiorments} = useMutation(CREATE_APPIORMENTS)
   // const user = useSelector(state => state.user)
 
-  const handelAddTargetAreaDrawer = () => {
+  const handelNewAppiormentDrawer = () => {
     setCreateNewAppiormentDrawer(state => !state)
   }
 
@@ -168,7 +140,7 @@ const AppiorMentsCard = ({ style }) => {
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          onClick={handelAddTargetAreaDrawer}
+          onClick={handelNewAppiormentDrawer}
         >
           <PlusOutlined style={{ fontSize: 24, marginTop: 5, marginLeft: 2, color: '#000' }} />
         </Button>
@@ -180,18 +152,20 @@ const AppiorMentsCard = ({ style }) => {
           boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
           borderRadius: 10,
           padding: '14px 6px',
+          minHeight: 585,
         }}
       >
         {appiorments.loading ? (
           'Loading...'
         ) : (
           <>
-            {appiorments.error && <Text type="danger">Opp&apos;s some thing wrong </Text>}
+            {appiorments.error && <Text type="danger">Opp&apos;s some thing wrong</Text>}
             {appiorments.data && (
-              <Scrollbars style={{ height: 219, padding: '0px 26px' }}>
-                {appiorments.data.upcoming_appointment.edges.map(({ node }) => {
+              <div>
+                {appiorments.data.upcoming_appointment.edges.map(({ node }, index) => {
+                  const { length } = appiorments.data.upcoming_appointment.edges
                   return (
-                    <>
+                    <div key={node.id}>
                       <AppointmentCard
                         therapist={node.therapist.name}
                         title={node.title}
@@ -199,107 +173,42 @@ const AppiorMentsCard = ({ style }) => {
                         end={node.end}
                         profileImg={node.profileImg}
                       />
-                      <hr
-                        style={{
-                          margin: '34px auto 0px',
-                          width: 'calc(100% - 64px)',
-                        }}
-                      />
-                    </>
+                      {index < length - 1 && (
+                        <hr
+                          style={{
+                            margin: '34px auto 0px',
+                            width: 'calc(100% - 64px)',
+                          }}
+                        />
+                      )}
+                    </div>
                   )
                 })}
-              </Scrollbars>
+              </div>
             )}
           </>
         )}
       </div>
       <Drawer
         handler={false}
-        className="drawer242"
-        levelMove={100}
         width="500px"
-        open={createNewAppiormentDrawer}
+        visible={createNewAppiormentDrawer}
         placement="right"
-        onMaskClick={handelAddTargetAreaDrawer}
-        onClose={handelAddTargetAreaDrawer}
+        onClose={handelNewAppiormentDrawer}
+        title="New Appiorment"
       >
         <div
           style={{
             background: '#fff',
             height: '100%',
             width: '100%',
-            padding: '30px 75px',
+            padding: '30px 40px',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Title
-              style={{
-                fontSize: '22px',
-              }}
-            >
-              New Appiorment
-            </Title>
-            <Button type="link" onClick={handelAddTargetAreaDrawer}>
-              <CloseOutlined style={{ fontSize: 25, color: '#000' }} />
-            </Button>
-          </div>
-          <Form name="basic" initialValues={{ remember: true }}>
-            <Form.Item
-              label="Select User"
-              name="username"
-              rules={[{ required: true, message: 'Please input your username!' }]}
-            >
-              <Select>
-                <Option key="1">Hello</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              label="Purpose of Assignment"
-              name="password"
-              rules={[{ required: true, message: 'Please input your password!' }]}
-            >
-              <DatePicker />
-            </Form.Item>
-
-            <Form.Item
-              label="Date (Select one time or Recutting)"
-              name="password"
-              rules={[{ required: true, message: 'Please input your password!' }]}
-            >
-              <DatePicker />
-            </Form.Item>
-
-            <Form.Item
-              label="Time"
-              name="password"
-              rules={[{ required: true, message: 'Please input your password!' }]}
-            >
-              <TimePicker />
-              <TimePicker />
-            </Form.Item>
-
-            <Form.Item
-              label="Select Therefist"
-              name="username"
-              rules={[{ required: true, message: 'Please input your username!' }]}
-            >
-              <Select>
-                <Option key="1">Hello</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-            </Form.Item>
-          </Form>
+          <AppiorMentForm
+            setNewAppiormentCreated={setNewAppiormentCreated}
+            handelNewAppiormentDrawer={handelNewAppiormentDrawer}
+          />
         </div>
       </Drawer>
     </div>

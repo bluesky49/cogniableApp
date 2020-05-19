@@ -20,7 +20,7 @@ const FilterCard = ({
         border: '1px solid #E4E9F0',
         boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
         borderRadius: 10,
-        padding: '26px 35px',
+        padding: '10px 35px',
         position: 'relative',
         display: 'flex',
         justifyContent: 'center',
@@ -54,7 +54,7 @@ const FilterCard = ({
         />
       </Form.Item>
 
-      <Form.Item style={{ marginLeft: 30, height: 40 }} label="By Date" size="large">
+      <Form.Item style={{ marginLeft: 30 }} label="By Date" size="large">
         <DatePicker
           defaultValue={moment(dateValue, 'YYYY-MM-DD')}
           style={{ width: '190px' }}

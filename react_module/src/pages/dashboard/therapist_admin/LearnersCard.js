@@ -3,6 +3,7 @@ import { Select, Typography, Button } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
 import { useQuery } from 'react-apollo'
+import Scrollbars from 'react-custom-scrollbars'
 import LearnerCard from './LearnerCard'
 
 const { Title, Text } = Typography
@@ -10,7 +11,7 @@ const { Option } = Select
 
 const LEARNERS = gql`
   query {
-    students(first: 2) {
+    students {
       edges {
         node {
           id
@@ -26,20 +27,13 @@ const LEARNERS = gql`
 const LearnersCard = () => {
   const { data, loading, error } = useQuery(LEARNERS)
 
-  if (loading) {
-    return 'Loading...'
-  }
-
-  if (error) {
-    return <Text type="danger">Opp&apos;s their some error</Text>
-  }
-
   return (
     <div
       style={{
         background: '#F9F9F9',
         borderRadius: 10,
-        padding: '28px 27px',
+        padding: '28px 27px 20px',
+        minHeight: 650,
       }}
     >
       {loading ? (
@@ -72,24 +66,36 @@ const LearnersCard = () => {
                   }}
                   size="large"
                   placeholder="Select Learner"
+                  showSearch
+                  optionFilterProp="name"
                 >
                   {data.students.edges.map(({ node }) => {
-                    return <Option key={node.id}>{node.firstname}</Option>
+                    return (
+                      <Option key={node.id} name={node.firstname}>
+                        {node.firstname}
+                      </Option>
+                    )
                   })}
                 </Select>
               </div>
 
               <div>
-                {data.students.edges.map(({ node }) => {
-                  return (
-                    <LearnerCard
-                      key={node.id}
-                      name={node.firstname}
-                      style={{ marginTop: 18 }}
-                      leaveRequest={node.leaveRequest}
-                    />
-                  )
-                })}
+                <Scrollbars
+                  style={{
+                    height: '481px',
+                  }}
+                >
+                  {data.students.edges.map(({ node }) => {
+                    return (
+                      <LearnerCard
+                        key={node.id}
+                        name={node.firstname}
+                        style={{ marginTop: 18 }}
+                        leaveRequest={node.leaveRequest}
+                      />
+                    )
+                  })}
+                </Scrollbars>
               </div>
 
               <div
@@ -102,7 +108,7 @@ const LearnersCard = () => {
                 <Button
                   type="link"
                   style={{
-                    marginTop: 39,
+                    marginTop: 10,
                     fontSize: 18,
                     lineHeight: '25px',
                   }}

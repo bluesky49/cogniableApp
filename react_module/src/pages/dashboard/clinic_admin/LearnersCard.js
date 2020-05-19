@@ -10,7 +10,7 @@ const { Option } = Select
 
 const LEARNERS = gql`
   query {
-    students(first: 2) {
+    students(first: 3) {
       edges {
         node {
           id

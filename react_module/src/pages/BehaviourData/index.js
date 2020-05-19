@@ -7,10 +7,10 @@ import { useQuery } from 'react-apollo'
 import gql from 'graphql-tag'
 import Calendar from 'components/Calander'
 import Scrollbars from 'react-custom-scrollbars'
-import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import BehaviourCard from './BehaviourCard'
-import BehaviourForm from './Behaviourform'
+import TemplateForm from './Templateform'
 import TamplateCard from './TamplateCard'
+import CreateDehavrioDrawer from './CreateDehavrioDrawer'
 
 const { Content } = Layout
 const { Title, Text } = Typography
@@ -22,33 +22,17 @@ const BEHAVIOUR_RECORD_DATA = gql`
         node {
           id
           irt
-          intensity
           note
-          date
           duration
-          irt
           template {
-            id
-            behaviorDef
-            behaviorDescription
             behavior {
               behaviorName
             }
-          }
-          environment {
-            id
-            name
-          }
-          status {
-            id
-            statusName
           }
           frequency {
             edges {
               node {
                 id
-                count
-                time
               }
             }
           }
@@ -95,6 +79,7 @@ export default () => {
   const [newTampletFromOpen, setNewTamplateFromOpen] = useState(false)
   const [newRecordDrawer, setNewRecordDrawer] = useState(false)
   const studentId = localStorage.getItem('studentId')
+  const [selectTamplate, setSelectTamplate] = useState()
 
   const { data, loading, error } = useQuery(BEHAVIOUR_RECORD_DATA, {
     variables: {
@@ -130,7 +115,14 @@ export default () => {
     <Authorize roles={['school_admin', 'parents']} redirect to="/dashboard/beta">
       <Helmet title="Dashboard Alpha" />
       <Layout style={{ padding: '0px' }}>
-        <Content style={{ padding: '0px 20px', maxWidth: 1300, width: '100%', margin: '0px auto' }}>
+        <Content
+          style={{
+            padding: '0px 20px',
+            maxWidth: 1300,
+            width: '100%',
+            margin: '0px auto',
+          }}
+        >
           <Row gutter={[46, 0]}>
             <Col span={16}>
               <Calendar value={date} handleOnChange={handleSelectDate} />
@@ -155,7 +147,7 @@ export default () => {
                             <BehaviourCard
                               key={node.id}
                               behaviorName={node.template.behavior.behaviorName}
-                              time={node.time}
+                              time={node.duration}
                               note={node.note}
                               irt={node.irt}
                               frequently={node.frequency.edges.length}
@@ -187,7 +179,7 @@ export default () => {
                 }}
               >
                 {newTampletFromOpen ? (
-                  <BehaviourForm
+                  <TemplateForm
                     handleNewMealDate={newDate => {
                       setNewMealDate(newDate)
                     }}
@@ -195,9 +187,16 @@ export default () => {
                     setNewTamplateCreated={setNewTamplateCreated}
                   />
                 ) : (
-                  <>
+                  <div>
                     {dancleTemplateLoading ? (
-                      'Loading'
+                      <div
+                        style={{
+                          height: 'calc(100vh - 320px)',
+                          minHeight: 'calc(100vh - 320px)',
+                        }}
+                      >
+                        Loading...
+                      </div>
                     ) : (
                       <Scrollbars
                         style={{
@@ -210,6 +209,7 @@ export default () => {
                           dancleTemplateData.getTemplate.edges.map(({ node }, index) => {
                             return (
                               <TamplateCard
+                                id={node.id}
                                 behaviourName={node.behavior.behaviorName}
                                 description={node.behaviorDescription}
                                 status={node.status.statusName}
@@ -218,6 +218,7 @@ export default () => {
                                 style={{
                                   marginTop: index === 0 ? 0 : 20,
                                 }}
+                                setSelectTamplate={setSelectTamplate}
                               />
                             )
                           })}
@@ -243,7 +244,7 @@ export default () => {
                     >
                       New Template
                     </Button>
-                  </>
+                  </div>
                 )}
               </div>
             </Col>
@@ -256,219 +257,10 @@ export default () => {
             visible={newRecordDrawer}
             onClose={() => setNewRecordDrawer(false)}
           >
-            <div
-              style={{
-                padding: '30px 67px',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginTop: 16,
-                  alignItems: 'center',
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: '20px',
-                    letterSpacing: '-0.3px',
-                    color: '#63686E',
-                  }}
-                >
-                  Titile
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: '20px',
-                    letterSpacing: '-0.3px',
-                    color: '#63686E',
-                  }}
-                >
-                  Test behavior 4
-                </Text>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginTop: 16,
-                  alignItems: 'center',
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: '20px',
-                    letterSpacing: '-0.3px',
-                    color: '#63686E',
-                  }}
-                >
-                  Status
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: '20px',
-                    letterSpacing: '-0.3px',
-                    color: '#63686E',
-                  }}
-                >
-                  In-Therapy
-                </Text>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginTop: 16,
-                  alignItems: 'center',
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: '20px',
-                    letterSpacing: '-0.3px',
-                    color: '#63686E',
-                  }}
-                >
-                  Environments
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: '20px',
-                    letterSpacing: '-0.3px',
-                    color: '#63686E',
-                  }}
-                >
-                  Test Environment
-                </Text>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginTop: 16,
-                  alignItems: 'center',
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: '20px',
-                    letterSpacing: '-0.3px',
-                    color: '#63686E',
-                  }}
-                >
-                  Intensity
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: '20px',
-                    letterSpacing: '-0.3px',
-                    color: '#63686E',
-                  }}
-                >
-                  Severe
-                </Text>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  marginTop: 16,
-                  alignItems: 'center',
-                  fontSize: 16,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: '20px',
-                    letterSpacing: '-0.3px',
-                    color: '#63686E',
-                  }}
-                >
-                  Frequency
-                </Text>
-                <Button
-                  style={{
-                    marginLeft: 'auto',
-                    marginRight: 7,
-                  }}
-                >
-                  <MinusOutlined />
-                </Button>
-                1
-                <Button
-                  style={{
-                    marginLeft: 7,
-                  }}
-                >
-                  <PlusOutlined />
-                </Button>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  marginTop: 16,
-                  alignItems: 'center',
-                  fontSize: 16,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: '20px',
-                    letterSpacing: '-0.3px',
-                    color: '#63686E',
-                  }}
-                >
-                  IRT
-                </Text>
-                <Button
-                  style={{
-                    marginLeft: 'auto',
-                    marginRight: 7,
-                  }}
-                >
-                  <MinusOutlined />
-                </Button>
-                1
-                <Button
-                  style={{
-                    marginLeft: 7,
-                  }}
-                >
-                  <PlusOutlined />
-                </Button>
-              </div>
-
-              <Button
-                type="primary"
-                htmlType="submit"
-                onClick={() => {
-                  setNewTamplateFromOpen(true)
-                }}
-                style={{
-                  width: '100%',
-                  height: 40,
-                  background: '#0B35B3',
-                  boxShadow:
-                    '0px 2px 4px rgba(96, 97, 112, 0.16), 0px 0px 1px rgba(40, 41, 61, 0.04) !importent',
-                  borderRadius: 8,
-                  fontSize: 17,
-                  fontWeight: 'bold',
-                  marginTop: 20,
-                }}
-              >
-                Click for Submit
-              </Button>
-            </div>
+            <CreateDehavrioDrawer
+              setNewTamplateFromOpen={setNewTamplateFromOpen}
+              selectTamplate={selectTamplate}
+            />
           </Drawer>
         </Content>
       </Layout>

@@ -1,7 +1,6 @@
 import React from 'react'
 import { Typography, Button } from 'antd'
 import { ClockCircleOutlined, CopyOutlined } from '@ant-design/icons'
-import moment from 'moment'
 
 const { Title, Text } = Typography
 
@@ -33,7 +32,7 @@ const MealCard = ({ style, behaviorName, time, note, irt, frequently }) => {
         >
           {behaviorName}
         </Title>
-        <ClockCircleOutlined style={{ fontSize: 30, marginLeft: 'auto' }} />
+        <ClockCircleOutlined style={{ fontSize: 30, marginLeft: 'auto', marginRight: 10 }} />
         <Text
           style={{
             fontSize: 14,
@@ -44,7 +43,7 @@ const MealCard = ({ style, behaviorName, time, note, irt, frequently }) => {
             marginRight: 33,
           }}
         >
-          {moment(time).format('HH:mm a')}
+          {time}
         </Text>
 
         <Button

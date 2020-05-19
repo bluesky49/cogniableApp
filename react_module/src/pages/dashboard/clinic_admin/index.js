@@ -15,61 +15,57 @@ import './index.scss'
 
 const { Content } = Layout
 
-class DashboardAlpha extends React.Component {
-  render() {
-    return (
-      <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
-        <Helmet title="Dashboard Alpha" />
-        <Layout style={{ backgroundColor: '#F2F4F8', padding: '0px' }}>
-          <Content
-            style={{
-              padding: '0px',
-              maxWidth: 1300,
-              width: '100%',
-              margin: '0px auto',
-            }}
-          >
-            <Row style={{ width: '100%', margin: 0 }} gutter={[41, 0]}>
-              <Col xs={24} sm={16} className="section1">
-                <TargetStatusCard />
-                <AppiorMentsCard style={{ marginTop: 13 }} />
-                <TasksCard style={{ marginTop: 27 }} />
-              </Col>
-              <Col xs={24} sm={8} className="sidebar">
-                <div
-                  style={{
-                    background: '#F9F9F9',
-                    borderRadius: 10,
-                    padding: '28px 27px',
-                  }}
-                >
-                  <EmployesCard style={{ marginBottom: 47 }} />
-                  <LearnersCard />
-                </div>
-              </Col>
-            </Row>
+export default () => {
+  return (
+    <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
+      <Helmet title="Dashboard Alpha" />
+      <Layout style={{ backgroundColor: '#fff', padding: '0px' }}>
+        <Content
+          style={{
+            padding: '0px',
+            maxWidth: 1300,
+            width: '100%',
+            margin: '0px auto',
+          }}
+        >
+          <Row style={{ width: '100%', margin: 0 }} gutter={[41, 0]}>
+            <Col xs={24} sm={16} className="section1">
+              <TargetStatusCard />
+              <AppiorMentsCard style={{ marginTop: 13 }} />
+              <TasksCard style={{ marginTop: 27 }} />
+            </Col>
+            <Col xs={24} sm={8} className="sidebar">
+              <div
+                style={{
+                  background: '#F9F9F9',
+                  borderRadius: 10,
+                  padding: '28px 27px',
+                }}
+              >
+                <EmployesCard style={{ marginBottom: 47 }} />
+                <LearnersCard />
+              </div>
+            </Col>
+          </Row>
 
-            {/* Last Row */}
-            <Row gutter={[45, 0]} style={{ marginTop: 41 }}>
-              <Col xs={24} lg={8}>
-                <InfoCard title="Acceptance & Commitment" icon={safeGardIcon} />
-              </Col>
-              <Col xs={24} lg={8}>
-                <InfoCard title="Verified Doctors" icon={doctorIcon} />
-              </Col>
-              <Col xs={24} lg={8}>
-                <InfoCard
-                  title="Parent  Community"
-                  icon={parentCildIcon}
-                  style={{ marginRight: 0 }}
-                />
-              </Col>
-            </Row>
-          </Content>
-        </Layout>
-      </Authorize>
-    )
-  }
+          {/* Last Row */}
+          <Row gutter={[45, 0]} style={{ marginTop: 41 }}>
+            <Col xs={24} lg={8}>
+              <InfoCard title="Acceptance & Commitment" icon={safeGardIcon} />
+            </Col>
+            <Col xs={24} lg={8}>
+              <InfoCard title="Verified Doctors" icon={doctorIcon} />
+            </Col>
+            <Col xs={24} lg={8}>
+              <InfoCard
+                title="Parent  Community"
+                icon={parentCildIcon}
+                style={{ marginRight: 0 }}
+              />
+            </Col>
+          </Row>
+        </Content>
+      </Layout>
+    </Authorize>
+  )
 }
-
-export default DashboardAlpha
