@@ -144,6 +144,20 @@ const routes = [
     component: loadable(() => import('views/family/family')),
   },
 
+  // Tutorials videos
+  {
+    path: '/tutorials/step1',
+    component: loadable(() => import('pages/tutorials/step1')),
+  },
+  {
+    path: '/tutorials/step2',
+    component: loadable(() => import('pages/tutorials/step2')),
+  },
+  {
+    path: '/tutorials/step3',
+    component: loadable(() => import('pages/tutorials/step3')),
+  },
+
   // Settings
   {
     path: '/profileSetting/',
