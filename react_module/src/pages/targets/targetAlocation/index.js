@@ -1,26 +1,25 @@
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent */
 import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { Button, Checkbox, Select } from 'antd'
 import moment from 'moment'
 import { EditOutlined } from '@ant-design/icons'
+import { useSelector } from 'react-redux'
 import styles from './style.module.scss'
-import motherSon from '../motherSon.jpg'
-import SessionCard from '../../../components/SessionCard'
-import AllocatedTargetCard from '../../../components/AllocatedTargetCard'
 import GoalCard from '../../../components/GoalCard'
 import {
-  getDomainByProgramArea,
   alreadyAlloctedTarget,
-  getTargetAreaByDoimain,
   getLongTermGoals,
   getPatients,
-  getShortTermGoals,
-  suggestTarget,
   getGoalStatus,
   getGoalResponsibility,
 } from './TargetAllocation.query'
 import { arrayNotNull, notNull } from '../../../utilities'
 import AddLongAndShortGoal from '../AddLongAndShortGoal'
+import TargetAllocationDetails from '../targetAllocationDetails'
+import AllocatedTarget from './AllocatedTarget'
+import TargetsAvailable from './TargetsAvailable'
 
 const longGoalBtn = {
   color: '#0B35B3',
@@ -33,39 +32,25 @@ const shortGoalBtn = {
   backgroundColor: '#0B35B3',
 }
 
-const searchBtnStyle = {
-  color: '#FFF',
-  backgroundColor: '#0B35B3',
-  width: '180px',
-}
-
-const selectTargetStyle = {
-  width: '120px',
-  textDecoration: 'none',
-  marginRight: '20px',
-}
-
 const selectPatientStyle = {
   width: '244px',
-  height: '60px',
+  // height: '60px',
   textDecoration: 'none',
   marginRight: '20px',
   border: 0,
 }
 
 const TargetAllocation = () => {
-  const [selectedStudent, setSelectedStudent] = useState('U3R1ZGVudFR5cGU6OTM=')
+  let stdId = ''
+  if (!(localStorage.getItem('studentId') === null) && localStorage.getItem('studentId')) {
+    stdId = JSON.parse(localStorage.getItem('studentId'))
+  }
+  const [selectedStudent, setSelectedStudent] = useState(stdId)
+  const [programArea, setProgramArea] = useState([])
+
   const [selectedProgram, setSelectedProgram] = useState('UHJvZ3JhbUFyZWFUeXBlOjE=')
 
   const [longTermGoals, setLongTermGoals] = useState([])
-
-  const [selectAllTarget, setSelectAllTarget] = useState(false)
-  const [domain, setDomain] = useState([])
-  const [area, setArea] = useState([])
-  const [selectedTargetArea, setSelectedTargetArea] = useState([])
-  const [selectedTargetDomain, setSelectedTargetDomain] = useState([])
-
-  const [patient, setPatient] = useState([])
   const [allocatedTarget, setAllocatedTarget] = useState([])
   const [shortTermGoals, setShortTermGoals] = useState([])
 
@@ -75,35 +60,9 @@ const TargetAllocation = () => {
 
   const [goalType, setGoalType] = useState('long')
 
-  const onChangeselectAllTarget = ({ target: { checked } }) => {
-    setSelectAllTarget(checked)
-  }
-
-  const patientOptions = [
-    { id: '1', name: 'Anna Goel', image: motherSon },
-    { id: '21', name: 'Anna Goel', image: motherSon },
-    { id: '3', name: 'Anna Goel', image: motherSon },
-    { id: '4', name: 'Anna Goel', image: motherSon },
-  ]
-
-  const getDomainByProgramAreaQuery = async pId => {
-    const domainResp = await getDomainByProgramArea(pId)
-    console.log('domainResp==>', domainResp)
-    if (notNull(domainResp)) setDomain(domainResp.data.programDetails.domain.edges)
-  }
-
-  const getTargetAreaByDoimainQuery = async domainId => {
-    const targetAreaResp = await getTargetAreaByDoimain(domainId)
-    setSelectedTargetDomain(domainId)
-    if (notNull(targetAreaResp)) setArea(targetAreaResp.data.targetArea.edges)
-  }
+  const [addTargetMode, setAddTargetMode] = useState('')
 
   const [suggestedTarget, setSuggestedTarget] = useState([])
-
-  const suggestedTargetQuery = async (domainId, areaId) => {
-    const suggestedTargetResp = await suggestTarget(domainId, areaId)
-    if (notNull(suggestedTargetResp)) setSuggestedTarget(suggestedTargetResp.data.target.edges)
-  }
 
   const alreadyAlloctedTargetQuery = async (
     studentId = 'U3R1ZGVudFR5cGU6MTYz',
@@ -119,14 +78,9 @@ const TargetAllocation = () => {
     const longTermGoalResp = await getLongTermGoals(studentId, program)
     if (notNull(longTermGoalResp)) setLongTermGoals(longTermGoalResp.data.longTerm.edges)
   }
-  const getPatientsQuery = async studentId => {
+  const getProgramAreaQuery = async studentId => {
     const patientResp = await getPatients(studentId)
-    // console.log("patientResp==>", patientResp);
-    if (notNull(patientResp)) setPatient(patientResp.data.student.programArea.edges)
-  }
-
-  const onSelectArea = sArea => {
-    setSelectedTargetArea(sArea)
+    if (notNull(patientResp)) setProgramArea(patientResp.data.student.programArea.edges)
   }
 
   const [goalResponsibilityList, setGoalResponsibilityList] = useState([])
@@ -147,16 +101,11 @@ const TargetAllocation = () => {
     getGoalStatusQuery()
     getGoalResponsibilityQuery()
 
+    // alreadyAlloctedTargetQuery(selectedStudent, 'U3RhdHVzVHlwZToz', 'RG9tYWluVHlwZToxMQ==')
+
+    getProgramAreaQuery(selectedStudent)
+
     getLongTermGoalsQuery(selectedStudent, selectedProgram)
-
-    getDomainByProgramAreaQuery(selectedProgram)
-
-    alreadyAlloctedTargetQuery('U3R1ZGVudFR5cGU6MTYz', 'U3RhdHVzVHlwZToz', 'RG9tYWluVHlwZToxMQ==')
-    //
-    getPatientsQuery('U3R1ZGVudFR5cGU6OTI=')
-
-    // const shortTermGoalResp = getShortTermGoals('TG9uZ1Rlcm1UeXBlOjEy');
-    // console.log("shortTermGoalResp==>", shortTermGoalResp);
   }, [])
 
   const addShortTermGoal = ltg => {
@@ -171,12 +120,9 @@ const TargetAllocation = () => {
     setActiveLongTermGoal(null)
   }
 
-  const searchDomin = () => {
-    suggestedTargetQuery(selectedTargetDomain, selectedTargetArea)
-  }
-
-  const handleSelectStudent = stId => {
-    setSelectedStudent(stId)
+  const handleSelectProgram = pId => {
+    setSelectedProgram(pId)
+    getLongTermGoalsQuery(selectedStudent, pId)
   }
 
   const getDate = node => {
@@ -213,6 +159,56 @@ const TargetAllocation = () => {
     getLongTermGoalsQuery(selectedStudent, selectedProgram)
   }
 
+  const [isTargetDetailsVisible, setShowTargetDetailsVisible] = useState(false)
+  const [activeSessionDetails, setActiveSessionDetails] = useState(null)
+
+  const handleCloseTargetDetails = () => {
+    setShowTargetDetailsVisible(false)
+    setActiveSessionDetails(null)
+  }
+
+  const allocateSessionToTarget = session => {
+    setShowTargetDetailsVisible(true)
+    setActiveSessionDetails(session)
+  }
+
+  const handleSelectTargetMode = mode => {
+    setAddTargetMode(mode)
+  }
+
+  useEffect(() => {
+    if (addTargetMode === 'manually') {
+      setShowTargetDetailsVisible(true)
+      setActiveSessionDetails(null)
+    }
+  }, [addTargetMode])
+
+  const [selectedShortTermGoal, setSelectedShortTermGoal] = useState(null)
+  const selectShortTermGoal = stg => {
+    setSelectedShortTermGoal(stg)
+  }
+
+  useEffect(() => {}, [selectedShortTermGoal])
+
+  const onSuccessTargetAllocation = resp => {
+    setShowTargetDetailsVisible(false)
+    setActiveSessionDetails(null)
+
+    getLongTermGoalsQuery(selectedStudent, selectedProgram)
+
+    if (addTargetMode === 'list') {
+      setSuggestedTarget(item =>
+        item.filter(target => target.node.id !== activeSessionDetails.node.id),
+      )
+    }
+  }
+
+  const role = useSelector(state => state.user.role)
+  let editAble = true
+  if (role === 'parents') {
+    editAble = false
+  }
+
   return (
     <div>
       <Helmet title="Target allocation to goals" />
@@ -228,157 +224,159 @@ const TargetAllocation = () => {
         goalResponsibilityList={goalResponsibilityList}
         goalStatusList={goalStatusList}
         onSuccess={onSuccessAddEditGoal}
+        editAble={editAble}
       />
+
+      <TargetAllocationDetails
+        selectedShortTermGoal={selectedShortTermGoal}
+        studentId={selectedStudent}
+        show={isTargetDetailsVisible}
+        onClose={handleCloseTargetDetails}
+        heading="Target Allocation Details"
+        activeSessionDetails={activeSessionDetails}
+        addTargetMode={addTargetMode}
+        onSuccessTargetAllocation={onSuccessTargetAllocation}
+      />
+
       <section className="card">
-        <div className="card-header">
+        <div className={`${styles.cardHeader} card-header`}>
           <div className="utils__title">
             <strong>Target allocation to goals</strong>
           </div>
         </div>
-        <div className="card-body">
+        <div className={`${styles.cardBody} card-body`}>
           <div className={styles.feed}>
             <div className={styles.selectPatient}>
-              <Select
-                style={selectPatientStyle}
-                size="large"
-                defaultValue="Select Student"
-                value={selectedStudent}
-                onSelect={handleSelectStudent}
-              >
-                {patientOptions.map(p => {
-                  return (
-                    <Select.Option value="second" key={p.id}>
-                      <div className={styles.patentSelectOption}>
-                        <img className={styles.optionImage} src={p.image} alt={p.name} />
-                        <span>{p.name}</span>
-                      </div>
-                    </Select.Option>
-                  )
-                })}
-              </Select>
+              <div>
+                <Select
+                  style={selectPatientStyle}
+                  // size="large"
+                  defaultValue="Select Program"
+                  value={selectedProgram}
+                  onSelect={handleSelectProgram}
+                >
+                  {programArea.map(p => {
+                    return (
+                      <Select.Option value={p.node.id} key={p.node.id}>
+                        {p.node.name}
+                      </Select.Option>
+                    )
+                  })}
+                </Select>
+              </div>
+
+              {selectedShortTermGoal && editAble ? (
+                <div>
+                  <Select
+                    style={{ width: 200 }}
+                    placeholder="Allocate target mode"
+                    defaultValue="Allocate target mode"
+                    value={addTargetMode}
+                    onSelect={handleSelectTargetMode}
+                  >
+                    <Select.Option value="">Allocate target mode</Select.Option>
+                    <Select.Option value="list">Choose from list</Select.Option>
+                    <Select.Option value="manually">Add Manually</Select.Option>
+                  </Select>
+                </div>
+              ) : (
+                <></>
+              )}
             </div>
 
             <div className={styles.partition}>
               <div className="row">
-                <div className={`${styles.leftPanel} col-md-12 col-lg-3`}>
+                <div
+                  className={`${styles.leftPanel} col-md-12 ${
+                    addTargetMode === 'list' ? 'col-lg-3' : 'col-lg-8'
+                  }`}
+                >
                   <div className={styles.longTermGoalWrapper}>
                     {longTermGoals.length > 0 &&
                       longTermGoals.map(ltGoal => {
                         return (
                           <div className={styles.behaviour} key={ltGoal.node.id}>
-                            <div className={styles.longTermGoalEditBn}>
-                              <EditOutlined onClick={() => editLongTermGoal(ltGoal)} />
-                            </div>
-                            <div className={styles.behaviourHeading}>
-                              <span>{ltGoal.node.goalName}</span>
+                            {editAble ? (
+                              <div className={styles.longTermGoalEditBn}>
+                                <EditOutlined onClick={() => editLongTermGoal(ltGoal)} />
+                              </div>
+                            ) : (
+                              ''
+                            )}
+                            <div>
+                              <span className={styles.behaviourHeading}>
+                                {ltGoal.node.goalName}
+                              </span>
                             </div>
                             <div className={styles.behaviourDate}>
                               <span>{getDate(ltGoal.node)}</span>
                             </div>
                             <div className={styles.goalCardWrapper}>
                               {arrayNotNull(ltGoal.node.shorttermgoalSet.edges) &&
-                                ltGoal.node.shorttermgoalSet.edges.map(sGoal => {
+                                ltGoal.node.shorttermgoalSet.edges.map((sGoal, index) => {
                                   return (
                                     <GoalCard
+                                      selected={
+                                        selectedShortTermGoal !== null &&
+                                        selectedShortTermGoal.node.id === sGoal.node.id
+                                      }
+                                      editAble={editAble}
                                       key={sGoal.node.id}
                                       heading={sGoal.node.goalName}
                                       progess={50}
                                       onEdit={() => editShortTermGoal(ltGoal, sGoal)}
+                                      selectShortTermGoal={() => selectShortTermGoal(sGoal)}
                                     />
                                   )
                                 })}
                             </div>
-                            <div className={styles.shortGoalBtn}>
-                              <Button
-                                type="primary"
-                                style={shortGoalBtn}
-                                onClick={() => addShortTermGoal(ltGoal)}
-                              >
-                                Add Short Term Goal
-                              </Button>
-                            </div>
+                            {editAble ? (
+                              <div className={styles.shortGoalBtn}>
+                                <Button
+                                  type="primary"
+                                  style={shortGoalBtn}
+                                  onClick={() => addShortTermGoal(ltGoal)}
+                                >
+                                  Add Short Term Goal
+                                </Button>
+                              </div>
+                            ) : (
+                              ''
+                            )}
                           </div>
                         )
                       })}
                   </div>
-
-                  <div className={styles.longtGoalBtn}>
-                    <Button type="default" style={longGoalBtn} onClick={addLongTermGoal}>
-                      Add Long Term Goal
-                    </Button>
-                  </div>
+                  {editAble ? (
+                    <div className={styles.longtGoalBtn}>
+                      <Button type="default" style={longGoalBtn} onClick={addLongTermGoal}>
+                        Add Long Term Goal
+                      </Button>
+                    </div>
+                  ) : (
+                    ''
+                  )}
                 </div>
 
-                <div className="col-md-12  col-lg-5">
-                  <div className={styles.sessionBtns}>
-                    <Select
-                      style={selectTargetStyle}
-                      defaultValue="Target Domain"
-                      onSelect={getTargetAreaByDoimainQuery}
-                    >
-                      {domain.length > 0 &&
-                        domain.map(d => {
-                          return (
-                            <Select.Option value={d.node.id} key={d.node.id}>
-                              {d.node.domain}
-                            </Select.Option>
-                          )
-                        })}
-                    </Select>
-                    <Select
-                      style={selectTargetStyle}
-                      defaultValue="Target Area"
-                      onSelect={onSelectArea}
-                    >
-                      {area.map(a => {
-                        return (
-                          <Select.Option value={a.node.id} key={a.node.id}>
-                            {a.node.Area}
-                          </Select.Option>
-                        )
-                      })}
-                    </Select>
+                {addTargetMode === 'list' ? (
+                  <TargetsAvailable
+                    selectedStudent={selectedStudent}
+                    selectedProgram={selectedProgram}
+                    allocateSessionToTarget={allocateSessionToTarget}
+                    suggestedTarget={suggestedTarget}
+                    setSuggestedTarget={setSuggestedTarget}
+                  />
+                ) : (
+                  <></>
+                )}
 
-                    <Button type="primary" style={searchBtnStyle} onClick={searchDomin}>
-                      Search
-                    </Button>
-                  </div>
-
-                  <div className="mb-3">
-                    <Checkbox onChange={onChangeselectAllTarget} checked={selectAllTarget}>
-                      Select all Target
-                    </Checkbox>
-                  </div>
-                  <div>
-                    {suggestedTarget.length > 0 &&
-                      suggestedTarget.map(sTarget => {
-                        return (
-                          <SessionCard
-                            key={sTarget.node.id}
-                            image={motherSon}
-                            heading={sTarget.node.targetMain.targetName}
-                            receptiveLanguage="in therapy"
-                          />
-                        )
-                      })}
-                  </div>
-                </div>
-                <div className={`${styles.allocatedGoal} col-md-12 col-lg-4`}>
-                  <div className={styles.allocatedGoalHeading}>
-                    <span>Allocated Targets to STG1</span>
-                  </div>
-
-                  {allocatedTarget.length > 0 &&
-                    allocatedTarget.map(aTarget => {
-                      return (
-                        <AllocatedTargetCard
-                          key={aTarget.node.id}
-                          heading={aTarget.node.targetAllcatedDetails.targetName}
-                          status={aTarget.node.targetStatus.statusName}
-                        />
-                      )
-                    })}
-                </div>
+                {selectedShortTermGoal ? (
+                  <AllocatedTarget
+                    allocatedTarget={selectedShortTermGoal.node.targetAllocateSet.edges}
+                  />
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
           </div>

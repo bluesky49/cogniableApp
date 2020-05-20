@@ -51,7 +51,6 @@ const AddLongAndShortGoal = props => {
     } else {
       resetForm()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type])
 
   const resetForm = () => {
@@ -219,7 +218,7 @@ const AddLongAndShortGoal = props => {
           >
             <DatePicker
               className={style.datepicker}
-              // value={moment(dateIntiated).format('YYYY-MM-DD')}
+              value={dateIntiated}
               onChange={handleChangeDateIntiated}
             />
           </Form.Item>
@@ -236,7 +235,7 @@ const AddLongAndShortGoal = props => {
           >
             <DatePicker
               className={style.datepicker}
-              // value={moment(endDate ).format('YYYY-MM-DD')}
+              value={endDate}
               onChange={handleChangeEndDate}
             />
           </Form.Item>
@@ -323,7 +322,7 @@ const AddLongAndShortGoal = props => {
 
           <Form.Item>
             <Button onClick={addGoal} className={style.searchBtn} type="primary" htmlType="submit">
-              Search
+              {type.includes('edit') ? 'Update' : 'Add'}
             </Button>
           </Form.Item>
         </Form>

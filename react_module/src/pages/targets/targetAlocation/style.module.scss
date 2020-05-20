@@ -1,15 +1,25 @@
 @import 'assets/styles/mixins.scss';
 
+.cardBody {
+  padding: 0;
+}
+
+.cardHeader {
+  padding: 0;
+}
+
 .feed {
   max-width: rem(1250);
   margin: 0 auto;
 }
 
 .selectPatient {
-  width: 244px !important;
+  //width: 244px !important;
   height: 60px !important;
   border: 0;
   margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .patentSelectOption {
@@ -41,6 +51,7 @@
   max-height: 100vh;
   overflow-y: scroll;
   margin-bottom: 45px;
+  padding-right: 10px;
 }
 
 .longTermGoalWrapper::-webkit-scrollbar {
@@ -61,13 +72,15 @@
 
 .behaviour {
   background-color: #f9f9f9;
-  border-right: 10px;
   width: 100%;
-  max-height: 400px;
+  //max-height: 400px;
   margin-right: 12px;
   margin-bottom: 12px;
   padding: 10px;
   position: relative;
+  border: 1px solid #0000000a;
+  border-radius: 10px;
+  box-shadow: 2px 2px 0 #f1f1f1;
 
   .longTermGoalEditBn {
     position: absolute;
@@ -85,25 +98,9 @@
 }
 
 .goalCardWrapper {
-  max-height: 210px;
-  overflow-y: scroll;
+  //max-height: 210px;
+  //overflow-y: scroll;
   padding-right: 5px;
-}
-
-.goalCardWrapper::-webkit-scrollbar {
-  width: 5px;
-}
-
-.goalCardWrapper::-webkit-scrollbar-track {
-  background-color: #e5e5e5;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-}
-
-.goalCardWrapper::-webkit-scrollbar-thumb {
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-  background: #6d6d6d;
 }
 
 .behaviourDate {
@@ -117,16 +114,61 @@
   margin-bottom: 30px;
 }
 
+.targetWrapper {
+  max-height: 500px;
+  overflow-y: scroll;
+  padding-right: 10px;
+}
+
+.targetWrapper::-webkit-scrollbar {
+  width: 5px;
+}
+
+.targetWrapper::-webkit-scrollbar-track {
+  background-color: #e5e5e5;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
+.targetWrapper::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: #6d6d6d;
+}
+
 .allocatedGoal {
   border-radius: 10px;
   border: 1px solid #f9f9f9;
-}
 
-.allocatedGoalHeading {
-  font-size: 24px;
-  font-weight: bold;
-  color: #000;
-  margin: 30px 0 40px 0;
+  .allocatedGoalHeading {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+    margin: 30px 0 40px 0;
+  }
+
+  .availableTargetWrapper {
+    max-height: 500px;
+    overflow-y: scroll;
+    //margin-bottom: 45px;
+    padding-right: 10px;
+  }
+
+  .availableTargetWrapper::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .availableTargetWrapper::-webkit-scrollbar-track {
+    background-color: #e5e5e5;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+  }
+
+  .availableTargetWrapper::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #6d6d6d;
+  }
 }
 
 .shortGoalBtn {

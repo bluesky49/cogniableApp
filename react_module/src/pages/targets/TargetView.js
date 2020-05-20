@@ -572,7 +572,6 @@ class TargetView extends React.Component {
                   </Button>
                 </div>
                 <TargetAllocate
-                  targets={[{ node: { targetMain: { targetName: 'hello' } } }]}
                   DomainList={DomainList}
                   targettype={targettype}
                   mcriteria={mcriteria}

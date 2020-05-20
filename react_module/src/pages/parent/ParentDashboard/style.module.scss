@@ -337,10 +337,6 @@ main {
   margin-left: 3%;
   margin-top: 4%;
 }
-// .drawerBody {
-//   height: 40%;
-//   width: 50%;
-// }
 
 .drawerBody .overlayBody {
   height: 100%;
@@ -350,69 +346,8 @@ main {
   position: absolute;
   bottom: 0;
   display: flex;
-
-  /* for chrome and safari*/
-  // -webkit-animation-duration: 1s;
-  // -webkit-animation-name: slidein;
-
-  // /*for firefox*/
-  // -moz-animation-duration: 1s;
-  // -moz-animation-name: slidein;
-
-  // /* for opera*/
-  // -o-animation-duration: 1s;
-  // -o-animation-name: slidein;
-
-  // /* Standard syntax*/
-  // animation-duration: 1s;
-  // animation-name: slidein;
 }
 
-// @-webkit-keyframes slidein {
-//   from {
-//     margin-left: 100%;
-//     width: 300%;
-//   }
-
-//   to {
-//     margin-left: 0%;
-//     width: 100%;
-//   }
-// }
-
-// @-moz-keyframes slidein {
-//   from {
-//     margin-left: 100%;
-//     width: 300%;
-//   }
-
-//   to {
-//     margin-left: 0%;
-//     width: 100%;
-//   }
-// }
-// @-o-keyframes slidein {
-//   from {
-//     margin-left: 100%;
-//     width: 300%;
-//   }
-
-//   to {
-//     margin-left: 0%;
-//     width: 100%;
-//   }
-// }
-// @keyframes slidein {
-//   from {
-//     margin-left: 100%;
-//     width: 300%;
-//   }
-
-//   to {
-//     margin-left: 0%;
-//     width: 100%;
-//   }
-// }
 .addStudent {
   position: absolute;
   margin-top: 2%;
@@ -501,10 +436,8 @@ main {
 }
 .drawerShell {
   width: 100%;
-  // border: 1px solid #e4e9f0;
   border-radius: 10px;
   margin-top: 13%;
-  // box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
 }
 
 .drawerCard {
@@ -662,9 +595,8 @@ main {
   overflow-y: scroll;
   height: 80vh;
   border-radius: 10px;
-  // box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
-  // border: 1px solid #e4e9f0;
 }
+
 .sessubshell::-webkit-scrollbar {
   display: none;
 }
@@ -917,14 +849,13 @@ main {
   width: 60px;
   height: 34px;
 }
-/* Hide default HTML checkbox */
+
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* The slider */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -963,7 +894,6 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
-/* Rounded sliders */
 .slider.round {
   border-radius: 34px;
 }

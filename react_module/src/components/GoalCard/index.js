@@ -1,16 +1,40 @@
 import React from 'react'
-import { Progress } from 'antd'
+import { Button, Progress } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
 import styles from './style.module.scss'
 
-const GoalCard = ({ heading = '', progess = '0', onEdit }) => {
+const GoalCard = ({
+  heading = '',
+  progess = '0',
+  onEdit,
+  selectShortTermGoal,
+  selected,
+  editAble,
+}) => {
+  let headingStyle = {}
+  let selectedCardStyle = {}
+
+  if (selected) {
+    headingStyle = {
+      color: '#fff',
+    }
+    selectedCardStyle = {
+      background: '#E58425',
+    }
+  }
   return (
-    <div className={styles.card}>
-      <div className={styles.longTermGoalEditBn}>
-        <EditOutlined onClick={onEdit} />
-      </div>
+    <Button className={styles.card} style={selectedCardStyle} onClick={selectShortTermGoal}>
+      {editAble ? (
+        <div className={styles.longTermGoalEditBn}>
+          <EditOutlined onClick={onEdit} />
+        </div>
+      ) : (
+        ''
+      )}
       <div>
-        <span className={styles.heading}>{heading}</span>
+        <span className={styles.heading} style={headingStyle}>
+          {heading}
+        </span>
       </div>
       <div>
         <Progress
@@ -18,10 +42,10 @@ const GoalCard = ({ heading = '', progess = '0', onEdit }) => {
           percent={progess}
           showInfo={false}
           strokeWidth={8}
-          strokeColor="#E58425"
+          strokeColor={selected ? '#000 ' : '#E58425'}
         />
       </div>
-    </div>
+    </Button>
   )
 }
 

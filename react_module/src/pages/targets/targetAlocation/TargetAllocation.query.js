@@ -246,6 +246,88 @@ export const getGoalResponsibility = () => {
     .then(result => result)
 }
 
+export const getTargetDetailsOptions = () => {
+  return client
+    .query({
+      query: gql`
+        {
+          targetStatus {
+            id
+            statusName
+          }
+          types {
+            id
+            typeTar
+          }
+          promptCodes {
+            id
+            promptName
+          }
+          masteryCriteria {
+            id
+            responsePercentage
+            consecutiveDays
+            minTrial
+          }
+          domain {
+            edges {
+              node {
+                domain
+                id
+              }
+            }
+          }
+          goalsProgramArea {
+            id
+            name
+          }
+        }
+      `,
+    })
+    .then(result => result)
+    .catch(error => error)
+}
+
+export const getSearchSd = text => {
+  return client
+    .query({
+      query: gql`
+        {
+          targetSd(first:8, sd_Icontains:"${text}"){
+            edges {
+              node {
+                id,
+                sd
+              }
+            }
+          }
+        }
+      `,
+    })
+    .then(result => result)
+    .catch(error => error)
+}
+
+export const getSearchSteps = text => {
+  return client
+    .query({
+      query: gql`
+        {
+          targetStep(first:8, step_Icontains:"${text}")
+            {edges {
+              node {
+                id,
+                step
+              }
+            }
+          }
+        }
+      `,
+    })
+    .then(result => result)
+    .catch(error => error)
+}
+
 export const alreadyAlloctedTarget = (
   studentId = 'U3R1ZGVudFR5cGU6MTYz',
   targetStatus = 'U3RhdHVzVHlwZToz',
@@ -530,6 +612,105 @@ export async function updateShortTermGoal(
     })
     .then(result => result)
     .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
+        })
+      })
+    })
+}
+
+export async function createTargetAllocate(
+  shortTerm,
+  targetId,
+  studentId,
+  targetStatus,
+  objective,
+  date = '2020-04-08',
+  targetInstr,
+  masteryCriteria,
+  targetName,
+  dailyTrials,
+  consecutiveDays,
+  targetType,
+  promptCodes = [],
+  sd = [],
+  steps = [],
+) {
+  const mu = `mutation {
+        createTargetAllocate(input:{targetData:{shortTerm:"${shortTerm}", ${
+    targetId === '' ? '' : `targetId:"${targetId}",`
+  } studentId:"${studentId}", targetStatus:"U3RhdHVzVHlwZTox", objective:"${objective}", date:"${date}", targetInstr:"<p>${targetInstr}</p>", goodPractices:"<p></p>", precaution:"<p></p>", gernalizationCriteria:"<p></p>", masteryCriteria:"${masteryCriteria}", targetName:"${targetName}", DailyTrials:${dailyTrials}, consecutiveDays:${consecutiveDays}, targetType:"VGFyZ2V0RGV0YWlsVHlwZTox", promptCodes:[], sd:[${sd}], steps:[${steps}], videos:["https://vimeo.com/349440428"]
+        }
+
+        })
+           {
+                targetName,
+                target{
+                    id,
+                    date,
+                    targetInstr,
+                    targetStatus{
+                        id,
+                        statusName
+                    }
+                    sessionSet{
+                        edges{
+                            node{
+                                id
+                            }
+                        }
+                    }
+                    targetId{
+                        id,
+                        domain{
+                            id,
+                            domain
+                        }
+                    }
+                    targetAllcatedDetails{
+                        id,
+                        targetName,
+                        dateBaseline,
+                        DailyTrials,
+                        consecutiveDays,
+                        targetType{
+                            id,
+                            typeTar
+                        }
+
+                    },
+                    sd{
+                        edges{
+                            node{
+                                id,
+                                sd
+                            }
+                        }
+                    },
+                    steps{
+                        edges{
+                            node{
+                                id,
+                                step
+                            }
+                        }
+                    },
+
+                }
+           }
+    }`
+  console.log('mu create ===>', mu)
+  return client
+    .mutate({
+      mutation: gql`
+        ${mu}
+      `,
+    })
+    .then(result => result)
+    .catch(error => {
+      console.log('error==>', error)
       error.graphQLErrors.map(item => {
         return notification.error({
           message: 'Somthing want wrong',
