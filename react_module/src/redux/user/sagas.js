@@ -7,6 +7,7 @@ import {
   StudentIdFromUserId,
   GetUserDetailsByUsername,
   logout,
+  GetStudentNameById,
 } from 'services/user'
 // import { GraphQLClient } from 'graphql-request'
 import actions from './actions'
@@ -143,11 +144,24 @@ export function* LOGOUT() {
   localStorage.setItem('role', '')
 }
 
+export function* GET_STUDENT_NAME() {
+  const response = yield call(GetStudentNameById, localStorage.getItem('studentId'))
+  if (response && response.data) {
+    yield put({
+      type: 'user/SET_STATE',
+      payload: {
+        studentName: response.data.student.firstname,
+      },
+    })
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     takeEvery(actions.LOGIN, LOGIN),
     takeEvery(actions.LOAD_CURRENT_ACCOUNT, LOAD_CURRENT_ACCOUNT),
     takeEvery(actions.LOGOUT, LOGOUT),
+    takeEvery(actions.GET_STUDENT_NAME, GET_STUDENT_NAME),
     LOAD_CURRENT_ACCOUNT(), // run once on app load to check user auth
   ])
 }

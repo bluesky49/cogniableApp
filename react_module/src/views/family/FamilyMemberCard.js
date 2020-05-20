@@ -8,7 +8,7 @@ const FamilyMemberCard = ({ onClick, heading, text, selected }) => {
   let buttonStyle = {
     boxShadow: '0 3px 10px rgba(0,0,0,0.1)',
     width: '100%',
-    height: '140px',
+    height: '80px',
     margin: '12.5px 0',
     padding: '0 35px',
     borderRadius: '10px',
@@ -21,7 +21,7 @@ const FamilyMemberCard = ({ onClick, heading, text, selected }) => {
   let headingStyle = {
     fontWeight: 'bold',
     fontSize: '36px',
-    color: '#000',
+    color: '#AAA',
   }
 
   let textStyle = {
@@ -55,11 +55,11 @@ const FamilyMemberCard = ({ onClick, heading, text, selected }) => {
         <div>
           <Text style={headingStyle}>{heading}</Text>
         </div>
-        <div>
+        {/* <div>
           <Text type="secondary" style={textStyle}>
             {text}
           </Text>
-        </div>
+        </div> */}
       </div>
     </Button>
   )

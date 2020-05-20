@@ -31,6 +31,12 @@ class FamilyBasicForm extends React.Component {
   }
 
   componentDidMount() {
+    const { dispatch } = this.props
+
+    dispatch({
+      type: 'user/GET_STUDENT_NAME',
+    })
+
     this.setState({
       isLoaded: false,
     })
@@ -301,7 +307,12 @@ class FamilyBasicForm extends React.Component {
   }
 
   render() {
-    const { processData, family, form } = this.props
+    const {
+      processData,
+      family,
+      form,
+      user: { studentName },
+    } = this.props
     const {
       isLoaded,
       morning,
@@ -454,17 +465,17 @@ class FamilyBasicForm extends React.Component {
         </div>
         <Row
           style={{
-            margin: '20px 0',
+            margin: '0',
             padding: '14px 10px',
             boxShadow: '0 0px 0px rgba(0,0,0,0.1)',
             backgroundColor: '#fff',
           }}
         >
           <Col>
-            <Text className="time-spend">Time spent with kunal</Text>
-            <Paragraph type="secondary" className="how-much-time">
-              How much time do you spent with kunal
-            </Paragraph>
+            <Text className="time-spend">How much time do you spent with {studentName}</Text>
+            {/* <Paragraph type="secondary" className="how-much-time">
+              
+            </Paragraph> */}
           </Col>
           <TimeSpend
             image={dawn}

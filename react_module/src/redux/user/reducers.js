@@ -6,6 +6,7 @@ const initialState = {
   loading: false,
   role: '',
   studentId: '',
+  studentName: '',
 }
 
 export default function userReducer(state = initialState, action) {

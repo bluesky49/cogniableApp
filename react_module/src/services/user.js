@@ -156,3 +156,25 @@ export async function RefreshToken() {
 export async function logout() {
   return apolloClient.cache.reset()
 }
+
+export async function GetStudentNameById(payload) {
+  return apolloClient
+    .query({
+      query: gql`{
+        student(id: ${payload}) {
+          firstname
+        }
+      }`,
+    })
+    .then(result => {
+      return result
+    })
+    .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
+        })
+      })
+    })
+}
