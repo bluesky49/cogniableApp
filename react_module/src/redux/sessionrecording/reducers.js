@@ -17,6 +17,8 @@ const initialState = {
   Count: 1,
   CorrectCount: 0,
   IncorrectCount: 0,
+  // session id
+  SessionId: '',
 
   PromptCodesList: [],
   // holding trial start time

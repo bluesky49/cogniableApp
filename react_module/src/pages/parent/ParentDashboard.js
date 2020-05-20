@@ -40,13 +40,23 @@ const QUERY = gql`
             id
             name
           }
+          itemRequired
           duration
           sessionHost {
             edges {
               node {
+                memberName
                 relationship {
                   name
                 }
+              }
+            }
+          }
+          instruction {
+            edges {
+              node {
+                id
+                instruction
               }
             }
           }
@@ -213,6 +223,8 @@ const ParentDashboard = () => {
                     sessionName={node.sessionName.name}
                     targetsCount={node.targets.edgeCount}
                     hostList={node.sessionHost.edges}
+                    id={node.id}
+                    session={node}
                     status={
                       node.childsessionSet.edges[0]
                         ? node.childsessionSet.edges[0].node.status

@@ -44,18 +44,18 @@ export function* GET_DATA({ payload }) {
 
   if (response && response.data) {
     const targetResponse = {}
-    let tragetActiveId = ''
-    let stimulusActiveId = ''
-    let stepActiveId = ''
+    let targetId = ''
+    let stimulusId = ''
+    let stepId = ''
     let i = 0
     if (response.data.getsession.targets.edgeCount > 0) {
       const targets = response.data.getsession.targets
-      tragetActiveId = targets.edges[0].node.id
+      targetId = targets.edges[0].node.id
 
       if (targets.edges[0].node.sd && targets.edges[0].node.sd.edges.length > 0) {
-        stimulusActiveId = targets.edges[0].node.sd.edges[0].node.id
+        stimulusId = targets.edges[0].node.sd.edges[0].node.id
       } else if (targets.edges[0].node.steps && targets.edges[0].node.steps.edges.length > 0) {
-        stepActiveId = targets.edges[0].node.steps.edges[0].node.id
+        stepId = targets.edges[0].node.steps.edges[0].node.id
       }
 
       for (i = 0; i < targets.edgeCount; i++) {
@@ -89,9 +89,9 @@ export function* GET_DATA({ payload }) {
         MasterSession: response.data.getsession,
         PromptCodesList: response.data.promptCodes,
         TargetResponse: targetResponse,
-        TargetActiveId: tragetActiveId,
-        StimulusActiveId: stimulusActiveId,
-        StepActiveId: stepActiveId,
+        TargetActiveId: targetId,
+        StimulusActiveId: stimulusId,
+        StepActiveId: stepId,
       },
     })
 
@@ -160,11 +160,11 @@ export function* GET_DATA({ payload }) {
         let currentCorrectCount = 0
         let currentIncorrectCount = 0
         let targetIndex = 0
-        let targetId = ''
+        // let targetId = ''
         let stimulusIndex = 0
-        let stimulusId = ''
+        // let stimulusId = ''
         let stepIndex = 0
-        let stepId = ''
+        // let stepId = ''
 
         const edgeLength = childResponse.data.getSessionRecordings.edges.length
         if (edgeLength > 0) {

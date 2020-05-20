@@ -16,6 +16,7 @@
 /* eslint-disable react/jsx-closing-tag-location */
 /* eslint-disable no-var */
 /* eslint-disable react/no-unknown-property */
+/* eslint-disable no-unused-expressions */
 
 import React from 'react'
 import { Helmet } from 'react-helmet'
@@ -54,18 +55,29 @@ class DataRecording extends React.Component {
       visible: false,
       // for target instruction drawer
       targetVisible: false,
+      // redirecting sessionId does not exist
+      redirect: false,
     }
   }
 
-  componentWillMount() {
-    const { dispatch } = this.props
+  componentDidMount() {
+    const {
+      dispatch,
+      sessionrecording: { SessionId },
+    } = this.props
 
-    dispatch({
-      type: 'sessionrecording/LOAD_SESSION',
-      payload: {
-        masterSessionId: 'U2Vzc2lvblR5cGU6Mg==',
-      },
-    })
+    if (SessionId === '') {
+      this.setState({
+        redirect: true,
+      })
+    } else {
+      dispatch({
+        type: 'sessionrecording/LOAD_SESSION',
+        payload: {
+          masterSessionId: SessionId,
+        },
+      })
+    }
   }
 
   showDrawer = () => {
@@ -244,6 +256,12 @@ class DataRecording extends React.Component {
     }
     const targetBlockStyle = { height: '450px', overflow: 'auto' }
     const borderOnePixel = { border: '1px solid #f4f6f8' }
+
+    const { redirect } = this.state
+
+    if (redirect) {
+      return <Redirect to="/" />
+    }
 
     if (loading) {
       return 'Loading session data...'
