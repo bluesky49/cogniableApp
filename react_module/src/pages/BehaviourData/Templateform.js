@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Form, Input, Button, Select, notification } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
@@ -44,7 +43,6 @@ const CREATE_TAMPLET = gql`
     $studentId: ID!
     $behaviorId: ID!
     $status: ID!
-    $def: String
     $description: String
     $measurments: [ID]
     $envs: [ID]
@@ -55,7 +53,6 @@ const CREATE_TAMPLET = gql`
           student: $studentId
           behavior: $behaviorId
           status: $status
-          behaviorDef: $def
           behaviorDescription: $description
           measurments: $measurments
           environment: $envs
@@ -80,48 +77,35 @@ const CREATE_TAMPLET = gql`
   }
 `
 
-const dateFormat = 'YYYY-MM-DD'
+const BEHAVIORS = gql`
+  query getBehaviour($studentId: ID!) {
+    getBehaviour(studentId: $studentId) {
+      edges {
+        node {
+          id
+          behaviorName
+        }
+      }
+    }
+  }
+`
 
-const BehaviourForm = ({ style, setNewTamplateCreated, setNewTampletFromOpen }) => {
-  const [name, setName] = useState('')
-  const [status, setStatus] = useState()
-  const [description, setDescription] = useState('')
-  const [envs, setEnvs] = useState(null)
-  const [measurements, setMeasurements] = useState()
-
+const BehaviourForm = ({ style, setNewTamplateCreated, setNewTampletFromOpen, form }) => {
   const studentId = localStorage.getItem('studentId')
   const durationMesId = 'RGVjZWxCZWhhdmlvck1lYXN1cmluZ3NUeXBlOjQ='
 
-  const {
-    data: dancleStatusData,
-    error: dancleStatusError,
-    loading: dancleStatusLoading,
-  } = useQuery(DANCLE_STATUS)
+  const { data: dancleStatusData, loading: dancleStatusLoading } = useQuery(DANCLE_STATUS)
 
-  const { data: dancleEnvData, error: dancleEnvError, loading: dancleEnvLoading } = useQuery(
-    DANCLE_ENVS,
+  const { data: dancleEnvData, loading: dancleEnvLoading } = useQuery(DANCLE_ENVS)
+
+  const { data: dancleMeasurementData, loading: dancleMeasurementLoading } = useQuery(
+    DANCLE_MEASURMENTS,
   )
 
-  const {
-    data: dancleMeasurementData,
-    error: dancleMeasurementError,
-    loading: dancleMeasurementLoading,
-  } = useQuery(DANCLE_MEASURMENTS)
-
-  const [createTemplate, { data: newTempleteData, error: newTempletError }] = useMutation(
-    CREATE_TAMPLET,
-    {
-      variables: {
-        studentId,
-        behaviorId: 'QmVoYXZpb3JUeXBlOjY4',
-        status,
-        def: 'Hello def',
-        description,
-        measurements,
-        envs,
-      },
-    },
-  )
+  const [
+    createTemplate,
+    { data: newTempleteData, error: newTempletError, loading: newTempleteLoading },
+  ] = useMutation(CREATE_TAMPLET)
 
   useEffect(() => {
     if (newTempleteData) {
@@ -143,21 +127,38 @@ const BehaviourForm = ({ style, setNewTamplateCreated, setNewTampletFromOpen }) 
     }
   }, [newTempletError])
 
-  const SubmitForm = e => {
-    e.preventDefault()
-    console.log(measurements, status)
-    createTemplate()
+  const { data: behaviorData, loading: behaviorLoading } = useQuery(BEHAVIORS, {
+    variables: {
+      studentId,
+    },
+  })
+
+  const SubmitForm = () => {
+    form.validateFields((error, value) => {
+      if (!error) {
+        createTemplate({
+          variables: {
+            studentId,
+            behaviorId: 'QmVoYXZpb3JUeXBlOjY4',
+            status: value.status,
+            description: value.description,
+            measurements: [value.measurements],
+            envs: [value.envs],
+          },
+        })
+      }
+    })
   }
 
   return (
     <Form
-      onSubmit={e => SubmitForm(e, this)}
+      onSubmit={SubmitForm}
       name="control-ref"
-      style={{ marginLeft: 0, position: 'relative' }}
+      style={{ marginLeft: 0, position: 'relative', ...style }}
     >
       <Button
         type="link"
-        onClick={e => {
+        onClick={() => {
           setNewTampletFromOpen(false)
         }}
         style={{
@@ -170,79 +171,93 @@ const BehaviourForm = ({ style, setNewTamplateCreated, setNewTampletFromOpen }) 
         <CloseOutlined style={{ fontSize: 20, color: '#D81E06' }} />
       </Button>
       <Form.Item label="Behaviour Name">
-        <Input
-          value={name}
-          placeholder="Enter Name"
-          onChange={e => {
-            setName(e.target.value)
-          }}
-          size="large"
-        />
+        {form.getFieldDecorator('name', {
+          rules: [{ required: true, message: 'Please select the behavior name!' }],
+        })(
+          <Select
+            placeholder="Select Behavior Name"
+            size="large"
+            loading={behaviorLoading}
+            showSearch
+            optionFilterProp="name"
+          >
+            {behaviorData &&
+              behaviorData.getBehaviour.edges.map(({ node }) => {
+                return (
+                  <Option key={node.id} vlaue={node.id} name={node.behaviorName}>
+                    {node.behaviorName}
+                  </Option>
+                )
+              })}
+          </Select>,
+        )}
       </Form.Item>
 
       <Form.Item label="Status">
-        <Select
-          value={status}
-          onChange={value => {
-            setStatus(value)
-          }}
-          placeholder="Select Behaviour Status"
-          size="large"
-        >
-          {dancleStatusData &&
-            dancleStatusData.getDecelStatus.map(dancleStatus => (
-              <Option value={dancleStatus.id}>{dancleStatus.statusName}</Option>
-            ))}
-        </Select>
+        {form.getFieldDecorator('status', {
+          rules: [{ required: true, message: 'Please select a status' }],
+        })(
+          <Select placeholder="Select Behaviour Status" size="large" loading={dancleStatusLoading}>
+            {dancleStatusData &&
+              dancleStatusData.getDecelStatus.map(dancleStatus => (
+                <Option value={dancleStatus.id}>{dancleStatus.statusName}</Option>
+              ))}
+          </Select>,
+        )}
       </Form.Item>
 
       <Form.Item label="Behaviour Description">
-        <TextArea
-          placeholder="Describe the behaviour"
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          style={{
-            height: 174,
-            resize: 'none',
-          }}
-          autoSave={false}
-        />
+        {form.getFieldDecorator('description', { initialValue: '' })(
+          <TextArea
+            placeholder="Describe the behaviour"
+            style={{
+              height: 174,
+              resize: 'none',
+            }}
+            autoSave={false}
+          />,
+        )}
       </Form.Item>
 
       <Form.Item label="Environments">
-        <Select
-          mode="multiple"
-          style={{ width: '100%' }}
-          placeholder="Please select"
-          onChange={value => setEnvs(value)}
-          size="large"
-        >
-          {dancleEnvData &&
-            dancleEnvData.getEnvironment.map(envData => (
-              <Option value={envData.id}>{envData.name}</Option>
-            ))}
-        </Select>
+        {form.getFieldDecorator('envs', {
+          rules: [{ required: true, message: 'Please select a Environments' }],
+        })(
+          <Select
+            mode="multiple"
+            style={{ width: '100%' }}
+            placeholder="Please select"
+            size="large"
+            loading={dancleEnvLoading}
+          >
+            {dancleEnvData &&
+              dancleEnvData.getEnvironment.map(envData => (
+                <Option value={envData.id}>{envData.name}</Option>
+              ))}
+          </Select>,
+        )}
       </Form.Item>
 
       <Form.Item label="Measurements">
-        <Select
-          mode="multiple"
-          style={{ width: '100%' }}
-          placeholder="Please select"
-          onChange={value => {
-            console.log(measurements)
-            setMeasurements(value)
-          }}
-          defaultValue={[durationMesId]}
-          size="large"
-        >
-          {dancleMeasurementData &&
-            dancleMeasurementData.getBehaviourMeasurings.map(measurement => (
-              <Option value={measurement.id} disabled={measurement.id === durationMesId}>
-                {measurement.measuringType}
-              </Option>
-            ))}
-        </Select>
+        {form.getFieldDecorator('measurements', {
+          initialValue: [durationMesId],
+          rules: [{ required: true, message: 'Please select a Environments' }],
+        })(
+          <Select
+            mode="multiple"
+            style={{ width: '100%' }}
+            placeholder="Please select"
+            size="large"
+            loading={dancleMeasurementLoading}
+          >
+            {dancleMeasurementData &&
+              dancleMeasurementData.getBehaviourMeasurings.map(measurement => (
+                <Option value={measurement.id} disabled={measurement.id === durationMesId}>
+                  {measurement.measuringType}
+                </Option>
+              ))}
+          </Select>,
+        )}
       </Form.Item>
 
       <Form.Item>
@@ -259,6 +274,7 @@ const BehaviourForm = ({ style, setNewTamplateCreated, setNewTampletFromOpen }) 
             fontWeight: 'bold',
             marginTop: 30,
           }}
+          loading={newTempleteLoading}
         >
           New Template
         </Button>
@@ -267,4 +283,4 @@ const BehaviourForm = ({ style, setNewTamplateCreated, setNewTampletFromOpen }) 
   )
 }
 
-export default BehaviourForm
+export default Form.create()(BehaviourForm)

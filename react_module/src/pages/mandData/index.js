@@ -15,21 +15,22 @@ const { Title, Text } = Typography
 
 const MAND_DATA = gql`
   query mandPage($studentId: ID!, $date: Date!) {
-    getMandData(dailyClick_Student: $studentId, date: $date) {
+    getClickData(student: $studentId, date: $date) {
       edges {
         node {
           id
-          data
-          dailyClick {
-            id
-            measurments
+          measurments
+          dailyClickDataSet {
+            edges {
+              node {
+                id
+                data
+                date
+              }
+            }
           }
         }
       }
-    }
-
-    student(id: $studentId) {
-      firstname
     }
   }
 `
@@ -51,8 +52,8 @@ const RECORD_MAND_DATA = gql`
 `
 
 const CREATE_NEW_MAND = gql`
-  mutation createDailyClick($studentId: ID!) {
-    createDailyClick(input: { clickData: { student: $studentId, measurments: "Food" } }) {
+  mutation createDailyClick($studentId: ID!, $mandTitle: String!) {
+    createDailyClick(input: { clickData: { student: $studentId, measurments: $mandTitle } }) {
       details {
         id
         measurments
@@ -98,6 +99,7 @@ export default () => {
   const [createNewMand, { data: newMandRes, error: newMandError }] = useMutation(CREATE_NEW_MAND, {
     variables: {
       studentId,
+      mandTitle,
     },
   })
 
@@ -117,14 +119,22 @@ export default () => {
   useEffect(() => {
     if (newMandRes) {
       notification.success({
-        message: 'Meal Data',
-        description: 'Meal Data Added Successfully',
+        message: 'Mand Data',
+        description: 'New Mand Created Successfully',
       })
+      setMandTitle('')
       setNewMandCreated(true)
-      console.log(newMandRes)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newMandRes])
+
+  useEffect(() => {
+    if (newMandError) {
+      notification.error({
+        message: 'Opps I cant create new mand for some reson',
+      })
+    }
+  }, [newMandError])
 
   useEffect(() => {
     if (mandNewDataError) {
@@ -145,7 +155,14 @@ export default () => {
     <Authorize roles={['school_admin', 'therapist', 'parents']} redirect to="/dashboard/beta">
       <Helmet title="Dashboard Alpha" />
       <Layout style={{ padding: '0px' }}>
-        <Content style={{ padding: '0px 20px', maxWidth: 1300, width: '100%', margin: '0px auto' }}>
+        <Content
+          style={{
+            padding: '0px 20px',
+            maxWidth: 1300,
+            width: '100%',
+            margin: '0px auto',
+          }}
+        >
           {studnetInfo && (
             <Title
               style={{
@@ -153,7 +170,7 @@ export default () => {
                 fontSize: 25,
               }}
             >
-              {studnetInfo.student.firstname}&apos;s Meal Data
+              {studnetInfo.student.firstname}&apos;s Mand Data
             </Title>
           )}
 
@@ -170,13 +187,21 @@ export default () => {
                     marginTop: 17,
                   }}
                 >
+                  {/* {data &&
+                    <pre>
+                      {JSON.stringify(data.getClickData.edges, null, 2)}
+                    </pre>} */}
                   {loading ? (
                     'Loading...'
                   ) : (
                     <>
                       {error && <pre>{JSON.stringify(error, null, 2)}</pre>}
                       {data &&
-                        data.getMandData.edges.map(({ node }, index) => {
+                        data.getClickData.edges.map(({ node }, index) => {
+                          // eslint-disable-next-line no-shadow
+                          const dailyClickData = node.dailyClickDataSet.edges[0]
+                            ? parseInt(node.dailyClickDataSet.edges[0].node.data, 10)
+                            : 0
                           return (
                             <div
                               id={node.id}
@@ -203,26 +228,25 @@ export default () => {
                                     margin: 0,
                                   }}
                                 >
-                                  {data.student.firstname}&apos;s requests for{' '}
-                                  {node.dailyClick.measurments}
+                                  {studnetInfo && studnetInfo.student.firstname}&apos;s requests for{' '}
+                                  {node.measurments}
                                 </Title>
 
                                 <Button
                                   style={{ marginLeft: 'auto' }}
-                                  onClick={e => {
-                                    e.preventDefault()
-                                    let newData = node.data
-                                    if (node.data > 0) {
-                                      newData = node.data - 1
+                                  onClick={() => {
+                                    let newDailyClickData = dailyClickData
+                                    if (dailyClickData > 0) {
+                                      newDailyClickData -= 1
+                                      console.log(newDailyClickData)
+                                      recodeMandData({
+                                        variables: {
+                                          id: node.id,
+                                          data: newDailyClickData,
+                                          date,
+                                        },
+                                      })
                                     }
-
-                                    recodeMandData({
-                                      variables: {
-                                        id: node.dailyClick.id,
-                                        data: newData,
-                                        date,
-                                      },
-                                    })
                                   }}
                                 >
                                   <MinusOutlined />
@@ -236,15 +260,15 @@ export default () => {
                                     marginRight: 19,
                                   }}
                                 >
-                                  {node.data}
+                                  {dailyClickData}
                                 </Text>
                                 <Button
                                   onClick={() => {
                                     recodeMandData({
                                       variables: {
-                                        id: node.dailyClick.id,
+                                        id: node.id,
                                         date,
-                                        data: node.data + 1,
+                                        data: dailyClickData + 1,
                                       },
                                     })
                                   }}

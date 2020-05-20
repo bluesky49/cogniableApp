@@ -1,6 +1,6 @@
+/* eslint-disable react/jsx-closing-tag-location */
 import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import Authorize from 'components/LayoutComponents/Authorize'
 import { Row, Col, Layout, Typography, Button, Drawer } from 'antd'
 import moment from 'moment'
 import { useQuery } from 'react-apollo'
@@ -11,9 +11,10 @@ import BehaviourCard from './BehaviourCard'
 import TemplateForm from './Templateform'
 import TamplateCard from './TamplateCard'
 import CreateDehavrioDrawer from './CreateDehavrioDrawer'
+import UpdateTemplateForm from './UpdateTemplateForm'
 
 const { Content } = Layout
-const { Title, Text } = Typography
+const { Title } = Typography
 
 const BEHAVIOUR_RECORD_DATA = gql`
   query getDecelData($date: Date!, $studentId: ID!) {
@@ -64,7 +65,6 @@ const GET_TEMPLETES = gql`
               }
             }
           }
-          behaviorDef
           behaviorDescription
         }
       }
@@ -74,12 +74,12 @@ const GET_TEMPLETES = gql`
 
 export default () => {
   const [date, setDate] = useState(moment().format('YYYY-MM-DD'))
-  const [newMealDate, setNewMealDate] = useState(date)
   const [newTamplateCreated, setNewTamplateCreated] = useState(false)
   const [newTampletFromOpen, setNewTamplateFromOpen] = useState(false)
   const [newRecordDrawer, setNewRecordDrawer] = useState(false)
   const studentId = localStorage.getItem('studentId')
   const [selectTamplate, setSelectTamplate] = useState()
+  const [updateTempId, setUpdateTempId] = useState()
 
   const { data, loading, error } = useQuery(BEHAVIOUR_RECORD_DATA, {
     variables: {
@@ -112,7 +112,7 @@ export default () => {
   }
 
   return (
-    <Authorize roles={['school_admin', 'parents']} redirect to="/dashboard/beta">
+    <div>
       <Helmet title="Dashboard Alpha" />
       <Layout style={{ padding: '0px' }}>
         <Content
@@ -178,72 +178,78 @@ export default () => {
                   paddingBottom: '20px',
                 }}
               >
-                {newTampletFromOpen ? (
-                  <TemplateForm
-                    handleNewMealDate={newDate => {
-                      setNewMealDate(newDate)
-                    }}
-                    setNewTampletFromOpen={setNewTamplateFromOpen}
-                    setNewTamplateCreated={setNewTamplateCreated}
-                  />
+                {updateTempId ? (
+                  <UpdateTemplateForm tempId={updateTempId} setUpdateTempId={setUpdateTempId} />
                 ) : (
                   <div>
-                    {dancleTemplateLoading ? (
-                      <div
-                        style={{
-                          height: 'calc(100vh - 320px)',
-                          minHeight: 'calc(100vh - 320px)',
-                        }}
-                      >
-                        Loading...
-                      </div>
+                    {newTampletFromOpen ? (
+                      <TemplateForm
+                        setNewTampletFromOpen={setNewTamplateFromOpen}
+                        setNewTamplateCreated={setNewTamplateCreated}
+                      />
                     ) : (
-                      <Scrollbars
-                        style={{
-                          height: 'calc(100vh - 320px)',
-                          minHeight: 'calc(100vh - 320px)',
-                        }}
-                      >
-                        {dancleTemplateError && 'Opps their is something wrong'}
-                        {dancleTemplateData &&
-                          dancleTemplateData.getTemplate.edges.map(({ node }, index) => {
-                            return (
-                              <TamplateCard
-                                id={node.id}
-                                behaviourName={node.behavior.behaviorName}
-                                description={node.behaviorDescription}
-                                status={node.status.statusName}
-                                envsNum={node.environment.edges.length}
-                                setNewRecordDrawer={setNewRecordDrawer}
-                                style={{
-                                  marginTop: index === 0 ? 0 : 20,
-                                }}
-                                setSelectTamplate={setSelectTamplate}
-                              />
-                            )
-                          })}
-                      </Scrollbars>
+                      <div>
+                        {dancleTemplateLoading ? (
+                          <div
+                            style={{
+                              height: 'calc(100vh - 320px)',
+                              minHeight: 'calc(100vh - 320px)',
+                            }}
+                          >
+                            Loading...
+                          </div>
+                        ) : (
+                          <Scrollbars
+                            style={{
+                              height: 'calc(100vh - 320px)',
+                              minHeight: 'calc(100vh - 320px)',
+                            }}
+                          >
+                            {dancleTemplateError && 'Opps their is something wrong'}
+                            {dancleTemplateData &&
+                              dancleTemplateData.getTemplate.edges.map(({ node }, index) => {
+                                return (
+                                  <TamplateCard
+                                    key={node.id}
+                                    id={node.id}
+                                    behaviourName={node.behavior.behaviorName}
+                                    description={node.behaviorDescription}
+                                    status={node.status.statusName}
+                                    envsNum={node.environment.edges.length}
+                                    setNewRecordDrawer={setNewRecordDrawer}
+                                    style={{
+                                      marginTop: index === 0 ? 0 : 20,
+                                    }}
+                                    setSelectTamplate={setSelectTamplate}
+                                    setTemDataUpdate={setNewTamplateCreated}
+                                    setUpdateTempId={setUpdateTempId}
+                                  />
+                                )
+                              })}
+                          </Scrollbars>
+                        )}
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          onClick={() => {
+                            setNewTamplateFromOpen(true)
+                          }}
+                          style={{
+                            width: '100%',
+                            height: 40,
+                            background: '#0B35B3',
+                            boxShadow:
+                              '0px 2px 4px rgba(96, 97, 112, 0.16), 0px 0px 1px rgba(40, 41, 61, 0.04) !importent',
+                            borderRadius: 8,
+                            fontSize: 17,
+                            fontWeight: 'bold',
+                            marginTop: 10,
+                          }}
+                        >
+                          New Template
+                        </Button>
+                      </div>
                     )}
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      onClick={() => {
-                        setNewTamplateFromOpen(true)
-                      }}
-                      style={{
-                        width: '100%',
-                        height: 40,
-                        background: '#0B35B3',
-                        boxShadow:
-                          '0px 2px 4px rgba(96, 97, 112, 0.16), 0px 0px 1px rgba(40, 41, 61, 0.04) !importent',
-                        borderRadius: 8,
-                        fontSize: 17,
-                        fontWeight: 'bold',
-                        marginTop: 10,
-                      }}
-                    >
-                      New Template
-                    </Button>
                   </div>
                 )}
               </div>
@@ -264,6 +270,6 @@ export default () => {
           </Drawer>
         </Content>
       </Layout>
-    </Authorize>
+    </div>
   )
 }

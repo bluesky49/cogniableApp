@@ -1,8 +1,20 @@
 import React, { useEffect } from 'react'
-import { Typography, Button } from 'antd'
+import { Typography, Button, notification } from 'antd'
 import recordIcon from 'icons/racord.png'
+import { FormOutlined, DeleteOutlined } from '@ant-design/icons'
+import gql from 'graphql-tag'
+import { useMutation } from 'react-apollo'
 
 const { Title, Text } = Typography
+
+const DELETE_TEMP = gql`
+  mutation deleteTemplate($id: ID!) {
+    deleteTemplate(input: { pk: $id }) {
+      status
+      message
+    }
+  }
+`
 
 const TampletCard = ({
   style,
@@ -12,8 +24,37 @@ const TampletCard = ({
   envsNum,
   setNewRecordDrawer,
   setSelectTamplate,
+  setTemDataUpdate,
+  setUpdateTempId,
   id,
 }) => {
+  const [deleteTemp, { data, loading, error }] = useMutation(DELETE_TEMP)
+
+  const handleDeleteTemp = () => {
+    deleteTemp({
+      variables: {
+        id,
+      },
+    })
+  }
+
+  useEffect(() => {
+    if (data) {
+      notification.success({
+        message: 'Delete Template Sucessfully',
+      })
+      setTemDataUpdate(true)
+    }
+  }, [data, setTemDataUpdate])
+
+  useEffect(() => {
+    if (error) {
+      notification.error({
+        message: 'Opps their something wrong',
+      })
+    }
+  }, [error])
+
   return (
     <div
       style={{
@@ -25,16 +66,38 @@ const TampletCard = ({
         ...style,
       }}
     >
-      <Title
-        style={{
-          fontSize: 18,
-          lineHeight: '25px',
-          textTransform: 'capitalize',
-          margin: 0,
-        }}
-      >
-        {behaviourName}
-      </Title>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Title
+          style={{
+            fontSize: 18,
+            lineHeight: '25px',
+            textTransform: 'capitalize',
+            margin: 0,
+            display: 'inline',
+          }}
+        >
+          {behaviourName}
+        </Title>
+        <Button
+          type="link"
+          style={{ marginLeft: 'auto', padding: 0 }}
+          disabled={loading}
+          onClick={() => {
+            setUpdateTempId(id)
+          }}
+        >
+          <FormOutlined style={{ fontSize: 24 }} />
+        </Button>
+        <Button
+          type="link"
+          style={{ paddingRight: 0 }}
+          onClick={handleDeleteTemp}
+          loading={loading}
+        >
+          <DeleteOutlined style={{ fontSize: 24, color: 'red' }} />
+        </Button>
+      </div>
+
       <Text
         style={{
           marginTop: 4,
