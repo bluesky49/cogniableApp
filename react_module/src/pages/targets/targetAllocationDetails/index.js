@@ -186,12 +186,7 @@ const TargetAllocationDetails = ({
           <Text className={styles.type}>Narrative</Text>
         </div>
 
-        <Form
-          name="basic"
-          initialValues={{
-            remember: true,
-          }}
-        >
+        <Form name="basic">
           <Form.Item
             label="Target Name"
             name="Target Name"

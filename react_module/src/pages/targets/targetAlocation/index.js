@@ -156,9 +156,43 @@ const TargetAllocation = () => {
     setActiveShortTermGoal(stg)
   }
 
-  const onSuccessAddEditGoal = () => {
+  const onSuccessAddEditGoal = (resp, type) => {
     setAddGoalVisible(false)
-    getLongTermGoalsQuery(selectedStudent, selectedProgram)
+    if (type === 'long') {
+      setLongTermGoals(state => [...state, ...[{ node: resp.data.createLongTerm.details }]])
+    } else if (type === 'long-edit') {
+      setLongTermGoals(state =>
+        state.map(lg => {
+          if (lg.node.id === activeLongTermGoal.node.id) {
+            return { node: resp.data.updateLongTerm.details }
+          }
+          return lg
+        }),
+      )
+    } else if (type === 'short') {
+      setLongTermGoals(state =>
+        state.map(lg => {
+          if (lg.node.id === activeLongTermGoal.node.id) {
+            lg.node.shorttermgoalSet.edges.push({ node: resp.data.createShortTerm.details })
+            return lg
+          }
+          return lg
+        }),
+      )
+    } else if (type === 'short-edit') {
+      setLongTermGoals(state =>
+        state.map(lg => {
+          if (lg.node.id === activeLongTermGoal.node.id) {
+            const lgIdx = lg.node.shorttermgoalSet.edges.findIndex(
+              d => d.node.id === activeShortTermGoal.node.id,
+            )
+            lg.node.shorttermgoalSet.edges[lgIdx] = { node: resp.data.updateShortTerm.details }
+            return lg
+          }
+          return lg
+        }),
+      )
+    }
   }
 
   const [isTargetDetailsVisible, setShowTargetDetailsVisible] = useState(false)
@@ -220,6 +254,14 @@ const TargetAllocation = () => {
   if (role === 'parents') {
     editAble = false
   }
+  let addHeading = 'Update short term details'
+  if (goalType === 'long') {
+    addHeading = 'Add long term details'
+  } else if (goalType === 'long-edit') {
+    addHeading = 'Update long term details'
+  } else if (goalType === 'short') {
+    addHeading = 'Add short term details'
+  }
 
   return (
     <div>
@@ -227,7 +269,7 @@ const TargetAllocation = () => {
       <AddLongAndShortGoal
         show={isAddGoalVisible}
         onClose={handleCloseAddGoal}
-        heading={goalType === 'long' ? 'Add long term details' : 'Add short term details'}
+        heading={addHeading}
         type={goalType}
         activeLongTermGoal={activeLongTermGoal}
         activeShortTermGoal={activeShortTermGoal}
@@ -326,7 +368,8 @@ const TargetAllocation = () => {
                               <span>{getDate(ltGoal.node)}</span>
                             </div>
                             <div className={styles.goalCardWrapper}>
-                              {arrayNotNull(ltGoal.node.shorttermgoalSet.edges) &&
+                              {'shorttermgoalSet' in ltGoal.node &&
+                                arrayNotNull(ltGoal.node.shorttermgoalSet.edges) &&
                                 ltGoal.node.shorttermgoalSet.edges.map((sGoal, index) => {
                                   return (
                                     <GoalCard
@@ -386,7 +429,7 @@ const TargetAllocation = () => {
 
                 {selectedShortTermGoal ? (
                   <AllocatedTarget
-                    allocatedTarget={selectedShortTermGoal.node.targetAllocateSet.edges}
+                    allocatedTarget={selectedShortTermGoal?.node?.targetAllocateSet?.edges}
                   />
                 ) : (
                   <></>

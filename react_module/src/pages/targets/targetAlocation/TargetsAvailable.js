@@ -77,7 +77,8 @@ const TargetsAvailable = ({
           defaultValue="Target Domain"
           onSelect={getTargetAreaByDoimainQuery}
         >
-          {domain.length > 0 &&
+          {domain &&
+            domain.length > 0 &&
             domain.map(d => {
               return (
                 <Select.Option value={d.node.id} key={d.node.id}>
@@ -87,13 +88,14 @@ const TargetsAvailable = ({
             })}
         </Select>
         <Select style={selectTargetStyle} defaultValue="Target Area" onSelect={onSelectArea}>
-          {area.map(a => {
-            return (
-              <Select.Option value={a.node.id} key={a.node.id}>
-                {a.node.Area}
-              </Select.Option>
-            )
-          })}
+          {area &&
+            area.map(a => {
+              return (
+                <Select.Option value={a.node.id} key={a.node.id}>
+                  {a.node.Area}
+                </Select.Option>
+              )
+            })}
         </Select>
 
         <Button type="primary" style={searchBtnStyle} onClick={searchDomin}>
@@ -107,7 +109,8 @@ const TargetsAvailable = ({
         </Checkbox>
       </div>
       <div className={styles.targetWrapper}>
-        {suggestedTarget.length > 0 &&
+        {suggestedTarget &&
+          suggestedTarget.length > 0 &&
           suggestedTarget.map(sTarget => {
             return (
               <SessionCard

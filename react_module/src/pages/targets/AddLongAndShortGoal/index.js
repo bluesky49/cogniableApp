@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Form, Input, Button, DatePicker, Select } from 'antd'
 import moment from 'moment'
 import style from './style.module.scss'
@@ -16,7 +16,7 @@ const selectStyle = {
   zIndex: '1000',
 }
 
-const AddLongAndShortGoal = props => {
+const AddLongAndShortGoalForm = props => {
   const {
     show,
     onClose,
@@ -29,158 +29,115 @@ const AddLongAndShortGoal = props => {
     goalStatusList,
     onSuccess,
     activeShortTermGoal,
+    form,
   } = props
 
   useEffect(() => {
-    if (type === 'long-edit') {
-      setEndDate(moment(activeLongTermGoal.node.dateEnd, 'YYYY-MM-DD'))
-      setDateIntiated(moment(activeLongTermGoal.node.dateInitialted, 'YYYY-MM-DD'))
-      setDescription(activeLongTermGoal.node.description)
-      setGoalName(activeLongTermGoal.node.goalName)
-      setGoalStatus(activeLongTermGoal.node.goalStatus.id)
-      setResponsible(activeLongTermGoal.node.responsibility.id)
-      console.log('activeLongTermGoal.node.dateEnd==>', activeLongTermGoal.node.dateEnd)
-      console.log('activeLongTermGoal==>', moment(activeLongTermGoal, 'YYYY-MM-DD'))
-    } else if (type === 'short-edit') {
-      setEndDate(moment(activeShortTermGoal.node.dateEnd, 'YYYY-MM-DD'))
-      setDateIntiated(moment(activeShortTermGoal.node.dateInitialted, 'YYYY-MM-DD'))
-      setDescription(activeShortTermGoal.node.description)
-      setGoalName(activeShortTermGoal.node.goalName)
-      setGoalStatus(activeShortTermGoal.node.goalStatus.id)
-      setResponsible(activeShortTermGoal.node.responsibility.id)
+    const dataObj = type === 'long-edit' ? activeLongTermGoal : activeShortTermGoal
+    if (type === 'long-edit' || type === 'short-edit') {
+      form.setFieldsValue({
+        endDate: moment(dataObj.node.dateEnd, 'YYYY-MM-DD'),
+        dateIntiated: moment(dataObj.node.dateInitialted, 'YYYY-MM-DD'),
+        description: dataObj.node.description,
+        goalName: dataObj.node.goalName,
+        goalStatus: dataObj.node.goalStatus.id,
+        responsible: dataObj.node.responsibility.id,
+      })
     } else {
       resetForm()
     }
   }, [type])
 
   const resetForm = () => {
-    setEndDate('')
-    setDateIntiated('')
-    setDescription('')
-    setGoalName('')
-    setGoalStatus('')
-    setResponsible('')
-  }
-  const [goalName, setGoalName] = useState('')
-  const [description, setDescription] = useState('')
-  const [dateIntiated, setDateIntiated] = useState('')
-  const [endDate, setEndDate] = useState('')
-  const [responsible, setResponsible] = useState('')
-  const [goalStatus, setGoalStatus] = useState('')
-  // const [assessment, setAssessment] = useState('')
-
-  const handleOnChange = ({ target: { name, value } }) => {
-    if (name === 'goalName') setGoalName(value)
-    else if (name === 'description') setDescription(value)
-  }
-
-  const handleSelectResponsible = resp => {
-    setResponsible(resp)
+    form.setFieldsValue({
+      endDate: null,
+      dateIntiated: null,
+      description: null,
+      goalName: null,
+      goalStatus: null,
+      responsible: null,
+    })
   }
 
   const addGoal = async () => {
-    const startDate = moment(dateIntiated).format('YYYY-MM-DD')
-    const endDate1 = moment(endDate).format('YYYY-MM-DD')
+    let isError = true
+    let formValues = null
 
-    const data = {
-      student,
-      goalName,
-      description,
-      startDate,
-      endDate1,
-      responsible,
-      goalStatus,
-      program,
-    }
+    form.validateFields((error, values) => {
+      console.log('error, values==>', error, values)
+      isError = error
+      formValues = values
+    })
 
-    if (type === 'long') {
-      const createLongTermGoalResp = await createLongTermGoal(
-        student,
-        goalName,
-        description,
-        startDate,
-        endDate1,
-        responsible,
-        goalStatus,
-        program,
-      )
-      if (createLongTermGoalResp) {
-        onSuccess()
-      }
-    } else if (type === 'long-edit') {
-      const updateLongTermGoalResp = await updateLongTermGoal(
-        student,
-        goalName,
-        description,
-        startDate,
-        endDate1,
-        responsible,
-        goalStatus,
-        program,
-        activeLongTermGoal.node.id,
-      )
-      if (updateLongTermGoalResp) {
-        onSuccess()
-      }
-    } else if (type === 'short') {
-      const createShortTermGoalResp = await createShortTermGoal(
-        activeLongTermGoal.node.id,
-        student,
-        goalName,
-        description,
-        startDate,
-        endDate1,
-        '',
-        responsible,
-        goalStatus,
-      )
-      if (createShortTermGoalResp) {
-        onSuccess()
-      }
-    } else if (type === 'short-edit') {
-      const updateShortTermGoalResp = await updateShortTermGoal(
-        activeLongTermGoal.node.id,
-        student,
-        goalName,
-        description,
-        startDate,
-        endDate1,
-        '',
-        responsible,
-        goalStatus,
-        activeShortTermGoal.node.id,
-      )
-      if (updateShortTermGoalResp) {
-        onSuccess()
+    if (!isError) {
+      if (type === 'long') {
+        const createLongTermGoalResp = await createLongTermGoal(
+          student,
+          formValues.goalName,
+          formValues.description,
+          moment(formValues.startDate).format('YYYY-MM-DD'),
+          moment(formValues.endDate).format('YYYY-MM-DD'),
+          formValues.responsible,
+          formValues.goalStatus,
+          formValues.program,
+        )
+        if (createLongTermGoalResp) {
+          onSuccess(createLongTermGoalResp, type)
+        }
+      } else if (type === 'long-edit') {
+        const updateLongTermGoalResp = await updateLongTermGoal(
+          student,
+          formValues.goalName,
+          formValues.description,
+          moment(formValues.startDate).format('YYYY-MM-DD'),
+          moment(formValues.endDate).format('YYYY-MM-DD'),
+          formValues.responsible,
+          formValues.goalStatus,
+          formValues.program,
+          activeLongTermGoal.node.id,
+        )
+        if (updateLongTermGoalResp) {
+          onSuccess(updateLongTermGoalResp, type)
+        }
+      } else if (type === 'short') {
+        const createShortTermGoalResp = await createShortTermGoal(
+          activeLongTermGoal.node.id,
+          student,
+          formValues.goalName,
+          formValues.description,
+          moment(formValues.startDate).format('YYYY-MM-DD'),
+          moment(formValues.endDate).format('YYYY-MM-DD'),
+          formValues.responsible,
+          formValues.goalStatus,
+        )
+        if (createShortTermGoalResp) {
+          onSuccess(createShortTermGoalResp, type)
+        }
+      } else if (type === 'short-edit') {
+        const updateShortTermGoalResp = await updateShortTermGoal(
+          activeLongTermGoal.node.id,
+          student,
+          formValues.goalName,
+          formValues.description,
+          moment(formValues.startDate).format('YYYY-MM-DD'),
+          moment(formValues.endDate).format('YYYY-MM-DD'),
+          formValues.responsible,
+          formValues.goalStatus,
+          activeShortTermGoal.node.id,
+        )
+        if (updateShortTermGoalResp) {
+          onSuccess(updateShortTermGoalResp, type)
+        }
       }
     }
   }
 
-  const handleSelectGoalStatus = gs => {
-    setGoalStatus(gs)
-  }
-
-  // const handleSelectAssessment = as => {
-  //   setAssessment(as)
-  // }
-
-  const handleChangeDateIntiated = date => {
-    setDateIntiated(date)
-  }
-
-  const handleChangeEndDate = date => {
-    setEndDate(date)
-  }
+  const formRef = useRef(null)
 
   return (
     <RightDrawer show={show} onClose={onClose} heading={heading}>
       <div className={style.form}>
-        <Form
-          name="basic"
-          initialValues={{
-            remember: true,
-          }}
-        >
+        <Form ref={formRef} name="basic">
           <Form.Item
             label="Goal Name"
             name="goalName"
@@ -191,7 +148,9 @@ const AddLongAndShortGoal = props => {
               },
             ]}
           >
-            <Input name="goalName" value={goalName} onChange={handleOnChange} />
+            {form.getFieldDecorator('goalName', {
+              rules: [{ required: true, message: 'Please provide goal name!' }],
+            })(<Input placeholder="Goal Name" />)}
           </Form.Item>
           <Form.Item
             label="Description"
@@ -203,7 +162,9 @@ const AddLongAndShortGoal = props => {
               },
             ]}
           >
-            <Input.TextArea name="description" value={description} onChange={handleOnChange} />
+            {form.getFieldDecorator('description', {
+              rules: [{ required: true, message: 'Please provide description!' }],
+            })(<Input.TextArea placeholder="Description" />)}
           </Form.Item>
           <Form.Item
             className={style.formItem}
@@ -216,11 +177,15 @@ const AddLongAndShortGoal = props => {
               },
             ]}
           >
-            <DatePicker
-              className={style.datepicker}
-              value={dateIntiated}
-              onChange={handleChangeDateIntiated}
-            />
+            {form.getFieldDecorator('dateIntiated', {
+              rules: [{ required: true, message: 'Please Select date intiated!' }],
+            })(
+              <DatePicker
+                className={style.datepicker}
+                format="YYYY-MM-DD"
+                placeholder="Start Date"
+              />,
+            )}
           </Form.Item>
           <Form.Item
             className={style.formItem}
@@ -233,11 +198,15 @@ const AddLongAndShortGoal = props => {
               },
             ]}
           >
-            <DatePicker
-              className={style.datepicker}
-              value={endDate}
-              onChange={handleChangeEndDate}
-            />
+            {form.getFieldDecorator('endDate', {
+              rules: [{ required: true, message: 'Please Select end date!' }],
+            })(
+              <DatePicker
+                className={style.datepicker}
+                format="YYYY-MM-DD"
+                placeholder="End Date"
+              />,
+            )}
           </Form.Item>
           <Form.Item
             label="Responsible"
@@ -249,21 +218,19 @@ const AddLongAndShortGoal = props => {
               },
             ]}
           >
-            <Select
-              style={selectStyle}
-              defaultValue="Responsible"
-              value={responsible}
-              size="large"
-              onSelect={handleSelectResponsible}
-            >
-              {goalResponsibilityList.map(gsl => {
-                return (
-                  <Select.Option value={gsl.id} key={gsl.id}>
-                    {gsl.name}
-                  </Select.Option>
-                )
-              })}
-            </Select>
+            {form.getFieldDecorator('responsible', {
+              rules: [{ required: true, message: 'Please Select responsible!' }],
+            })(
+              <Select style={selectStyle} size="large" placeholder="Responsible">
+                {goalResponsibilityList.map(gsl => {
+                  return (
+                    <Select.Option value={gsl.id} key={gsl.id}>
+                      {gsl.name}
+                    </Select.Option>
+                  )
+                })}
+              </Select>,
+            )}
           </Form.Item>
           <Form.Item
             label="Goal Status"
@@ -275,50 +242,20 @@ const AddLongAndShortGoal = props => {
               },
             ]}
           >
-            <Select
-              style={selectStyle}
-              defaultValue="Goal Status"
-              size="large"
-              value={goalStatus}
-              onSelect={handleSelectGoalStatus}
-            >
-              {goalStatusList.map(gsl => {
-                return (
-                  <Select.Option value={gsl.id} key={gsl.id}>
-                    {gsl.status}
-                  </Select.Option>
-                )
-              })}
-            </Select>
+            {form.getFieldDecorator('goalStatus', {
+              rules: [{ required: true, message: 'Please Select goal status!' }],
+            })(
+              <Select style={selectStyle} size="large" placeholder="Goal Status">
+                {goalStatusList.map(gsl => {
+                  return (
+                    <Select.Option value={gsl.id} key={gsl.id}>
+                      {gsl.status}
+                    </Select.Option>
+                  )
+                })}
+              </Select>,
+            )}
           </Form.Item>
-
-          {/* {
-            type === "short" ? (
-              <Form.Item
-                label="Assessment"
-                name="Assessment"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please select Assessment',
-                  },
-                ]}
-              >
-                <Select
-                  style={selectStyle}
-                  size="large"
-                  defaultValue="Assessment"
-                  value={assessment}
-                  onSelect={handleSelectAssessment}
-                >
-                  <Select.Option value="Client">Client</Select.Option>
-                  <Select.Option value="Parent/Caregiver">Parent/Caregiver</Select.Option>
-                  <Select.Option value="Service Provider">Service Provider</Select.Option>
-                </Select>
-              </Form.Item>
-            ):
-              <></>
-          } */}
 
           <Form.Item>
             <Button onClick={addGoal} className={style.searchBtn} type="primary" htmlType="submit">
@@ -330,5 +267,5 @@ const AddLongAndShortGoal = props => {
     </RightDrawer>
   )
 }
-
+const AddLongAndShortGoal = Form.create()(AddLongAndShortGoalForm)
 export default AddLongAndShortGoal

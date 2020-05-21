@@ -490,7 +490,7 @@ export async function updateLongTermGoal(
                    responsibility{
                        id,
                        name
-                   }
+                   },
                    goalStatus{
                      id,
                      status
@@ -498,7 +498,46 @@ export async function updateLongTermGoal(
                    student{
                        id,
                        firstname
-                   }
+                   },
+                   shorttermgoalSet {
+                    edges {
+                      node {
+                        id
+                        goalName
+                        dateInitialted
+                        dateEnd
+                        description
+                        assessment {
+                          id
+                          name
+                        }
+                        responsibility {
+                          id
+                          name
+                        }
+                        goalStatus {
+                          id
+                          status
+                        }
+                        targetAllocateSet {
+                          edges {
+                            node {
+                              id
+                              goalName
+                              targetStatus {
+                                id
+                                statusName
+                              }
+                              targetAllcatedDetails {
+                                id
+                                targetName
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
            }
     }`,
@@ -521,7 +560,6 @@ export async function createShortTermGoal(
   description,
   dateInitialted,
   dateEnd,
-  assessment,
   responsibility,
   goalStatus,
 ) {
@@ -573,7 +611,6 @@ export async function updateShortTermGoal(
   description,
   dateInitialted,
   dateEnd,
-  assessment,
   responsibility,
   goalStatus,
   goalId,
