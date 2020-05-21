@@ -182,6 +182,13 @@ const routes = [
     component: loadable(() => import('pages/session_summary')),
     exact: true,
   },
+
+  // Therapist Urls
+  {
+    path: '/therapistStudent',
+    component: loadable(() => import('pages/tharepist_students')),
+    exact: true,
+  },
 ]
 
 class Router extends React.Component {

@@ -89,6 +89,7 @@ const LearnersCard = () => {
                     return (
                       <LearnerCard
                         key={node.id}
+                        node={node}
                         name={node.firstname}
                         style={{ marginTop: 18 }}
                         leaveRequest={node.leaveRequest}
@@ -105,17 +106,19 @@ const LearnersCard = () => {
                   justifyContent: 'flex-end',
                 }}
               >
-                <Button
-                  type="link"
-                  style={{
-                    marginTop: 10,
-                    fontSize: 18,
-                    lineHeight: '25px',
-                  }}
-                >
-                  View All
-                  <ArrowRightOutlined style={{ fontSize: 18, marginLeft: 11 }} />
-                </Button>
+                <a href="/#/therapistStudent">
+                  <Button
+                    type="link"
+                    style={{
+                      marginTop: 10,
+                      fontSize: 18,
+                      lineHeight: '25px',
+                    }}
+                  >
+                    View All
+                    <ArrowRightOutlined style={{ fontSize: 18, marginLeft: 11 }} />
+                  </Button>
+                </a>
               </div>
             </>
           )}
