@@ -1,9 +1,15 @@
 import React from 'react'
 import { PlusOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
 import styles from './style.module.scss'
 import motherSon from '../../pages/targets/motherSon.jpg'
 
-const SessionCard = ({ image = { motherSon }, heading = '', receptiveLanguage = '' }) => {
+const SessionCard = ({
+  image = { motherSon },
+  heading = '',
+  receptiveLanguage = '',
+  allocateSessionToTarget,
+}) => {
   return (
     <div className={styles.sessionCard}>
       <div className={styles.sessionCardWrapper}>
@@ -20,9 +26,9 @@ const SessionCard = ({ image = { motherSon }, heading = '', receptiveLanguage = 
           </div>
         </div>
       </div>
-      <div className={styles.addSessionBtn}>
+      <Button className={styles.addSessionBtn} onClick={allocateSessionToTarget}>
         <PlusOutlined />
-      </div>
+      </Button>
     </div>
   )
 }

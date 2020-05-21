@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="881230ea-78f9-44bc-8172-364ef207f664" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/react_module/src/components/SessionCard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/react_module/src/components/SessionCard/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react_module/src/pages/targets/targetAlocation/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/react_module/src/pages/targets/targetAlocation/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react_module/src/pages/targets/targetAlocation/style.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/react_module/src/pages/targets/targetAlocation/style.module.scss" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1bwWLvhQwb9TkY35fiQRrzasfRZ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../freelance/Archive[delivery-foodmaza]" />
+    <property name="node.js.detected.package.stylelint" value="true" />
+    <property name="node.js.path.for.package.stylelint" value="project" />
+    <property name="node.js.selected.package.stylelint" value="$PROJECT_DIR$/react_module/node_modules/stylelint" />
+    <property name="nodejs_package_manager_path" value="npm" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/react_module/src/pages/targets/targetAllocationDetails" />
+    </key>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="881230ea-78f9-44bc-8172-364ef207f664" name="Default Changelist" comment="" />
+      <created>1589543583620</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1589543583620</updated>
+      <workItem from="1589543585614" duration="6449000" />
+      <workItem from="1589610798772" duration="3272000" />
+      <workItem from="1589652477219" duration="1652000" />
+      <workItem from="1589654389891" duration="7163000" />
+      <workItem from="1589661573302" duration="4391000" />
+      <workItem from="1589697563896" duration="1096000" />
+      <workItem from="1589718194119" duration="1129000" />
+      <workItem from="1590041540143" duration="745000" />
+      <workItem from="1590042642588" duration="8131000" />
+      <workItem from="1590053488635" duration="778000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="502" y="155" width="424" height="491" key="FileChooserDialogImpl" timestamp="1590053584985">
+      <screen x="72" y="27" width="1294" height="741" />
+    </state>
+    <state x="502" y="155" width="424" height="491" key="FileChooserDialogImpl/72.27.1294.741@72.27.1294.741" timestamp="1590053584985" />
+    <state width="1271" height="164" key="GridCell.Tab.0.bottom" timestamp="1589580715626">
+      <screen x="72" y="27" width="1294" height="741" />
+    </state>
+    <state width="1271" height="164" key="GridCell.Tab.0.bottom/72.27.1294.741@72.27.1294.741" timestamp="1589580715626" />
+    <state width="1271" height="164" key="GridCell.Tab.0.center" timestamp="1589580715625">
+      <screen x="72" y="27" width="1294" height="741" />
+    </state>
+    <state width="1271" height="164" key="GridCell.Tab.0.center/72.27.1294.741@72.27.1294.741" timestamp="1589580715625" />
+    <state width="1271" height="164" key="GridCell.Tab.0.left" timestamp="1589580715625">
+      <screen x="72" y="27" width="1294" height="741" />
+    </state>
+    <state width="1271" height="164" key="GridCell.Tab.0.left/72.27.1294.741@72.27.1294.741" timestamp="1589580715625" />
+    <state width="1271" height="164" key="GridCell.Tab.0.right" timestamp="1589580715626">
+      <screen x="72" y="27" width="1294" height="741" />
+    </state>
+    <state width="1271" height="164" key="GridCell.Tab.0.right/72.27.1294.741@72.27.1294.741" timestamp="1589580715626" />
+    <state x="409" y="136" width="641" height="522" key="find.popup" timestamp="1590050645289">
+      <screen x="72" y="27" width="1294" height="741" />
+    </state>
+    <state x="409" y="136" width="641" height="522" key="find.popup/72.27.1294.741@72.27.1294.741" timestamp="1590050645289" />
+    <state x="444" y="311" width="540" height="179" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1589665022748">
+      <screen x="72" y="27" width="1294" height="741" />
+    </state>
+    <state x="444" y="311" width="540" height="179" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/72.27.1294.741@72.27.1294.741" timestamp="1589665022748" />
+  </component>
+</project>

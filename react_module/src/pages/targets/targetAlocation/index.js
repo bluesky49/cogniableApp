@@ -80,7 +80,8 @@ const TargetAllocation = () => {
   }
   const getProgramAreaQuery = async studentId => {
     const patientResp = await getPatients(studentId)
-    if (notNull(patientResp)) setProgramArea(patientResp.data.student.programArea.edges)
+
+    if (notNull(patientResp)) setProgramArea(patientResp?.data?.student?.programArea?.edges)
   }
 
   const [goalResponsibilityList, setGoalResponsibilityList] = useState([])
@@ -98,12 +99,13 @@ const TargetAllocation = () => {
   }
 
   useEffect(() => {
+    getProgramAreaQuery(selectedStudent)
+
     getGoalStatusQuery()
+
     getGoalResponsibilityQuery()
 
     // alreadyAlloctedTargetQuery(selectedStudent, 'U3RhdHVzVHlwZToz', 'RG9tYWluVHlwZToxMQ==')
-
-    getProgramAreaQuery(selectedStudent)
 
     getLongTermGoalsQuery(selectedStudent, selectedProgram)
   }, [])
@@ -196,6 +198,16 @@ const TargetAllocation = () => {
 
     getLongTermGoalsQuery(selectedStudent, selectedProgram)
 
+    const cloneSelectedShortTermGoal = { ...selectedShortTermGoal }
+
+    cloneSelectedShortTermGoal.node.targetAllocateSet.edges.push({
+      node: {
+        ...resp.data.createTargetAllocate.target,
+      },
+    })
+
+    setSelectedShortTermGoal(cloneSelectedShortTermGoal)
+
     if (addTargetMode === 'list') {
       setSuggestedTarget(item =>
         item.filter(target => target.node.id !== activeSessionDetails.node.id),
@@ -255,13 +267,14 @@ const TargetAllocation = () => {
                   value={selectedProgram}
                   onSelect={handleSelectProgram}
                 >
-                  {programArea.map(p => {
-                    return (
-                      <Select.Option value={p.node.id} key={p.node.id}>
-                        {p.node.name}
-                      </Select.Option>
-                    )
-                  })}
+                  {programArea &&
+                    programArea.map(p => {
+                      return (
+                        <Select.Option value={p.node.id} key={p.node.id}>
+                          {p.node.name}
+                        </Select.Option>
+                      )
+                    })}
                 </Select>
               </div>
 
@@ -292,7 +305,8 @@ const TargetAllocation = () => {
                   }`}
                 >
                   <div className={styles.longTermGoalWrapper}>
-                    {longTermGoals.length > 0 &&
+                    {longTermGoals &&
+                      longTermGoals.length > 0 &&
                       longTermGoals.map(ltGoal => {
                         return (
                           <div className={styles.behaviour} key={ltGoal.node.id}>
