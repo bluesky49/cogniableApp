@@ -24,6 +24,8 @@ import {
 } from 'services/sessionrecording'
 import actions from './actions'
 
+const debug = true
+
 export function* UpdateDuration() {
   // selecting child session id for creating child session
   const childSessionId = yield select(state => state.sessionrecording.ChildSession.id)
@@ -37,6 +39,27 @@ export function* GET_DATA({ payload }) {
     type: 'sessionrecording/SET_STATE',
     payload: {
       loading: true,
+      MasterSession: null,
+      ChildSession: null,
+      TargetResponse: {},
+      RecordingType: 'Target',
+      SessionStatus: 'Pending',
+      StepActiveIndex: 0,
+      StepActiveId: '',
+      StimulusActiveIndex: 0,
+      StimulusActiveId: '',
+      TargetActiveIndex: 0,
+      TargetActiveId: '',
+      Count: 1,
+      CorrectCount: 0,
+      IncorrectCount: 0,
+
+      // holding trial start time
+      TrialStartTime: 0,
+      // for disabled target recording block
+      Disabled: true,
+      // for storing session clock time for api calls
+      CurrentSessionTime: 0,
     },
   })
 
@@ -110,19 +133,18 @@ export function* GET_DATA({ payload }) {
         },
       })
 
-      // yield put({
-      //     type: 'sessionrecording/GET_CHILD_SESSION_DATA',
-      //     payload: {
-      //         id: response.data.getChildSession.edges[0].node.id
-      //     },
-      // })
-
+      if (debug) {
+        console.log('====> now checking child session recording')
+      }
       // if data recording present
       const childResponse = yield call(getChildSessionData, {
         id: response.data.getChildSession.edges[0].node.id,
       })
 
       if (childResponse && childResponse.data) {
+        if (debug) {
+          console.log('====> found child session recording')
+        }
         // updating targets response in store
         childResponse.data.getSessionRecordings.edges.map(item => {
           targetResponse[item.node.targets.id] = {
@@ -179,8 +201,13 @@ export function* GET_DATA({ payload }) {
 
                 if (item.node.sd && item.node.sd.edges.length > 0) {
                   stimulusId = item.node.sd.edges[0].node.id
-                } else if (item.node.steps && item.node.steps.edges.length > 0) {
+                } else {
+                  stimulusId = ''
+                }
+                if (item.node.steps && item.node.steps.edges.length > 0) {
                   stepId = item.node.steps.edges[0].node.id
+                } else {
+                  stepId = ''
                 }
 
                 const lastObjectEdgeCount = lastObject.sessionRecord.edges.length
@@ -209,7 +236,8 @@ export function* GET_DATA({ payload }) {
           }
 
           // updating Count, CorrectCount & IncorrectCount
-          if (!(stimulusId === '')) {
+          if (stimulusId !== '') {
+            console.log(targetId)
             if (targetResponse[targetId].sd[stimulusId].length > 0) {
               currentCount = targetResponse[targetId].sd[stimulusId].length + 1
               targetResponse[targetId].sd[stimulusId].map(recordingItem => {
