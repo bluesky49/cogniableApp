@@ -48,20 +48,21 @@ class TharepistStudents extends Component {
     apolloClient
       .query({
         query: gql`
-          query {
-            students(authStaff_Id: "U3RhZmZUeXBlOjIxOQ==") {
+          {
+            students {
               edges {
                 node {
                   id
                   firstname
                   internalNo
-                  parent {
-                    id
-                    username
-                  }
-                  school {
-                    id
-                  }
+                }
+              }
+            }
+            programArea(school: "U2Nob29sVHlwZTo4") {
+              edges {
+                node {
+                  id
+                  name
                 }
               }
             }
@@ -69,30 +70,10 @@ class TharepistStudents extends Component {
         `,
       })
       .then(qresult => {
-        apolloClient
-          .query({
-            query: gql`
-              query {
-                programArea(school: "U2Nob29sVHlwZTo4") {
-                  edges {
-                    node {
-                      id
-                      name
-                    }
-                  }
-                }
-              }
-            `,
-          })
-          .then(presult => {
-            this.setState({
-              students: qresult.data.students.edges,
-              programArea: presult.data.programArea.edges,
-            })
-          })
-          .catch(error => {
-            console.log(error)
-          })
+        this.setState({
+          students: qresult.data.students.edges,
+          programArea: qresult.data.programArea.edges,
+        })
       })
       .catch(error => {
         console.log(error)
@@ -420,7 +401,7 @@ class TharepistStudents extends Component {
           closable={false}
           // onClose={this.onClose}
           visible={data.visible}
-          width="75%"
+          width="100%"
         >
           <StudentDrawer
             programs={data.programArea}

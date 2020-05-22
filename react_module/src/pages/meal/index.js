@@ -169,7 +169,7 @@ export default () => {
                     'Loading...'
                   ) : (
                     <>
-                      {mealQuery.error && <pre>{JSON.stringify(mealQuery.error, null, 2)}</pre>}
+                      {mealQuery.error && 'Opps their something wrong'}
                       {mealQuery.data &&
                         mealQuery.data.getFood.edges.map(({ node }, index) => {
                           return (

@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import { Form, Button, Select, TimePicker } from 'antd'
@@ -6,7 +7,15 @@ import { MinusOutlined } from '@ant-design/icons'
 
 const { Option } = Select
 
-export default ({ reminder, setRemainderTime, setReminderRepetaion, index, setRemainderCount }) => {
+export default ({
+  reminder,
+  setRemainderTime,
+  setReminderRepetaion,
+  index,
+  setRemainderCount,
+  dispatch,
+  state,
+}) => {
   return (
     <div
       style={{
@@ -26,6 +35,7 @@ export default ({ reminder, setRemainderTime, setReminderRepetaion, index, setRe
           }}
           onClick={() => {
             setRemainderCount(state => state - 1)
+            dispatch({ type: 'REMOVE_REMAINDER', index })
           }}
         >
           <MinusOutlined style={{ fontSize: 24, marginTop: 2 }} />
@@ -35,10 +45,12 @@ export default ({ reminder, setRemainderTime, setReminderRepetaion, index, setRe
       <Form.Item style={{ marginBottom: 0 }}>
         <TimePicker
           disabled={!reminder}
+          value={state[index].time}
           onChange={value => {
-            setRemainderTime(value)
+            dispatch({ type: 'UPDATE_TIME', index, time: value })
           }}
           size="large"
+          allowClear={false}
         />
       </Form.Item>
 
@@ -46,22 +58,18 @@ export default ({ reminder, setRemainderTime, setReminderRepetaion, index, setRe
         <Select
           disabled={!reminder}
           placeholder="Set Repeat"
+          value={state[index].frequency}
           onChange={value => {
-            setReminderRepetaion(value)
+            dispatch({ type: 'UPDATE_FREQUENCY', index, frequency: value })
           }}
           style={{
             width: 150,
           }}
           size="large"
-          mode="multiple"
         >
-          <Option value="mon">Monday</Option>
-          <Option value="tue">Tuesday</Option>
-          <Option value="wed">Wednesday</Option>
-          <Option value="thu">Thursday</Option>
-          <Option value="fri">Friday</Option>
-          <Option value="sat">Saturday</Option>
-          <Option value="sun">Sunday</Option>
+          <Option value="Daily">Daily</Option>
+          <Option value="Weekly">Weekly</Option>
+          <Option value="Monthly">Monthly</Option>
         </Select>
       </Form.Item>
     </div>

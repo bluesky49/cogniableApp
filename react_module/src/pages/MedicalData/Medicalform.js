@@ -36,7 +36,8 @@ const CREATE_MEDICAL_DATA = gql`
     $endDate: Date!
     $note: String
     $severity: ID!
-    $drug: [Object!]!
+    $drug: [DrugInput!]!
+    $remainder: [RemainderInput!]!
   ) {
     createMedical(
       input: {
@@ -50,10 +51,7 @@ const CREATE_MEDICAL_DATA = gql`
         lastObservedDate: "2020-05-16"
         severity: $severity
         drug: $drug
-        remainders: [
-          { time: "10:00 AM", frequency: "Daily" }
-          { time: "07:00 PM", frequency: "Daily" }
-        ]
+        remainders: $remainder
       }
     ) {
       details {
@@ -99,34 +97,64 @@ const presepReducer = (state, action) => {
     case 'UPDATE_DRUG':
       return update(action.index, { ...state[action.index], drugName: action.drugName }, state)
     case 'UPDATE_TIME':
-      return update(action.index, { ...state[action.index], times: `${action.time} mg` }, state)
+      return update(
+        action.index,
+        { ...state[action.index], times: parseInt(action.time, 10) },
+        state,
+      )
     case 'UPDATE_DOSAGE':
       return update(
         action.index,
         { ...state[action.index], dosage: parseInt(action.dosage, 10) },
         state,
       )
+    case 'RESET':
+      return [{ drugName: '', times: 1, dosage: 1 }]
     default:
       return state
   }
 }
 
-const MealForm = ({ style, handleNewMediDate, setNewMediCreated }) => {
+const remainderReducer = (state, action) => {
+  switch (action.type) {
+    case 'ADD_REMAINDER':
+      return [
+        ...state,
+        {
+          time: moment(),
+          frequency: 'Daily',
+        },
+      ]
+
+    case 'REMOVE_REMAINDER':
+      return remove(action.index, 1, state)
+
+    case 'UPDATE_TIME':
+      return update(action.index, { ...state[action.index], time: action.time }, state)
+    case 'UPDATE_FREQUENCY':
+      return update(action.index, { ...state[action.index], frequency: action.frequency }, state)
+    case 'RESET':
+      return [{ time: moment(), frequency: 'Daily' }]
+    default:
+      return state
+  }
+}
+
+const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
   const [condition, setConditon] = useState('')
   const [startDate, setStartDate] = useState(moment().format(dateFormat))
   const [endDate, setEndDate] = useState(moment().format(dateFormat))
   const [severity, setSeverity] = useState('')
-  const [drug, setDrug] = useState('')
-  const [drugDosage, setDrugDosage] = useState()
-  const [drugDosageTime, setDrugDosageTime] = useState('')
   const [reminder, setReminder] = useState(true)
   const [preseptionDrugCount, setPreseptionDrugCount] = useState(1)
   const [remainderCount, setRemainderCount] = useState(1)
-  const [remainderTime, setRemainderTime] = useState()
-  const [remainderRepetaion, setReminderRepetaion] = useState()
 
   const [presepState, presepDispatch] = useReducer(presepReducer, [
-    { drugName: 'he', time: 1, dosage: 1 },
+    { drugName: '', times: 1, dosage: 1 },
+  ])
+
+  const [remainderState, remainderDispatch] = useReducer(remainderReducer, [
+    { time: moment(), frequency: 'Daily' },
   ])
 
   const studentId = localStorage.getItem('studentId')
@@ -142,17 +170,31 @@ const MealForm = ({ style, handleNewMediDate, setNewMediCreated }) => {
   const [mutate, { data, error }] = useMutation(CREATE_MEDICAL_DATA, {
     variables: {
       studentId,
-      date: moment(startDate).format('YYYY-MM-DD'),
-      startDate: moment(startDate).format('YYYY-MM-DD'),
-      endDate: moment(endDate).format('YYYY-MM-DD'),
       drug: presepState,
-      severity,
+      remainder: remainderState,
     },
   })
 
+  useEffect(() => {
+    console.log(remainderState)
+  }, [remainderState])
+
   const SubmitForm = e => {
     e.preventDefault()
-    mutate()
+    // eslint-disable-next-line no-shadow
+    form.validateFields((error, values) => {
+      if (!error) {
+        mutate({
+          variables: {
+            date: moment(values.timeFream[0]).format('YYYY-MM-DD'),
+            startDate: moment(values.timeFream[0]).format('YYYY-MM-DD'),
+            endDate: moment(values.timeFream[1]).format('YYYY-MM-DD'),
+            condition: values.condition,
+            severity: values.severity,
+          },
+        })
+      }
+    })
   }
 
   useEffect(() => {
@@ -162,7 +204,11 @@ const MealForm = ({ style, handleNewMediDate, setNewMediCreated }) => {
         description: 'Meal Data Added Successfully',
       })
       handleNewMediDate(data.createMedical.details.date)
-      console.log(data)
+      form.resetFields()
+      setPreseptionDrugCount(1)
+      presepDispatch({ type: 'RESET' })
+      setRemainderCount(1)
+      remainderDispatch({ type: 'RESET' })
       setNewMediCreated(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,39 +228,38 @@ const MealForm = ({ style, handleNewMediDate, setNewMediCreated }) => {
   }
 
   return (
-    <Form onSubmit={e => SubmitForm(e, this)} name="control-ref" style={{ marginLeft: 0 }}>
+    <Form onSubmit={e => SubmitForm(e)} name="control-ref" style={{ marginLeft: 0 }}>
       <Form.Item label="Madical Condition" style={{ marginBottom: 0 }}>
-        <Input value={condition} onChange={e => setConditon(e.target.value)} size="large" />
+        {form.getFieldDecorator('condition', {
+          rules: [{ required: true, message: 'Please give the condition name' }],
+        })(<Input size="large" placeholder="Type the condition" />)}
       </Form.Item>
 
       <Form.Item label="Start & End Date" style={{ marginBottom: 0 }}>
-        <RangePicker
-          onCalendarChange={value => {
-            setStartDate(value[0])
-            setEndDate(value[1])
-          }}
-          size="large"
-        />
+        {form.getFieldDecorator('timeFream', {
+          rules: [{ required: true, message: 'Please select start and end date!' }],
+        })(<RangePicker size="large" />)}
       </Form.Item>
 
       <Form.Item label="Severity" style={{ marginBottom: 0 }}>
-        <Select
-          placeholder="Select Severity"
-          onChange={value => {
-            setSeverity(value)
-          }}
-          size="large"
-          showSearch
-          loading={severityTypeLoading}
-          optionFilterProp="name"
-        >
-          {severityType &&
-            severityType.getSeverity.map(node => (
-              <Option value={node.id} name={node.name}>
-                {node.name}
-              </Option>
-            ))}
-        </Select>
+        {form.getFieldDecorator('severity', {
+          rules: [{ required: true, message: 'Please select a severity' }],
+        })(
+          <Select
+            placeholder="Select Severity"
+            size="large"
+            showSearch
+            loading={severityTypeLoading}
+            optionFilterProp="name"
+          >
+            {severityType &&
+              severityType.getSeverity.map(node => (
+                <Option value={node.id} name={node.name}>
+                  {node.name}
+                </Option>
+              ))}
+          </Select>,
+        )}
       </Form.Item>
 
       <div>
@@ -242,12 +287,6 @@ const MealForm = ({ style, handleNewMediDate, setNewMediCreated }) => {
         {times(n => {
           return (
             <PreseptionDrugFrom
-              drug={drug}
-              setDrug={setDrug}
-              drugDosageTime={drugDosageTime}
-              setDrugDosageTime={setDrugDosageTime}
-              drugDosage={drugDosage}
-              setDrugDosage={setDrugDosage}
               index={n}
               dispatch={presepDispatch}
               state={presepState}
@@ -288,8 +327,8 @@ const MealForm = ({ style, handleNewMediDate, setNewMediCreated }) => {
           return (
             <ReminderForm
               reminder={reminder}
-              setReminderRepetaion={setReminderRepetaion}
-              setRemainderTime={setRemainderTime}
+              dispatch={remainderDispatch}
+              state={remainderState}
               index={n}
               setRemainderCount={setRemainderCount}
             />
@@ -312,6 +351,7 @@ const MealForm = ({ style, handleNewMediDate, setNewMediCreated }) => {
             }}
             onClick={() => {
               setRemainderCount(state => state + 1)
+              remainderDispatch({ type: 'ADD_REMAINDER' })
             }}
           >
             <PlusOutlined style={{ fontSize: 24, marginTop: 5 }} />
@@ -337,4 +377,4 @@ const MealForm = ({ style, handleNewMediDate, setNewMediCreated }) => {
   )
 }
 
-export default MealForm
+export default Form.create()(MedicalForm)

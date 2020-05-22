@@ -4,6 +4,7 @@ import family from './family/sagas'
 import menu from './menu/sagas'
 import goals from './goals/sagas'
 import staffs from './staffs/sagas'
+import student from './student/sagas'
 import learners from './learners/sagas'
 import settings from './settings/sagas'
 import sessionrecording from './sessionrecording/sagas'
@@ -15,6 +16,7 @@ export default function* rootSaga() {
     menu(),
     goals(),
     staffs(),
+    student(),
     family(),
     learners(),
     settings(),

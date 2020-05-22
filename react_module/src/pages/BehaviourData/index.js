@@ -80,6 +80,8 @@ export default () => {
   const studentId = localStorage.getItem('studentId')
   const [selectTamplate, setSelectTamplate] = useState()
   const [updateTempId, setUpdateTempId] = useState()
+  const [viewBehaviorRecordData, setViewBehaviorRecordData] = useState()
+  const [newRecord, setNewRecord] = useState()
 
   const { data, loading, error } = useQuery(BEHAVIOUR_RECORD_DATA, {
     variables: {
@@ -98,6 +100,22 @@ export default () => {
       studentId,
     },
   })
+
+  useEffect(() => {
+    if (data) {
+      console.log(data)
+      setViewBehaviorRecordData([...data.getDecelData.edges])
+    }
+  }, [data])
+
+  // need fix
+  useEffect(() => {
+    if (newRecord) {
+      setViewBehaviorRecordData(state => {
+        return [...state, newRecord]
+      })
+    }
+  }, [newRecord])
 
   useEffect(() => {
     if (newTamplateCreated) {
@@ -142,7 +160,8 @@ export default () => {
                     <>
                       {error && <pre>{JSON.stringify(error, null, 2)}</pre>}
                       {data &&
-                        data.getDecelData.edges.map(({ node }, index) => {
+                        viewBehaviorRecordData &&
+                        viewBehaviorRecordData.map(({ node }, index) => {
                           return (
                             <BehaviourCard
                               key={node.id}
@@ -261,12 +280,20 @@ export default () => {
             title="Add Behaviour Templates"
             placement="right"
             visible={newRecordDrawer}
-            onClose={() => setNewRecordDrawer(false)}
+            onClose={() => {
+              setNewRecordDrawer(false)
+              setSelectTamplate(null)
+            }}
           >
-            <CreateDehavrioDrawer
-              setNewTamplateFromOpen={setNewTamplateFromOpen}
-              selectTamplate={selectTamplate}
-            />
+            {selectTamplate && (
+              <CreateDehavrioDrawer
+                setNewTamplateFromOpen={setNewTamplateFromOpen}
+                setNewRecordDrawer={setNewRecordDrawer}
+                selectTamplate={selectTamplate}
+                setNewRecord={setNewRecord}
+                setSelectTamplate={setSelectTamplate}
+              />
+            )}
           </Drawer>
         </Content>
       </Layout>

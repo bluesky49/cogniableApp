@@ -289,6 +289,7 @@ const BehaviourForm = ({ style, tempId, form, setUpdateTempId }) => {
                 style={{
                   height: 174,
                   resize: 'none',
+                  color: '#000',
                 }}
               />,
             )}

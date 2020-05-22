@@ -1,9 +1,11 @@
-import React, { useState, useRef } from 'react'
+/* eslint-disable no-shadow */
+/* eslint-disable react/jsx-closing-tag-location */
+import React, { useState, useRef, useEffect } from 'react'
 import { createUseStyles } from 'react-jss'
-import { Typography, Button, Select, Form } from 'antd'
+import { Typography, Button, Select, Form, notification } from 'antd'
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
-import { useQuery } from 'react-apollo'
+import { useMutation } from 'react-apollo'
 import Timer from 'react-compound-timer/build'
 
 const { Text } = Typography
@@ -38,33 +40,46 @@ const useStyles = createUseStyles(() => ({
   },
 }))
 
-const TEMPLATE_DETAILS = gql`
-  query getTemplateDetails($id: ID!) {
-    getTemplateDetails(id: $id) {
-      id
-      behavior {
+const RECORD_DATA = gql`
+  mutation createDecel($templateId: ID!) {
+    createDecel(input: { template: $templateId }) {
+      details {
         id
-        behaviorName
-        definition
-      }
-      status {
-        id
-        statusName
-      }
-      environment {
-        edges {
-          node {
-            id
-            name
+        date
+        irt
+        note
+        duration
+        frequency {
+          edges {
+            node {
+              id
+            }
           }
         }
-      }
-      measurments {
-        edges {
-          node {
-            id
-            measuringType
-            unit
+        template {
+          id
+          behaviorDescription
+          behavior {
+            behaviorName
+          }
+          status {
+            statusName
+          }
+          environment {
+            edges {
+              node {
+                id
+                name
+              }
+            }
+          }
+          measurments {
+            edges {
+              node {
+                id
+                measuringType
+              }
+            }
           }
         }
       }
@@ -72,19 +87,159 @@ const TEMPLATE_DETAILS = gql`
   }
 `
 
-const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
+const UPDATE_RECORD = gql`
+  mutation updateDecel($id: ID!, $env: ID!, $irt: Int, $intensity: String, $duration: String!) {
+    updateDecel(
+      input: { pk: $id, environment: $env, irt: $irt, intensity: $intensity, duration: $duration }
+    ) {
+      details {
+        id
+        irt
+        intensity
+        note
+        date
+        duration
+        template {
+          id
+          behaviorDef
+          behaviorDescription
+        }
+        environment {
+          id
+          name
+        }
+        status {
+          id
+          statusName
+        }
+        frequency {
+          edges {
+            node {
+              id
+              count
+              time
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+const UPDATE_FREQUENCY = gql`
+  mutation updateDecelFrequency($id: ID!, $count: Int!, $time: Int!) {
+    updateDecelFrequency(input: { pk: $id, count: $count, time: $time }) {
+      details {
+        frequency {
+          edges {
+            node {
+              id
+              count
+              time
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+const CreateFrom = ({
+  selectTamplate,
+  form,
+  setNewRecord,
+  setSelectTamplate,
+  setNewRecordDrawer,
+}) => {
   const classes = useStyles()
   const [frequency, setFrequency] = useState(0)
   const [irt, setIrt] = useState(0)
   const timerRef = useRef()
 
-  const { data, loading, error } = useQuery(TEMPLATE_DETAILS, { variables: { id: selectTamplate } })
+  const [createRecord, { data, loading, error }] = useMutation(RECORD_DATA, {
+    fetchPolicy: 'no-cache',
+  })
+
+  const [
+    updateFrequency,
+    { data: updateFrequencyData, loading: updateFrequencyLoading, error: updateFrequencyError },
+  ] = useMutation(UPDATE_FREQUENCY)
+
+  const [
+    updateRecord,
+    { data: updateRecordData, loading: updateRecordLoading, error: updateRecordError },
+  ] = useMutation(UPDATE_RECORD)
+
+  useEffect(() => {
+    if (updateRecordData) {
+      setNewRecordDrawer(false)
+      setSelectTamplate(null)
+    }
+  }, [setNewRecordDrawer, setSelectTamplate, updateRecordData])
+
+  useEffect(() => {
+    createRecord({
+      variables: {
+        templateId: selectTamplate,
+      },
+    })
+  }, [createRecord, selectTamplate])
+
+  useEffect(() => {
+    if (frequency) {
+      updateFrequency({
+        variables: {
+          id: data.createDecel.details.id,
+          count: frequency,
+          time: timerRef.current.getTime(),
+        },
+      })
+    }
+  }, [data, frequency, updateFrequency, updateRecord])
+
+  useEffect(() => {
+    if (data) {
+      setNewRecord({ node: data.createDecel.details })
+    }
+  }, [data, setNewRecord])
+
+  useEffect(() => {
+    if (updateRecordError) {
+      notification.error({
+        message: 'Opps their are some error to update the record',
+      })
+    }
+  }, [updateRecordError])
+
+  useEffect(() => {
+    if (updateFrequencyData) {
+      setFrequency(updateFrequencyData.updateDecelFrequency.details.frequency.edges.length)
+    }
+  }, [updateFrequencyData])
+
+  useEffect(() => {
+    if (updateFrequencyError) {
+      notification.error({
+        message: 'Frequency Data Update Erro',
+      })
+    }
+  }, [updateFrequencyError])
 
   const handleSubmit = () => {
     // eslint-disable-next-line no-shadow
-    form.validateFields((error, value) => {
+    form.validateFields((error, values) => {
       if (!error) {
-        alert(timerRef.current.getTime())
+        console.log(values)
+        updateRecord({
+          variables: {
+            id: data.createDecel.details.id,
+            irt: irt > 0 ? irt : null,
+            frequency: frequency > 0 ? frequency : null,
+            env: values.env,
+            intensity: values.intensity,
+            duration: timerRef.current.getTime(),
+          },
+        })
       }
     })
   }
@@ -104,7 +259,7 @@ const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
             }}
           >
             <Timer id={selectTamplate} ref={timerRef}>
-              {({ stop, reset }) => {
+              {() => {
                 return (
                   <span>
                     <Timer.Minutes /> min:&nbsp;
@@ -116,11 +271,15 @@ const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
           </span>
           <div className={classes.horizontalView}>
             <Text className={classes.text}>Titile</Text>
-            <Text className={classes.text}>{data.getTemplateDetails.behavior.behaviorName}</Text>
+            <Text className={classes.text}>
+              {data.createDecel.details.template.behavior.behaviorName}
+            </Text>
           </div>
           <div className={classes.horizontalView}>
             <Text className={classes.text}>Status</Text>
-            <Text className={classes.text}>{data.getTemplateDetails.status.statusName}</Text>
+            <Text className={classes.text}>
+              {data.createDecel.details.template.status.statusName}
+            </Text>
           </div>
           <div className={classes.horizontalView}>
             <Text className={classes.text}>Environments</Text>
@@ -135,8 +294,12 @@ const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
                       width: 120,
                     }}
                   >
-                    {data.getTemplateDetails.environment.edges.map(({ node }) => {
-                      return <Option value={node.id}>{node.name}</Option>
+                    {data.createDecel.details.template.environment.edges.map(({ node }) => {
+                      return (
+                        <Option key={node.id} value={node.id}>
+                          {node.name}
+                        </Option>
+                      )
                     })}
                   </Select>,
                 )}
@@ -144,7 +307,7 @@ const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
             </Text>
           </div>
           {data &&
-            data.getTemplateDetails.measurments.edges.map(({ node }) => {
+            data.createDecel.details.template.measurments.edges.map(({ node }) => {
               switch (node.measuringType) {
                 case 'Intensity':
                   return (
@@ -155,20 +318,30 @@ const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
                           rules: [
                             {
                               required: true,
-                              message: 'Please Select a environment',
+                              message: 'Please Select a Intensity',
                             },
                           ],
                         })(
                           <Select style={{ width: 120 }} placeholder="Select a Intensity">
-                            <Option value="Severe">Severe</Option>
-                            <Option value="Moderate">Moderate</Option>
-                            <Option value="Mild Function">Mild Function</Option>
+                            <Option key={1} value="Severe">
+                              Severe
+                            </Option>
+                            <Option key={2} value="Moderate">
+                              Moderate
+                            </Option>
+                            <Option key={3} value="Mild Function">
+                              Mild Function
+                            </Option>
                           </Select>,
                         )}
                       </Form.Item>
                     </div>
                   )
                 case 'IRT':
+                  if (irt === undefined) {
+                    setIrt(0)
+                  }
+
                   return (
                     <div
                       style={{
@@ -184,6 +357,11 @@ const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
                           marginLeft: 'auto',
                           marginRight: 7,
                         }}
+                        onClick={() => {
+                          if (irt > 0) {
+                            setIrt(state => state - 1)
+                          }
+                        }}
                       >
                         <MinusOutlined />
                       </Button>
@@ -191,6 +369,9 @@ const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
                       <Button
                         style={{
                           marginLeft: 7,
+                        }}
+                        onClick={() => {
+                          setIrt(state => state + 1)
                         }}
                       >
                         <PlusOutlined />
@@ -218,6 +399,7 @@ const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
                             setFrequency(state => state - 1)
                           }
                         }}
+                        disabled={updateFrequencyLoading}
                       >
                         <MinusOutlined />
                       </Button>
@@ -229,6 +411,8 @@ const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
                         onClick={() => {
                           setFrequency(state => state + 1)
                         }}
+                        loading={updateFrequencyLoading}
+                        disabled={updateFrequencyLoading}
                       >
                         <PlusOutlined />
                       </Button>
@@ -242,10 +426,8 @@ const CreateFrom = ({ setNewTamplateFromOpen, selectTamplate, form }) => {
           <Button
             type="primary"
             htmlType="submit"
-            onClick={() => {
-              setNewTamplateFromOpen(true)
-            }}
             className={classes.submitButton}
+            loading={updateRecordLoading}
           >
             Click for Submit
           </Button>

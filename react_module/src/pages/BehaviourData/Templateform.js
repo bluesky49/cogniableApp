@@ -180,6 +180,9 @@ const BehaviourForm = ({ style, setNewTamplateCreated, setNewTampletFromOpen, fo
             loading={behaviorLoading}
             showSearch
             optionFilterProp="name"
+            style={{
+              color: '#000',
+            }}
           >
             {behaviorData &&
               behaviorData.getBehaviour.edges.map(({ node }) => {
@@ -213,6 +216,7 @@ const BehaviourForm = ({ style, setNewTamplateCreated, setNewTampletFromOpen, fo
             style={{
               height: 174,
               resize: 'none',
+              color: '#000',
             }}
             autoSave={false}
           />,

@@ -8,18 +8,7 @@ const { RangePicker } = DatePicker
 const { Option } = Select
 const { Title, Text } = Typography
 
-export default ({
-  drugDosage,
-  setDrugDosage,
-  drugDosageTime,
-  setDrugDosageTime,
-  drug,
-  setDrug,
-  index,
-  setPreseptionDrugCount,
-  state,
-  dispatch,
-}) => {
+export default ({ index, setPreseptionDrugCount, state, dispatch }) => {
   return (
     <div
       style={{
@@ -76,7 +65,7 @@ export default ({
 
         <Form.Item style={{ marginBottom: 0 }}>
           <Input
-            value={state[index].time}
+            value={state[index].times}
             type="number"
             onChange={e => {
               dispatch({ type: 'UPDATE_TIME', time: e.target.value, index })

@@ -31,7 +31,8 @@ const MealCard = ({ style, urination, bowel, time, prompted }) => {
           }}
         >
           {urination && 'Urination'}
-          {bowel && 'Bowel'}
+          {bowel && urination && ' & Bowel'}
+          {bowel && !urination && 'Bowel'}
         </Title>
         <ClockCircleOutlined style={{ fontSize: 30, marginLeft: 'auto' }} />
         <Text
@@ -54,7 +55,11 @@ const MealCard = ({ style, urination, bowel, time, prompted }) => {
           display: 'block',
         }}
       >
-        {prompted ? 'Prompted to Request' : 'Independent Request'}
+        {prompted && bowel && urination ? (
+          <span style={{ color: 'green' }}>Independent Request</span>
+        ) : (
+          <span style={{ color: 'red' }}>Prompted to Request</span>
+        )}
       </Text>
     </div>
   )

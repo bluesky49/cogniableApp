@@ -7,6 +7,7 @@ import settings from './settings/reducers'
 import goals from './goals/reducers'
 import learners from './learners/reducers'
 import staffs from './staffs/reducers'
+import student from './student/reducers'
 import sessiontargetallocation from './sessiontargetallocation/reducers'
 import sessionrecording from './sessionrecording/reducers'
 
@@ -18,6 +19,7 @@ export default history =>
     settings,
     goals,
     family,
+    student,
     learners,
     staffs,
     sessiontargetallocation,

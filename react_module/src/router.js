@@ -182,6 +182,10 @@ const routes = [
     component: loadable(() => import('pages/session_summary')),
     exact: true,
   },
+  {
+    path: '/sessionDetails',
+    component: loadable(() => import('pages/sessionDetails/index')),
+  },
 
   // Therapist Urls
   {
