@@ -15,6 +15,7 @@ main {
 }
 .studentList {
   width: 40%;
+  height: 60vh;
 }
 .studentDetail {
   width: 60%;
@@ -59,7 +60,7 @@ main {
   margin-left: 7%;
 }
 .drpStudent {
-  margin-left: 41%;
+  margin-left: 28%;
 }
 .drpdnName {
   font-weight: bold;
@@ -83,7 +84,6 @@ main {
   width: 95%;
   border: 1px solid #e4e9f0;
   border-radius: 10px;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
   margin-top: 4%;
   margin-left: 2.5%;
   cursor: pointer;
@@ -97,16 +97,20 @@ main {
 
 .studentCards {
   margin-top: 2%;
-  margin-left: 7%;
-  height: 10%;
-  border: 1px solid #e4e9f0;
-  border-radius: 10px;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
+  margin-left: 4%;
+  height: 90%;
   overflow-y: scroll;
+  margin-right: 4%;
 }
 .studentCards::-webkit-scrollbar {
-  display: none;
+  height: 10px;
+  width: 8px;
 }
+.studentCards::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #a0a0a0;
+}
+
 .studentName {
   margin-top: 5%;
   margin-left: 10%;
@@ -139,7 +143,7 @@ main {
 }
 
 .category > .request {
-  margin-left: 40%;
+  margin-left: 15%;
   font-size: 15px;
   color: red;
 }
@@ -147,7 +151,6 @@ main {
 .detailHeader {
   border: 1px solid #e4e9f0;
   border-radius: 10px;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
   margin-top: 4%;
   display: flex;
 }
@@ -192,17 +195,10 @@ main {
 .detailCardItem {
   border: 1px solid #e4e9f0;
   border-radius: 10px;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   flex: 0 0 auto;
   margin: 1%;
   width: 50%;
-}
-
-.detailCardItem:active {
-  transition: transform 0.1s ease-out;
-  box-shadow: 0 5px #e4e9f0;
-  transform: translateY(5px);
 }
 
 .detailcardHeading {
@@ -237,17 +233,21 @@ main {
 
 .detCardone {
   margin-top: 2%;
+  margin-left: -1%;
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
-  border: 0.5px solid #e4e9f0;
-  border-radius: 10px;
-  box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.2);
 }
 
 .detCardone::-webkit-scrollbar {
-  display: none;
+  height: 10px;
+  width: 3px;
 }
+.detCardone::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #a0a0a0;
+}
+
 // background-color: white;
 .dataRecording {
   margin-top: 3%;
@@ -268,30 +268,14 @@ main {
   margin-top: 7.5%;
 }
 .detailcardTwoItem {
-  border: 1px solid #e4e9f0;
-  border-radius: 10px;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
   display: flex;
-  margin-top: 6%;
-}
-.detailcardTwoItem:active {
-  transition: transform 0.1s ease-out;
-  box-shadow: 0 5px #e4e9f0;
-  transform: translateY(5px);
+  margin-top: -9%;
+  margin-bottom: -7%;
 }
 .mealcardTwoItem {
-  border: 1px solid #e4e9f0;
-  border-radius: 10px;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
   display: flex;
-  margin-top: 6%;
-}
-.mealcardTwoItem:active {
-  transition: transform 0.1s ease-out;
-  box-shadow: 0 5px #e4e9f0;
-  transform: translateY(5px);
+  margin-top: -7%;
+  margin-bottom: -7%;
 }
 .detailCardtwo {
   width: 90%;
@@ -382,7 +366,7 @@ main {
 
 .terms {
   width: 28%;
-  margin-top: 2.5%;
+  margin-top: 3.9%;
 }
 
 .studet {
@@ -393,16 +377,16 @@ main {
   height: 16%;
   border: 1px solid #e4e9f0;
   border-radius: 10px;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.lngTrmGoal {
+  margin-top: 5%;
 }
 
 .termCards {
   width: 90%;
-  border: 1px solid #e4e9f0;
-  border-radius: 10px;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
-  margin-top: 6%;
-  cursor: pointer;
+  margin-top: -9%;
+  margin-bottom: -7%;
 }
 .termCards:active {
   transition: transform 0.1s ease-out;
@@ -449,7 +433,7 @@ main {
   // border: 1px solid #e4e9f0;
   border-radius: 10px;
   margin-top: 13%;
-  // box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
 }
 
 .drawerCard {
@@ -476,20 +460,7 @@ main {
   margin-left: 2.5%;
   margin-right: 1%;
   margin-bottom: 4%;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-}
-
-.drawerCardItem:active {
-  transition: transform 0.1s ease-out;
-  box-shadow: 0 5px #e4e9f0;
-  transform: translateY(5px);
-}
-
-.drawerCardItemSelected:active {
-  transition: transform 0.1s ease-out;
-  box-shadow: 0 5px #e4e9f0;
-  transform: translateY(5px);
 }
 
 .drawerCardItemSelected {
@@ -500,7 +471,6 @@ main {
   margin-left: 2.5%;
   margin-right: 1%;
   margin-bottom: 4%;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
   cursor: pointer;
 }
 
@@ -509,12 +479,9 @@ main {
   border: 1px solid #e4e9f0;
   border-radius: 10px;
   margin-top: 5%;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 .drawercardHeading p {
-  margin-left: 5%;
-  margin-top: 4%;
   font-weight: bold;
   font-size: 25px;
   color: black;
@@ -525,10 +492,9 @@ main {
 }
 
 .termcardHeading > .goal {
-  margin-left: 5%;
   margin-top: 4%;
   font-weight: bold;
-  font-size: 25px;
+  font-size: 19px;
   color: black;
 }
 
@@ -536,7 +502,7 @@ main {
   margin-left: 24%;
   margin-top: 4%;
   font-weight: bold;
-  font-size: 30px;
+  font-size: 22px;
   color: black;
 }
 
@@ -545,24 +511,20 @@ main {
 }
 
 .drawercardDesc p {
-  margin-left: 5%;
   font-size: 18px;
   color: darkgray;
   word-wrap: break-word;
 }
 
 .termcardDesc p {
-  margin-left: 6%;
   font-size: 18px;
   color: black;
   word-wrap: break-word;
-  margin-top: -3%;
+  margin-top: -6%;
 }
 
 .drawerProgress {
   width: 80%;
-  margin-left: 4%;
-  margin-bottom: 4%;
 }
 
 .termProgress {
@@ -598,7 +560,6 @@ main {
 .sesImage {
   border-radius: 10px;
   margin-top: 5%;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
   width: 70%;
   height: 190px;
   margin-left: 9%;
@@ -614,7 +575,6 @@ main {
   width: 100%;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
   border: 1px solid #e4e9f0;
 }
 .sesShell {
@@ -625,7 +585,7 @@ main {
   overflow-y: scroll;
   height: 80vh;
   border-radius: 10px;
-  // box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
   // border: 1px solid #e4e9f0;
 }
 .sessubshell::-webkit-scrollbar {
@@ -637,7 +597,7 @@ main {
   margin-left: 4%;
   margin-top: 4%;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 17px;
   color: black;
   margin-bottom: 4%;
 }

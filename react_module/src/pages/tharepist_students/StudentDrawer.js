@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Progress, Drawer } from 'antd'
+import { Button, Progress, Drawer, Card } from 'antd'
 import { HeartOutlined, CloseOutlined } from '@ant-design/icons'
 import { gql } from 'apollo-boost'
 import apolloClient from '../../apollo/config'
@@ -134,15 +134,13 @@ class StudentDrawer extends Component {
     if (stateData.programAreaStatus !== undefined) {
       for (let i = 0; i < stateData.programAreaStatus.length; i += 1) {
         array.push(
-          <div
-            role="presentation"
+          <Card
             className={
               propData.selectedArea.toUpperCase() ===
               stateData.programAreaStatus[i].node.name.toUpperCase()
                 ? styles.drawerCardItemSelected
                 : styles.drawerCardItem
             }
-            key={i}
           >
             <div className={styles.drawercardHeading}>
               <p>{stateData.programAreaStatus[i].node.name}</p>
@@ -156,7 +154,7 @@ class StudentDrawer extends Component {
             <div className={styles.drawerProgress}>
               <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
             </div>
-          </div>,
+          </Card>,
         )
       }
     }
@@ -257,7 +255,7 @@ class StudentDrawer extends Component {
                 this.close()
               }}
             >
-              <CloseOutlined style={{ fontSize: '30px', color: 'black', cursor: 'pointer' }} />
+              <CloseOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
             </div>
             <div className={styles.studentAct}>
               <div className={styles.studentthCard}>
@@ -295,29 +293,47 @@ class StudentDrawer extends Component {
             {/* change here */}
 
             <div className={styles.terms}>
-              <div className={styles.termCards}>
-                <div className={styles.termcardHeading}>
-                  <p className={styles.goal}>Short Term Goal</p>
-                  <p className={styles.goalPerc}>61%</p>
-                </div>
-                <div className={styles.termcardDesc}>
-                  <p>Jan 5- to March 4</p>
-                </div>
-                <div className={styles.termProgress}>
-                  <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
-                </div>
+              <div className={styles.shrtTrmGoal}>
+                <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
+                  <div className={styles.termCards}>
+                    <div className={styles.termcardHeading}>
+                      <p className={styles.goal}>Short Term Goal</p>
+                      <p className={styles.goalPerc}>61%</p>
+                    </div>
+                    <div className={styles.termcardDesc}>
+                      <p>Jan 5- to March 4</p>
+                    </div>
+                    <div className={styles.termProgress}>
+                      <Progress
+                        percent={40}
+                        showInfo={false}
+                        strokeColor="orange"
+                        strokeWidth={10}
+                      />
+                    </div>
+                  </div>
+                </Card>
               </div>
-              <div className={styles.termCards}>
-                <div className={styles.termcardHeading}>
-                  <p className={styles.goal}>Long Term Goal</p>
-                  <p className={styles.goalPerc}>75%</p>
-                </div>
-                <div className={styles.termcardDesc}>
-                  <p>Jan 5- to March 4</p>
-                </div>
-                <div className={styles.termProgress}>
-                  <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
-                </div>
+              <div className={styles.lngTrmGoal}>
+                <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
+                  <div className={styles.termCards}>
+                    <div className={styles.termcardHeading}>
+                      <p className={styles.goal}>Short Term Goal</p>
+                      <p className={styles.goalPerc}>61%</p>
+                    </div>
+                    <div className={styles.termcardDesc}>
+                      <p>Jan 5- to March 4</p>
+                    </div>
+                    <div className={styles.termProgress}>
+                      <Progress
+                        percent={40}
+                        showInfo={false}
+                        strokeColor="orange"
+                        strokeWidth={10}
+                      />
+                    </div>
+                  </div>
+                </Card>
               </div>
               <div className={styles.behaviourAction}>
                 <p className={styles.behHeader}>Behaviour Assessment</p>

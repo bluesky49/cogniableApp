@@ -106,7 +106,7 @@ class SessionInstruction extends Component {
               this.close()
             }}
           >
-            <CloseOutlined style={{ fontSize: '30px', color: 'black', cursor: 'pointer' }} />
+            <CloseOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
           </div>
           <div className={styles.subSesHeading}>
             <p>Session Preview</p>

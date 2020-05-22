@@ -1,5 +1,16 @@
 import React, { Component } from 'react'
-import { Menu, Dropdown, Button, message, Tooltip, Progress, Drawer, Switch, Modal } from 'antd'
+import {
+  Menu,
+  Dropdown,
+  Button,
+  message,
+  Tooltip,
+  Progress,
+  Drawer,
+  Switch,
+  Modal,
+  Card,
+} from 'antd'
 import { DownOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import { gql } from 'apollo-boost'
 import apolloClient from '../../apollo/config'
@@ -135,15 +146,17 @@ class TharepistStudents extends Component {
     const cardArray = []
     for (let i = 0; i < 5; i += 1) {
       cardArray.push(
-        <div className={styles.detailcardTwoItem} key={i}>
-          <div className={styles.cardtwoheader}>
-            <p className={styles.dataName}>Meal Data</p>
-            <p className={styles.dataDesc}>Breakfast, Lunch & Dinner</p>
+        <Card style={{ marginTop: '6%', borderRadius: '10px', cursor: 'pointer' }}>
+          <div className={styles.detailcardTwoItem} key={i}>
+            <div className={styles.cardtwoheader}>
+              <p className={styles.dataName}>Meal Data</p>
+              <p className={styles.dataDesc}>Breakfast, Lunch & Dinner</p>
+            </div>
+            <div className={styles.cardTwoicon}>
+              <ArrowRightOutlined style={{ color: 'darkblue', fontSize: '25px' }} />
+            </div>
           </div>
-          <div className={styles.cardTwoicon}>
-            <ArrowRightOutlined style={{ color: 'darkblue', fontSize: '25px' }} />
-          </div>
-        </div>,
+        </Card>,
       )
     }
     return cardArray
@@ -153,14 +166,16 @@ class TharepistStudents extends Component {
     const cardArray = []
     for (let i = 0; i < 3; i += 1) {
       cardArray.push(
-        <div className={styles.mealcardTwoItem} key={i}>
-          <div className={styles.mealcardtwoheader}>
-            <p className={styles.mealdataName}>Meal Data</p>
+        <Card style={{ marginTop: '6%', borderRadius: '10px', cursor: 'pointer' }}>
+          <div className={styles.mealcardTwoItem} key={i}>
+            <div className={styles.mealcardtwoheader}>
+              <p className={styles.mealdataName}>Meal Data</p>
+            </div>
+            <div className={styles.mealcardTwoicon}>
+              <ArrowRightOutlined style={{ color: 'darkblue', fontSize: '25px' }} />
+            </div>
           </div>
-          <div className={styles.mealcardTwoicon}>
-            <ArrowRightOutlined style={{ color: 'darkblue', fontSize: '25px' }} />
-          </div>
-        </div>,
+        </Card>,
       )
     }
     return cardArray
@@ -293,34 +308,35 @@ class TharepistStudents extends Component {
         const checked = this.renderSwitch(stateData.programArea[i].node.name)
         if (checked) {
           program.push(
-            <div
-              role="presentation"
-              className={styles.detailCardItem}
+            <Card
               onClick={() => {
                 this.showDrawr(stateData.programArea[i].node.name)
               }}
+              className={styles.detailCardItem}
             >
-              <div className={styles.detailcardHeading}>
-                <p>{stateData.programArea[i].node.name}</p>
-                <div className={styles.toggle}>
-                  <Switch
-                    defaultChecked={checked}
-                    onClick={(checkedUser, event) => {
-                      this.handleToggle(checkedUser, event, stateData.programArea[i].node)
-                    }}
-                  />
+              <>
+                <div className={styles.detailcardHeading}>
+                  <p>{stateData.programArea[i].node.name}</p>
+                  <div className={styles.toggle}>
+                    <Switch
+                      defaultChecked={checked}
+                      onClick={(checkedUser, event) => {
+                        this.handleToggle(checkedUser, event, stateData.programArea[i].node)
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className={styles.detcardDesc}>
-                <p>
-                  Fine Motor skills is a coordination of small muscles, in Movements -Usually
-                  involving the synchronisation of hands and fingers with eyes.
-                </p>
-              </div>
-              <div className={styles.detProgress}>
-                <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
-              </div>
-            </div>,
+                <div className={styles.detcardDesc}>
+                  <p>
+                    Fine Motor skills is a coordination of small muscles, in Movements -Usually
+                    involving the synchronisation of hands and fingers with eyes.
+                  </p>
+                </div>
+                <div className={styles.detProgress}>
+                  <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
+                </div>
+              </>
+            </Card>,
           )
         } else {
           program.push(
@@ -398,14 +414,13 @@ class TharepistStudents extends Component {
       )
     }
     if (data.isDrawer) {
-      const fullWidth = global.window.innerWidth
       return (
         <Drawer
           placement="right"
           closable={false}
           // onClose={this.onClose}
           visible={data.visible}
-          width="100%"
+          width="75%"
         >
           <StudentDrawer
             programs={data.programArea}
