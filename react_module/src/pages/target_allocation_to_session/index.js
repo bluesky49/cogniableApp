@@ -39,13 +39,17 @@ class ExtraAppsJiraAgileBoard extends React.Component {
   }
 
   componentWillMount() {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'sessiontargetallocation/GET_ALLOCATED_TARGETS',
-      payload: {
-        studentId: 'U3R1ZGVudFR5cGU6MTYz',
-      },
-    })
+    if (localStorage.getItem('studentId')) {
+      const { dispatch } = this.props
+      dispatch({
+        type: 'sessiontargetallocation/GET_ALLOCATED_TARGETS',
+        payload: {
+          studentId: JSON.parse(localStorage.getItem('studentId')),
+        },
+      })
+    } else {
+      window.location.href = '/'
+    }
   }
 
   clearAll = session => {

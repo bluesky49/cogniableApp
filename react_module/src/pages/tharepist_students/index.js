@@ -17,6 +17,8 @@ import apolloClient from '../../apollo/config'
 import styles from './style.module.scss'
 import student from '../../images/student.jpg'
 import StudentDrawer from './StudentDrawer'
+import StudentProgramLinks from './studentProgramLinks'
+import DataRecording from './DataRecordingTh'
 
 const menu = (
   <Menu>
@@ -94,6 +96,10 @@ class TharepistStudents extends Component {
   }
 
   setClickHandler = node => {
+    console.log('===> cliked', node.id)
+    // setting student id to local storage for further operations
+    localStorage.setItem('studentId', JSON.stringify(node.id))
+    // getting student program area
     apolloClient
       .query({
         query: gql`
@@ -123,45 +129,6 @@ class TharepistStudents extends Component {
       })
   }
 
-  renderSecondCard = () => {
-    const cardArray = []
-    for (let i = 0; i < 5; i += 1) {
-      cardArray.push(
-        <Card style={{ marginTop: '6%', borderRadius: '10px', cursor: 'pointer' }}>
-          <div className={styles.detailcardTwoItem} key={i}>
-            <div className={styles.cardtwoheader}>
-              <p className={styles.dataName}>Meal Data</p>
-              <p className={styles.dataDesc}>Breakfast, Lunch & Dinner</p>
-            </div>
-            <div className={styles.cardTwoicon}>
-              <ArrowRightOutlined style={{ color: 'darkblue', fontSize: '25px' }} />
-            </div>
-          </div>
-        </Card>,
-      )
-    }
-    return cardArray
-  }
-
-  renderSecondMealCard = () => {
-    const cardArray = []
-    for (let i = 0; i < 3; i += 1) {
-      cardArray.push(
-        <Card style={{ marginTop: '6%', borderRadius: '10px', cursor: 'pointer' }}>
-          <div className={styles.mealcardTwoItem} key={i}>
-            <div className={styles.mealcardtwoheader}>
-              <p className={styles.mealdataName}>Meal Data</p>
-            </div>
-            <div className={styles.mealcardTwoicon}>
-              <ArrowRightOutlined style={{ color: 'darkblue', fontSize: '25px' }} />
-            </div>
-          </div>
-        </Card>,
-      )
-    }
-    return cardArray
-  }
-
   renderStudentCards = () => {
     const stateData = this.state
     const cards = []
@@ -185,7 +152,7 @@ class TharepistStudents extends Component {
                   <p className={styles.name}>{stateData.students[i].node.firstname}</p>
                   <div className={styles.category}>
                     <p className={styles.categoryName}>Student</p>
-                    <p className={styles.request}>Pending leave request</p>
+                    {/* <p className={styles.request}>Pending leave request</p> */}
                   </div>
                 </div>
               </div>
@@ -387,9 +354,13 @@ class TharepistStudents extends Component {
           <div className={styles.mealCards}>
             <div className={styles.dataRecording}>
               <p>Data Recording</p>
-              <div className={styles.detailCardtwo}>{this.renderSecondCard()}</div>
+              <div className={styles.detailCardtwo}>
+                <DataRecording />
+              </div>
             </div>
-            <div className={styles.detailMealCard}>{this.renderSecondMealCard()}</div>
+            <div className={styles.detailMealCard}>
+              <StudentProgramLinks />
+            </div>
           </div>
         </>
       )
@@ -460,7 +431,7 @@ class TharepistStudents extends Component {
               <div className={styles.stuHeader}>
                 <p>Students</p>
                 <div className={styles.drpStudent}>
-                  <Dropdown overlay={menu}>
+                  {/* <Dropdown overlay={menu}>
                     <Button
                       style={{
                         fontSize: '15px',
@@ -472,7 +443,7 @@ class TharepistStudents extends Component {
                     >
                       Select Students <DownOutlined />
                     </Button>
-                  </Dropdown>
+                  </Dropdown> */}
                 </div>
               </div>
             </div>
