@@ -69,6 +69,7 @@ const TargetAllocation = () => {
       setSelectedProgram(programArea[0].node.id)
     }
   }, [programArea])
+
   const alreadyAlloctedTargetQuery = async (
     studentId = 'U3R1ZGVudFR5cGU6MTYz',
     targetStatus = 'U3RhdHVzVHlwZToz',
