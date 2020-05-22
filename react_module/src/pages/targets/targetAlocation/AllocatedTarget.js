@@ -12,7 +12,7 @@ const AllocatedTarget = ({ allocatedTarget }) => {
       </div>
 
       <div className={styles.availableTargetWrapper}>
-        {allocatedTarget.length > 0 ? (
+        {allocatedTarget && allocatedTarget.length > 0 ? (
           allocatedTarget.map(aTarget => {
             return (
               <AllocatedTargetCard

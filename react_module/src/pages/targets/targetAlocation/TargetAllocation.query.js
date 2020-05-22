@@ -490,7 +490,7 @@ export async function updateLongTermGoal(
                    responsibility{
                        id,
                        name
-                   }
+                   },
                    goalStatus{
                      id,
                      status
@@ -498,7 +498,46 @@ export async function updateLongTermGoal(
                    student{
                        id,
                        firstname
-                   }
+                   },
+                   shorttermgoalSet {
+                    edges {
+                      node {
+                        id
+                        goalName
+                        dateInitialted
+                        dateEnd
+                        description
+                        assessment {
+                          id
+                          name
+                        }
+                        responsibility {
+                          id
+                          name
+                        }
+                        goalStatus {
+                          id
+                          status
+                        }
+                        targetAllocateSet {
+                          edges {
+                            node {
+                              id
+                              goalName
+                              targetStatus {
+                                id
+                                statusName
+                              }
+                              targetAllcatedDetails {
+                                id
+                                targetName
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
            }
     }`,
@@ -521,19 +560,19 @@ export async function createShortTermGoal(
   description,
   dateInitialted,
   dateEnd,
-  assessment,
   responsibility,
   goalStatus,
 ) {
   return client
     .mutate({
       mutation: gql`mutation {
-        createShortTerm(input:{goalData:{longTerm:"${longTerm}", goalName:"${goalName}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}", assessment:"", responsibility:"${responsibility}", goalStatus:"${goalStatus}"}})
+        createShortTerm(input:{goalData:{longTerm:"${longTerm}", goalName:"${goalName}", description:"${description}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}",  responsibility:"${responsibility}", goalStatus:"${goalStatus}"}})
            {
                details{
                    id,
                    goalName,
                    dateInitialted,
+                   description,
                    dateEnd,
                    longTerm{
                        id,
@@ -573,30 +612,24 @@ export async function updateShortTermGoal(
   description,
   dateInitialted,
   dateEnd,
-  assessment,
   responsibility,
   goalStatus,
   goalId,
 ) {
-  // createShortTerm(input:{goalData:{longTerm:"${longTerm}", goalName:"${goalName}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}", assessment:"R29hbHNBc3Nlc3NtZW50VHlwZTox", responsibility:"${responsibility}", goalStatus:"${goalStatus}"}})
-
   return client
     .mutate({
       mutation: gql`mutation {
-        updateShortTerm(input:{goalData:{id:"${goalId}", longTerm:"${longTerm}", goalName:"${goalName}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}", assessment:"R29hbHNBc3Nlc3NtZW50VHlwZTox", responsibility:"${responsibility}", goalStatus:"${goalStatus}"}})
+        updateShortTerm(input:{goalData:{id:"${goalId}", longTerm:"${longTerm}", goalName:"${goalName}", description:"${description}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}", responsibility:"${responsibility}", goalStatus:"${goalStatus}"}})
            {
                details{
                    id,
                    goalName,
+                   description,
                    dateInitialted,
                    dateEnd,
                    longTerm{
                        id,
                        goalName
-                   },
-                   assessment{
-                       id,
-                       name
                    },
                    responsibility{
                        id,
