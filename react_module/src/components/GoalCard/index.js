@@ -29,7 +29,7 @@ const GoalCard = ({
           <EditOutlined onClick={onEdit} />
         </div>
       ) : (
-        ''
+        <></>
       )}
       <div>
         <span className={styles.heading} style={headingStyle}>

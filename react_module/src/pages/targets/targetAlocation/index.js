@@ -81,6 +81,7 @@ const TargetAllocation = () => {
 
   const getLongTermGoalsQuery = async (studentId, program) => {
     const longTermGoalResp = await getLongTermGoals(studentId, program)
+    console.log('longTermGoalResp ==>', longTermGoalResp)
     if (notNull(longTermGoalResp)) setLongTermGoals(longTermGoalResp.data.longTerm.edges)
   }
   const getProgramAreaQuery = async studentId => {

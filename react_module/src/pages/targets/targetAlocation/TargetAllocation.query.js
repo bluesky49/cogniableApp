@@ -566,7 +566,7 @@ export async function createShortTermGoal(
   return client
     .mutate({
       mutation: gql`mutation {
-        createShortTerm(input:{goalData:{longTerm:"${longTerm}", goalName:"${goalName}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}", assessment:"", responsibility:"${responsibility}", goalStatus:"${goalStatus}"}})
+        createShortTerm(input:{goalData:{longTerm:"${longTerm}", goalName:"${goalName}", description:"${description}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}", assessment:"", responsibility:"${responsibility}", goalStatus:"${goalStatus}"}})
            {
                details{
                    id,

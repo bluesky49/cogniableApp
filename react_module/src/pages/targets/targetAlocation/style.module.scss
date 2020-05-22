@@ -95,6 +95,11 @@
   font-weight: 700;
   color: #000;
   margin: 10px 0;
+
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .goalCardWrapper {

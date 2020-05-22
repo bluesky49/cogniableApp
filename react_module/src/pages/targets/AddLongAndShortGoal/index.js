@@ -79,7 +79,7 @@ const AddLongAndShortGoalForm = props => {
           moment(formValues.endDate).format('YYYY-MM-DD'),
           formValues.responsible,
           formValues.goalStatus,
-          formValues.program,
+          program,
         )
         if (createLongTermGoalResp) {
           onSuccess(createLongTermGoalResp, type)
@@ -93,7 +93,7 @@ const AddLongAndShortGoalForm = props => {
           moment(formValues.endDate).format('YYYY-MM-DD'),
           formValues.responsible,
           formValues.goalStatus,
-          formValues.program,
+          program,
           activeLongTermGoal.node.id,
         )
         if (updateLongTermGoalResp) {

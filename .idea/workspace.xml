@@ -21,9 +21,12 @@
   <component name="ChangeListManager">
     <list default="true" id="881230ea-78f9-44bc-8172-364ef207f664" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react_module/src/components/GoalCard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/react_module/src/components/GoalCard/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react_module/src/components/GoalCard/style.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/react_module/src/components/GoalCard/style.module.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react_module/src/pages/targets/AddLongAndShortGoal/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/react_module/src/pages/targets/AddLongAndShortGoal/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react_module/src/pages/targets/AddLongAndShortGoal/style.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/react_module/src/pages/targets/AddLongAndShortGoal/style.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react_module/src/pages/targets/targetAlocation/TargetAllocation.query.js" beforeDir="false" afterPath="$PROJECT_DIR$/react_module/src/pages/targets/targetAlocation/TargetAllocation.query.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react_module/src/pages/targets/targetAlocation/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/react_module/src/pages/targets/targetAlocation/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react_module/src/pages/targets/targetAlocation/style.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/react_module/src/pages/targets/targetAlocation/style.module.scss" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +88,7 @@
       <workItem from="1590042642588" duration="8131000" />
       <workItem from="1590053488635" duration="4566000" />
       <workItem from="1590077219546" duration="17585000" />
-      <workItem from="1590124704178" duration="1264000" />
+      <workItem from="1590124704178" duration="2942000" />
     </task>
     <servers />
   </component>
