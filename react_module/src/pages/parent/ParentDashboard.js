@@ -9,12 +9,10 @@ import gql from 'graphql-tag'
 import { useQuery, useMutation } from 'react-apollo'
 import { useSelector } from 'react-redux'
 import { Helmet } from 'react-helmet'
-import Authorize from 'components/LayoutComponents/Authorize'
 import PerformanceSummary from './ParentDashboard/PerformenceSummary'
 import PerformenceGrap from './ParentDashboard/PerformenceGrap'
 import AppointmentsCard from './ParentDashboard/AppointmentsCard'
-import TaskHeader from './ParentDashboard/TaskHeader'
-import TaskCard from './ParentDashboard/TaskCard'
+import SessionCard from './ParentDashboard/SessionCard'
 import InfoCard from '../../components/dashboard/InfoCard'
 import timeBack from './ParentDashboard/utils'
 
@@ -215,56 +213,23 @@ const ParentDashboard = () => {
               </Col>
             </Row>
 
-            {data.sessions.edges.map(({ node }) => {
-              return (
-                <div className="taskSection" style={{ position: 'relative', marginBottom: 15 }}>
-                  <TaskHeader
-                    duration={node.duration}
-                    sessionName={node.sessionName.name}
-                    targetsCount={node.targets.edgeCount}
-                    hostList={node.sessionHost.edges}
-                    id={node.id}
-                    session={node}
-                    status={
-                      node.childsessionSet.edges[0]
-                        ? node.childsessionSet.edges[0].node.status
-                        : null
-                    }
-                  />
-                  <Row gutter={[45, 0]}>
-                    {node.targets.edges.map(target => {
-                      return (
-                        <Col key={target.node.id} xs={24} lg={8}>
-                          <TaskCard
-                            id={target.node.id}
-                            domainName={target.node.targetId.domain.domain}
-                            targetName={target.node.targetAllcatedDetails.targetName}
-                            like={target.node.targetlikeSet.edgeCount}
-                            userLiked="dislike"
-                          />
-                        </Col>
-                      )
-                    })}
-                  </Row>
-                  <Button
-                    type="link"
-                    block
-                    style={{
-                      position: 'absolute',
-                      bottom: '20px',
-                      right: '24px',
-                      width: 100,
-                      fontSize: 14,
-                      lineHeight: '22px',
-                      color: '#0B35B3',
-                    }}
-                  >
-                    View All
-                    <Icon type="arrow-right" style={{ color: '#0B35B3' }} />
-                  </Button>
-                </div>
-              )
-            })}
+            <div className="taskSection" style={{ position: 'relative', marginBottom: 15 }}>
+              <Row gutter={[45, 0]}>
+                {data.sessions.edges.map(({ node }) => {
+                  return (
+                    <Col key={node.id} xs={24} lg={8}>
+                      <SessionCard
+                        id={node.id}
+                        sessionName={node.sessionName.name}
+                        duration={node.duration}
+                        hostList={node.sessionHost.edges}
+                        session={node}
+                      />
+                    </Col>
+                  )
+                })}
+              </Row>
+            </div>
 
             <Row gutter={[45, 0]}>
               <Col xs={24} lg={8}>
