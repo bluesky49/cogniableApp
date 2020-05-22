@@ -152,6 +152,7 @@ const AddLongAndShortGoalForm = props => {
               rules: [{ required: true, message: 'Please provide goal name!' }],
             })(<Input placeholder="Goal Name" />)}
           </Form.Item>
+
           <Form.Item
             label="Description"
             name="Description"
@@ -166,6 +167,7 @@ const AddLongAndShortGoalForm = props => {
               rules: [{ required: true, message: 'Please provide description!' }],
             })(<Input.TextArea placeholder="Description" />)}
           </Form.Item>
+
           <Form.Item
             className={style.formItem}
             label="Date Intiated"
@@ -187,6 +189,7 @@ const AddLongAndShortGoalForm = props => {
               />,
             )}
           </Form.Item>
+
           <Form.Item
             className={style.formItem}
             label="End Date"
@@ -208,6 +211,7 @@ const AddLongAndShortGoalForm = props => {
               />,
             )}
           </Form.Item>
+
           <Form.Item
             label="Responsible"
             name="responsible"
@@ -232,6 +236,7 @@ const AddLongAndShortGoalForm = props => {
               </Select>,
             )}
           </Form.Item>
+
           <Form.Item
             label="Goal Status"
             name="Goal Status"
@@ -267,5 +272,6 @@ const AddLongAndShortGoalForm = props => {
     </RightDrawer>
   )
 }
+
 const AddLongAndShortGoal = Form.create()(AddLongAndShortGoalForm)
 export default AddLongAndShortGoal

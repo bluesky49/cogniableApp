@@ -48,7 +48,7 @@ const TargetAllocation = () => {
   const [selectedStudent, setSelectedStudent] = useState(stdId)
   const [programArea, setProgramArea] = useState([])
 
-  const [selectedProgram, setSelectedProgram] = useState('UHJvZ3JhbUFyZWFUeXBlOjE=')
+  const [selectedProgram, setSelectedProgram] = useState('')
 
   const [longTermGoals, setLongTermGoals] = useState([])
   const [allocatedTarget, setAllocatedTarget] = useState([])
@@ -64,6 +64,11 @@ const TargetAllocation = () => {
 
   const [suggestedTarget, setSuggestedTarget] = useState([])
 
+  useEffect(() => {
+    if (programArea && programArea.length > 0) {
+      setSelectedProgram(programArea[0].node.id)
+    }
+  }, [programArea])
   const alreadyAlloctedTargetQuery = async (
     studentId = 'U3R1ZGVudFR5cGU6MTYz',
     targetStatus = 'U3RhdHVzVHlwZToz',
