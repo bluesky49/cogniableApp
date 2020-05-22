@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import { Redirect } from 'react-router-dom'
 import { Button } from 'antd'
-import { UserOutlined, DatabaseOutlined, FileTextOutlined, CloseOutlined } from '@ant-design/icons'
+import { UserOutlined, DatabaseOutlined, FileTextOutlined } from '@ant-design/icons'
 import styles from './style.module.scss'
 import student from '../../../images/student.jpg'
 
