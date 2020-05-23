@@ -1,21 +1,24 @@
-/* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import {
   Form,
-  Input,
   Button,
-  Select,
-  DatePicker,
   notification,
   Radio,
   InputNumber,
   TimePicker,
+  Typography,
+  Switch,
 } from 'antd'
-import { connect, useSelector } from 'react-redux'
+import { PlusOutlined } from '@ant-design/icons'
+import { useSelector } from 'react-redux'
 import gql from 'graphql-tag'
-import { useMutation, useQuery } from 'react-apollo'
+import { useMutation } from 'react-apollo'
 import moment from 'moment'
+import { times, remove, update } from 'ramda'
+import ReminderForm from './ReminderForm'
 import './toiletForm.scss'
+
+const { Title, Text } = Typography
 
 const CREATE_TOILET_DATA = gql`
   mutation recordToiletdata(
@@ -26,6 +29,7 @@ const CREATE_TOILET_DATA = gql`
     $urination: Boolean!
     $bowel: Boolean!
     $prompted: Boolean!
+    $remainders: [RemaindersInput]
   ) {
     recordToiletdata(
       input: {
@@ -40,6 +44,7 @@ const CREATE_TOILET_DATA = gql`
           bowel: $bowel
           prompted: $prompted
         }
+        remainders: $remainders
       }
     ) {
       details {
@@ -57,7 +62,32 @@ const CREATE_TOILET_DATA = gql`
   }
 `
 
-const dateFormat = 'YYYY-MM-DD'
+const TimeFormat = 'HH:mm'
+
+const remainderReducer = (state, action) => {
+  switch (action.type) {
+    case 'ADD_REMAINDER':
+      return [
+        ...state,
+        {
+          time: moment(),
+          frequency: 'Daily',
+        },
+      ]
+
+    case 'REMOVE_REMAINDER':
+      return remove(action.index, 1, state)
+
+    case 'UPDATE_TIME':
+      return update(action.index, { ...state[action.index], time: action.time }, state)
+    case 'UPDATE_FREQUENCY':
+      return update(action.index, { ...state[action.index], frequency: action.frequency }, state)
+    case 'RESET':
+      return [{ time: moment(), frequency: 'Daily' }]
+    default:
+      return state
+  }
+}
 
 const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDate }) => {
   const [waterIntake, setWaterIntake] = useState()
@@ -65,18 +95,25 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
   const [urination, setUrination] = useState(true)
   const [bowel, setBowel] = useState(true)
   const [prompted, setPrompted] = useState(true)
+  const [reminder, setReminder] = useState(true)
+  const [remainderCount, setRemainderCount] = useState(1)
+
+  const [remainderState, remainderDispatch] = useReducer(remainderReducer, [
+    { time: moment(), frequency: 'Daily' },
+  ])
 
   const user = useSelector(state => state.user)
   const [mutate, { data, error }] = useMutation(CREATE_TOILET_DATA, {
     variables: {
       studentId: user.id,
       date: selectDate,
-      time: moment().format('HH:mm'),
+      time: moment().format(TimeFormat),
       waterIntake: waterIntake && `${waterIntake} ml`,
-      waterIntakeTime: moment(waterIntakeTime).format('HH:mm'),
+      waterIntakeTime: moment(waterIntakeTime).format(TimeFormat),
       urination,
       bowel,
       prompted,
+      remainders: reminder ? remainderState : null,
     },
   })
 
@@ -92,7 +129,8 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
         description: 'Toilet Data Added Successfully',
       })
       handleNewToiletDate(data.recordToiletdata.details.date)
-      console.log(data)
+      setWaterIntake('')
+      setRemainderCount(1)
       setNewToiletCreated(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,7 +150,11 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
   }
 
   return (
-    <Form onSubmit={e => SubmitForm(e, this)} name="control-ref" style={{ marginLeft: 0 }}>
+    <Form
+      onSubmit={e => SubmitForm(e, this)}
+      name="control-ref"
+      style={{ marginLeft: 0, ...style }}
+    >
       <Form.Item label="Urination">
         <Radio.Group
           className="radioGroup"
@@ -195,6 +237,69 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
         />
       </Form.Item>
 
+      <div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            margin: '30px 0 25px',
+          }}
+        >
+          <div>
+            <Title
+              style={{
+                margin: 0,
+                fontSize: 18,
+              }}
+            >
+              Medical Reminders
+            </Title>
+            <Text>Remind me for medicine dosage</Text>
+          </div>
+          <Switch
+            defaultChecked
+            onChange={() => {
+              setReminder(state => !state)
+            }}
+            size="large"
+          />
+        </div>
+        {times(n => {
+          return (
+            <ReminderForm
+              reminder={reminder}
+              dispatch={remainderDispatch}
+              state={remainderState}
+              index={n}
+              setRemainderCount={setRemainderCount}
+            />
+          )
+        }, remainderCount)}
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ color: '#000', fontSize: 16 }}>Add Another Remainder</Text>
+          <Button
+            style={{
+              height: 40,
+              marginLeft: 'auto',
+            }}
+            onClick={() => {
+              setRemainderCount(state => state + 1)
+              remainderDispatch({ type: 'ADD_REMAINDER' })
+            }}
+          >
+            <PlusOutlined style={{ fontSize: 24, marginTop: 5 }} />
+          </Button>
+        </div>
+      </div>
+
       <Form.Item>
         <Button
           type="primary"
@@ -203,6 +308,7 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
             width: 206,
             height: 40,
             background: '#0B35B3',
+            marginTop: 10,
           }}
         >
           Save Data

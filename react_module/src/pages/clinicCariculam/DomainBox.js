@@ -15,6 +15,14 @@ const CREATE_DOMAIN = gql`
       domain {
         id
         domain
+        targetArea {
+          edges {
+            node {
+              id
+              Area
+            }
+          }
+        }
       }
     }
   }
@@ -128,6 +136,9 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
       setNewDomainName('')
       setKey('mand1')
       setCreateDomainModel(false)
+      setLiveDomains(state => {
+        return [{ node: createDomainData.domainProgram.domain }, ...state]
+      })
     }
   }, [createDomainData])
 

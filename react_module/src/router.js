@@ -124,10 +124,6 @@ const routes = [
     component: loadable(() => import('pages/ToiletData/index')),
   },
   {
-    path: '/appointmentData/',
-    component: loadable(() => import('pages/appointmentdata/index')),
-  },
-  {
     path: '/decel/',
     component: loadable(() => import('pages/BehaviourData/index')),
   },

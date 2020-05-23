@@ -46,18 +46,17 @@ export default () => {
   const user = useSelector(state => state.user)
   const [newToiletDate, setNewToiletDate] = useState(date)
   const [newToiletDataCreated, setNewToiletDataCreated] = useState(false)
-  const studentId = localStorage.getItem('studentId')
 
   const { data, loading, error, refetch } = useQuery(TOILET_DATA, {
     variables: {
-      studentId: user.id,
+      studentId: user.studentId,
       date,
     },
   })
 
   const { data: studnetInfo } = useQuery(STUDNET_INFO, {
     variables: {
-      studentId,
+      studentId: user.studentId,
     },
   })
 
@@ -73,10 +72,17 @@ export default () => {
   }
 
   return (
-    <Authorize roles={['school_admin', 'parents', 'therapist']} redirect to="/dashboard/beta">
+    <Authorize roles={['school_admin', 'parents']} redirect to="/dashboard/beta">
       <Helmet title="Dashboard Alpha" />
       <Layout style={{ padding: '0px' }}>
-        <Content style={{ padding: '0px 20px', maxWidth: 1300, width: '100%', margin: '0px auto' }}>
+        <Content
+          style={{
+            padding: '0px 20px',
+            maxWidth: 1300,
+            width: '100%',
+            margin: '0px auto',
+          }}
+        >
           {studnetInfo && (
             <Title
               style={{
@@ -84,7 +90,7 @@ export default () => {
                 fontSize: 25,
               }}
             >
-              {studnetInfo.student.firstname}&apos;s Toilet Data
+              {studnetInfo.student && studnetInfo.student.firstname}&apos;s Toilet Data
             </Title>
           )}
           <Row gutter={[46, 0]}>

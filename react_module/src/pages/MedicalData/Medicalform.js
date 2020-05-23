@@ -141,10 +141,6 @@ const remainderReducer = (state, action) => {
 }
 
 const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
-  const [condition, setConditon] = useState('')
-  const [startDate, setStartDate] = useState(moment().format(dateFormat))
-  const [endDate, setEndDate] = useState(moment().format(dateFormat))
-  const [severity, setSeverity] = useState('')
   const [reminder, setReminder] = useState(true)
   const [preseptionDrugCount, setPreseptionDrugCount] = useState(1)
   const [remainderCount, setRemainderCount] = useState(1)
@@ -171,7 +167,7 @@ const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
     variables: {
       studentId,
       drug: presepState,
-      remainder: remainderState,
+      remainder: reminder ? remainderState : null,
     },
   })
 
@@ -311,7 +307,7 @@ const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
                 fontSize: 18,
               }}
             >
-              Medical Reminders
+              Toilet Reminders
             </Title>
             <Text>Remind me for medicine dosage</Text>
           </div>
