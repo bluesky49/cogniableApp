@@ -1,8 +1,6 @@
-/* eslint-disable react/jsx-indent */
 import React, { useState } from 'react'
 import { Layout, Tabs, Button, Row, Col, Modal, Input } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import Authorize from 'components/LayoutComponents/Authorize'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import './index.scss'
@@ -18,22 +16,6 @@ const AREAS = gql`
         node {
           id
           name
-          domain {
-            edges {
-              node {
-                id
-                domain
-                targetArea {
-                  edges {
-                    node {
-                      id
-                      Area
-                    }
-                  }
-                }
-              }
-            }
-          }
         }
       }
     }
@@ -81,10 +63,15 @@ export default () => {
 
   return (
     <div>
-      <Layout style={{ backgroundColor: '#F2F4F8', padding: '0px' }}>
+      <Layout style={{ padding: '0px' }}>
         <Layout>
           <Content
-            style={{ padding: '0px 20px', maxWidth: 1300, margin: '0px auto', width: '100%' }}
+            style={{
+              padding: '0px 20px',
+              maxWidth: 1300,
+              margin: '0px auto',
+              width: '100%',
+            }}
           >
             <Row style={{ width: '100%' }}>
               <Col span={24}>
@@ -93,7 +80,7 @@ export default () => {
                     areasData.data.programArea.edges.map(({ node }) => {
                       return (
                         <TabPane style={{ marginTop: 27 }} tab={node.name} key={node.id}>
-                          <TabContent domains={node.domain.edges} />
+                          <TabContent programArea={node.id} />
                         </TabPane>
                       )
                     })}
@@ -104,7 +91,7 @@ export default () => {
                       tab={newAreaData.data.programArea.ProgramArea.name}
                       key={newAreaData.data.programArea.ProgramArea.id}
                     >
-                      <TabContent domains={[]} />
+                      <TabContent programArea={newAreaData.data.programArea.ProgramArea.id} />
                     </TabPane>
                   )}
 
@@ -129,7 +116,8 @@ export default () => {
                       top: 0,
                     }}
                   >
-                    <PlusOutlined style={{ fontSize: 18, color: '#000' }} /> Add New Area
+                    <PlusOutlined style={{ fontSize: 18, color: '#000' }} />
+                    Add New Area
                   </Button>
                 </Tabs>
               </Col>
@@ -152,7 +140,6 @@ export default () => {
                   background: '#fff',
                 }}
               >
-                <pre>{JSON.stringify(newAreaData.error)}</pre>
                 <Input placeholder="Area Name" value={newAreaName} onChange={handelNewAreaName} />
               </div>
             </Modal>

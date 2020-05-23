@@ -5,7 +5,7 @@ import targetImg1 from './images/motherChild.jpg'
 
 const { Title, Text } = Typography
 
-const TargetCard = ({ style, title }) => {
+const TargetCard = ({ style, title, setUpdateTargetId, id, setUpdateTargetDrawer }) => {
   return (
     <div
       style={{
@@ -53,6 +53,10 @@ const TargetCard = ({ style, title }) => {
             style={{
               marginLeft: 'auto',
             }}
+            onClick={() => {
+              setUpdateTargetId(id)
+              setUpdateTargetDrawer(true)
+            }}
           >
             <FormOutlined style={{ fontSize: 28, color: '#e9e9e9' }} />
           </Button>
@@ -72,16 +76,6 @@ const TargetCard = ({ style, title }) => {
           >
             Receptive Language
           </Text>
-          <span
-            style={{
-              fontWeight: 600,
-              fontSize: 14,
-              lineHeight: '19px',
-              color: '#D4237A',
-            }}
-          >
-            in therapy
-          </span>
           <Button
             type="link"
             style={{

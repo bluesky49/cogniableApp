@@ -167,7 +167,7 @@ const routes = [
   // clinic
   {
     path: '/cliniccariculam',
-    component: loadable(() => import('pages/clinic/clinicCariculam')),
+    component: loadable(() => import('pages/clinicCariculam')),
   },
   {
     path: '/targetsAllocationToSession/',
