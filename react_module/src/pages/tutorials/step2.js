@@ -14,128 +14,38 @@ class TutorialStep2 extends React.Component {
     console.log(props)
     this.state = {
       isLoading: true,
-      currentVideoId: '',
-      currentVideoURL: '',
-      currentVideoTitle: '',
-      currentVideoDuration: '',
+      currentVideoURL: props.location.videoUrl,
+      currentVideoTitle: props.location.videoTitle,
+      currentVideoDuration: props.location.videoDuration,
+      currentProjectId: props.location.projectId,
+      currentVideoDesription: props.location.description,
       upcomingVideos: [],
     }
   }
 
   componentDidMount() {
-    const { location } = this.props
-    client
-      .query({
-        query: gql`query {VimeoVideos(project:"${location.projectId}")
-      {
-        edgeCount
-        edges {
-            node {
-                id
-                status
-                name
-                url
-                duration
-                thubUrl
-                description
-                videoLike
-                {
-                    edgeCount
-                }
-                comment
-                {
-                    edgeCount
-                     edges {
-                        node {
-                            user
-                            {
-                                id
-                                username
-                            }
-                            comment
-                            date
-                        }
-                    }
-                }
-            }
-        }
-    }
-}`,
-      })
-      .then(result => {
-        console.log(result.data)
-        console.log(location.videoId)
-        result.data.VimeoVideos.edges.forEach(video => {
-          if (video.node.id === location.videoId) {
-            console.log('Found')
-            const duration = this.secondsToHms(video.node.duration)
-            this.getUpcomingVideos(video.node.id)
-            this.setState({
-              currentVideoId: video.node.id,
-              currentVideoURL: video.node.url,
-              currentVideoTitle: video.node.description,
-              currentVideoDuration: duration,
-              isLoading: false,
-            })
-          }
-        })
-      })
+    const { currentProjectId } = this.state
+    this.getUpcomingVideos(currentProjectId)
   }
 
-  componentWillReceiveProps(newProps) {
-    this.updateVideo(newProps)
-  }
-
-  updateVideo = props => {
-    console.log(props)
-  }
-
-  getUpcomingVideos = videoId => {
-    const { location } = this.props
-    client
-      .query({
-        query: gql`query {VimeoVideos(project:"${location.projectId}", first:8, after:"${videoId}")
-      {
-        edgeCount
-        edges {
-            node {
-                id
-                status
-                name
-                url
-                duration
-                thubUrl
-                description
-                videoLike
-                {
-                    edgeCount
-                }
-                comment
-                {
-                    edgeCount
-                     edges {
-                        node {
-                            user
-                            {
-                                id
-                                username
-                            }
-                            comment
-                            date
-                        }
-                    }
-                }
-            }
-        }
-    }
-}`,
-      })
-      .then(result => {
-        console.log(result.data)
+  getUpcomingVideos = projectId => {
+    fetch(`https://api.vimeo.com/users/100800066/projects/${projectId}/videos`, {
+      method: 'GET',
+      page: 1,
+      headers: new Headers({
+        'Content-Type': 'application/vnd.vimeo.*+json',
+        Authorization: 'Bearer 57fe5b03eac21264d45df680fb335a42',
+      }),
+    })
+      .then(res => res.json())
+      .then(res => {
+        console.log(res.data)
         this.setState({
-          upcomingVideos: result.data.VimeoVideos.edges,
+          upcomingVideos: res.data,
+          isLoading: false,
         })
       })
+      .catch(err => console.log(err))
   }
 
   secondsToHms = d => {
@@ -169,6 +79,11 @@ class TutorialStep2 extends React.Component {
 
   handleKeyDown = () => {}
 
+  getVideoIdFromUrl = url => {
+    const res = url.substring(8)
+    return res
+  }
+
   render() {
     const {
       isLoading,
@@ -177,7 +92,10 @@ class TutorialStep2 extends React.Component {
       currentVideoTitle,
       currentVideoDuration,
       upcomingVideos,
+      currentProjectId,
+      currentVideoDesription,
     } = this.state
+
     const { location } = this.props
     if (isLoading) {
       return <div>Loading....</div>
@@ -189,7 +107,7 @@ class TutorialStep2 extends React.Component {
             <div className="col-sm-12 col-md-7">
               <div className="row mb-5">
                 <div className="col-sm-12 col-md-12">
-                  <ReactPlayer url={currentVideoURL} controls width="100%" />
+                  <ReactPlayer url={currentVideoURL} width="100%" />
                 </div>
               </div>
               <div className="row">
@@ -218,35 +136,7 @@ class TutorialStep2 extends React.Component {
                 </div>
               </div>
               <div className="row">
-                <div className="col-sm-12 col-md-12">
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit
-                    amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur
-                    adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem
-                    ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet,
-                    consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing
-                    elitLorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit
-                    amet, consectetur adipiscing elit
-                  </p>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit
-                    amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur
-                    adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem
-                    ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet,
-                    consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing
-                    elitLorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit
-                    amet, consectetur adipiscing elit
-                  </p>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit
-                    amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur
-                    adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem
-                    ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet,
-                    consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing
-                    elitLorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit
-                    amet, consectetur adipiscing elit
-                  </p>
-                </div>
+                <div className="col-sm-12 col-md-12">{currentVideoDesription}</div>
               </div>
             </div>
             <div className="col-sm-6 col-md-5">
@@ -255,19 +145,17 @@ class TutorialStep2 extends React.Component {
                 {upcomingVideos &&
                   upcomingVideos.length > 0 &&
                   upcomingVideos.map(video => (
-                    <div key={video.node.id} className="col-md-12 col-sm-12">
+                    <div className="col-md-12 col-sm-12">
                       <div
-                        key={video.node.id}
                         role="button"
                         tabIndex="0"
                         onClick={() => {
                           this.setState({
-                            currentVideoId: video.node.id,
-                            currentVideoURL: video.node.url,
-                            currentVideoTitle: video.node.description,
-                            currentVideoDuration: this.secondsToHms(video.node.duration),
+                            currentVideoURL: video.link,
+                            currentVideoTitle: video.name,
+                            currentVideoDuration: this.secondsToHms(video.duration),
                           })
-                          this.getUpcomingVideos(video.node.id)
+                          this.getUpcomingVideos(currentProjectId)
                         }}
                         onKeyDown={this.handleKeyDown}
                       >
@@ -287,21 +175,24 @@ class TutorialStep2 extends React.Component {
                             <div className="col-md-4 col-sm-4">
                               <img
                                 alt="related_video"
-                                src={video.node.thubUrl}
+                                src={video.pictures.sizes[1].link}
                                 style={{ width: '100%', borderRadius: '10px' }}
                               />
                             </div>
                             <div className="col-md-8 col-sm-8">
                               <p style={{ fontSize: '20px', lineHeight: '1.2', fontWeight: '700' }}>
-                                {video.node.description}
+                                {video.name}
                               </p>
-                              <p>{this.secondsToHms(video.node.duration)}</p>
+                              <p>{this.secondsToHms(video.duration)}</p>
                             </div>
                           </div>
                         </Card>
                       </div>
                     </div>
                   ))}
+                {upcomingVideos && upcomingVideos.length === 0 && (
+                  <p>There are no more videos in this category.</p>
+                )}
               </div>
             </div>
           </div>

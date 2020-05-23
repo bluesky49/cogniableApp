@@ -5,15 +5,16 @@ import Authorize from 'components/LayoutComponents/Authorize'
 import { Link } from 'react-router-dom'
 import { gql } from 'apollo-boost'
 import client from '../../apollo/config'
-import cardImg1 from '../../images/cardImg1.jpg'
 
 const { Title, Text } = Typography
 
 class TutorialStep1 extends React.Component {
   constructor(props) {
     super(props)
+    console.log(JSON.stringify(props))
     this.state = {
       isLoading: true,
+      loadingMoreVideos: true,
       projects: [],
       projectVideos: [],
       selectedProjectId: '',
@@ -43,37 +44,56 @@ class TutorialStep1 extends React.Component {
         `,
       })
       .then(result => {
-        console.log(result.data)
-        spid = result.data.VimeoProject.edges[0].node.id
+        spid = result.data.VimeoProject.edges[0].node.projectId
         this.setState({
           isLoading: false,
           projects: result.data.VimeoProject.edges,
-          selectedProjectId: result.data.VimeoProject.edges[0].node.id,
+          selectedProjectId: result.data.VimeoProject.edges[0].node.projectId,
           selectedProjectName: result.data.VimeoProject.edges[0].node.name,
         })
+        this.getSelectedProjectContinueURL(spid)
+        this.getSelectedProjectVideos(spid)
       })
-    this.getSelectedProjectContinueURL(spid)
-    this.getSelectedProjectVideos(spid)
+  }
+
+  secondsToHms = d => {
+    d = Number(d)
+    const h = Math.floor(d / 3600)
+    const m = Math.floor((d % 3600) / 60)
+    const s = Math.floor((d % 3600) % 60)
+
+    const hDisplay = h > 0 ? h + (h === 1 ? ' hour, ' : ' hours, ') : ''
+    const mDisplay = m > 0 ? m + (m === 1 ? ' minute, ' : ' minutes, ') : ''
+    const sDisplay = s > 0 ? s + (s === 1 ? ' second' : ' seconds') : ''
+    return hDisplay + mDisplay + sDisplay
   }
 
   getSelectedProjectContinueURL = projectId => {
     client
       .query({
-        query: gql`query {VimeoVideos(project:"${projectId}")
+        query: gql`query {getVideoStatus(user:"", project:"${projectId}", first:1)
       {
-        edgeCount
         edges {
             node {
                 id
+                video
                 status
-                url
+                user{
+                  id
+                  username
+                }
+                project{
+                  id
+                  name
+                }
             }
         }
     }
 }`,
       })
       .then(result => {
-        let already = false
+        console.log(JSON.stringify(result))
+        /* let already = false
         result.data.VimeoVideos.edges.forEach(video => {
           if (already === false) {
             switch (video.node.status) {
@@ -104,58 +124,37 @@ class TutorialStep1 extends React.Component {
           this.setState({
             continueURL: result.data.VimeoVideos.edges[0].node.url,
           })
-        }
+        } */
       })
   }
 
   getSelectedProjectVideos = projectId => {
-    client
-      .query({
-        query: gql`query {VimeoVideos(project:"${projectId}", first:6)
-      {
-        edgeCount
-        edges {
-            node {
-                id
-                status
-                name
-                url
-                duration
-                thubUrl
-                description
-                videoLike
-                {
-                    edgeCount
-                }
-                comment
-                {
-                    edgeCount
-                     edges {
-                        node {
-                            user
-                            {
-                                id
-                                username
-                            }
-                            comment
-                            date
-                        }
-                    }
-                }
-            }
-        }
-    }
-}`,
-      })
-      .then(result => {
-        console.log(result.data)
+    fetch(`https://api.vimeo.com/users/100800066/projects/${projectId}/videos`, {
+      method: 'GET',
+      page: 1,
+      headers: new Headers({
+        'Content-Type': 'application/vnd.vimeo.*+json',
+        Authorization: 'Bearer 57fe5b03eac21264d45df680fb335a42',
+      }),
+    })
+      .then(res => res.json())
+      .then(res => {
+        console.log(res)
         this.setState({
-          projectVideos: result.data.VimeoVideos.edges,
+          projectVideos: res.data,
+          loadingMoreVideos: false,
         })
       })
+      .catch(err => console.log(err))
   }
 
   handleKeyDown = () => {}
+
+  getVideoIdFromUrl = url => {
+    const res = url.substring(8)
+    const id = res.substring(0, res.indexOf('/'))
+    return id
+  }
 
   render() {
     const {
@@ -165,6 +164,7 @@ class TutorialStep1 extends React.Component {
       selectedProjectName,
       projectVideos,
       continueURL,
+      loadingMoreVideos,
     } = this.state
     if (isLoading) {
       return <div>Loding...</div>
@@ -176,7 +176,7 @@ class TutorialStep1 extends React.Component {
             <div className="col-sm-6 col-md-5">
               <div style={{ background: '#f9f9f9', padding: '30px', borderRadius: '10px' }}>
                 {projects.map(project => {
-                  return selectedProjectId === project.node.id ? (
+                  return selectedProjectId === project.node.projectId ? (
                     <Card
                       key={project.node.id}
                       hoverable
@@ -203,10 +203,11 @@ class TutorialStep1 extends React.Component {
                       tabIndex="0"
                       onClick={() => {
                         this.setState({
-                          selectedProjectId: project.node.id,
+                          selectedProjectId: project.node.projectId,
                           selectedProjectName: project.node.name,
+                          loadingMoreVideos: true,
                         })
-                        this.getSelectedProjectVideos(project.node.id)
+                        this.getSelectedProjectVideos(project.node.projectId)
                       }}
                       onKeyDown={this.handleKeyDown}
                     >
@@ -248,15 +249,23 @@ class TutorialStep1 extends React.Component {
                     </span>
                   </div>
                   <div className="d-flex flex-row flex-nowrap overflow-auto">
-                    {projectVideos &&
+                    {loadingMoreVideos === true && <p>Loading videos. Please wait...</p>}
+                    {loadingMoreVideos === false && projectVideos && projectVideos.length === 0 && (
+                      <p>There are no more videos in this category.</p>
+                    )}
+                    {loadingMoreVideos === false &&
+                      projectVideos &&
                       projectVideos.length > 0 &&
                       projectVideos.map(video => (
-                        <div key={video.node.id} className="col-md-4 col-sm-6">
+                        <div className="col-md-4 col-sm-6">
                           <Link
                             to={{
                               pathname: '/tutorials/step2',
-                              videoId: video.node.id,
+                              videoUrl: video.link,
+                              videoTitle: video.name,
+                              videoDuration: this.secondsToHms(video.duration),
                               projectId: selectedProjectId,
+                              description: video.description,
                             }}
                           >
                             <Card
@@ -265,7 +274,7 @@ class TutorialStep1 extends React.Component {
                               cover={
                                 <img
                                   alt="video"
-                                  src={video.node.thubUrl}
+                                  src={video.pictures.sizes[1].link}
                                   style={{ height: '150px' }}
                                 />
                               }
@@ -279,10 +288,10 @@ class TutorialStep1 extends React.Component {
                                   marginRight: '5px',
                                 }}
                               >
-                                {video.node.description}
+                                {video.name}
                               </Title>
                               <Text type="secondary" style={{ fontSize: '10px' }}>
-                                5 times per day
+                                {this.secondsToHms(video.duration)}
                               </Text>
                             </Card>
                           </Link>
