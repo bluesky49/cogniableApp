@@ -98,28 +98,25 @@ class FamilyMembers extends React.Component {
                   FAMILY MEMBERS
                 </Title>
                 {family.relations.map(relation => {
-                  if (relation.name !== 'Other Members') {
-                    return (
-                      <FamilyMemberCard
-                        key={relation.id}
-                        onClick={() => this.memberClickHandler(relation.id, relation.name, false)}
-                        heading={relation.name}
-                        text="Personal Details & time 1 spen with kunal"
-                        selected={relationId === relation.id}
-                      />
-                    )
-                  }
                   return (
-                    <Button
-                      key="123"
-                      type="link"
-                      style={newMemberStyle}
-                      onClick={() => this.memberClickHandler(relation.id, relation.name, true)}
-                    >
-                      New Family Member
-                    </Button>
+                    <FamilyMemberCard
+                      key={relation.id}
+                      onClick={() => this.memberClickHandler(relation.id, relation.name, false)}
+                      heading={relation.name}
+                      text="Personal Details & time 1 spen with kunal"
+                      selected={relationId === relation.id}
+                    />
                   )
                 })}
+
+                <Button
+                  key="123"
+                  type="link"
+                  style={newMemberStyle}
+                  onClick={() => this.memberClickHandler('', '', true)}
+                >
+                  New Family Member
+                </Button>
               </Menu>
             </Sider>
             <Layout>

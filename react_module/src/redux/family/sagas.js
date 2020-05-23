@@ -44,6 +44,7 @@ export function* GetFamilyDetail() {
   })
 
   const response = yield call(getFamilyDetails)
+  console.log('response==>', response)
   if (response && response.data && response.data.student) {
     const baseResponse = response.data.student.family
     yield put({
@@ -82,6 +83,7 @@ export function* CreateNewMember({ payload }) {
       type: 'family/SET_STATE',
       payload: {
         familyMembers: newFamilyMembers,
+        updatedSuccess: true,
       },
     })
   }
@@ -121,6 +123,46 @@ export function* EditMember({ payload }) {
       payload: {
         updatedMember: { node: baseResponse },
         familyMembers: newFamilyMembers,
+        updatedSuccess: true,
+      },
+    })
+  }
+
+  yield put({
+    type: 'family/SET_STATE',
+    payload: {
+      loading: false,
+    },
+  })
+}
+export function* DeleteMember({ payload }) {
+  yield put({
+    type: 'family/SET_STATE',
+    payload: {
+      loading: true,
+    },
+  })
+
+  const response = yield call(editMember, payload)
+  if (response && response.data) {
+    notification.success({
+      message: 'Family Member Edited Successfully',
+    })
+    const baseResponse = response.data.editFamily.details
+    const familyMembers = yield select(state => state.family.familyMembers)
+    let newFamilyMembers = []
+    newFamilyMembers = familyMembers.map(val => {
+      if (val.node.id === baseResponse.id) {
+        return { node: baseResponse }
+      }
+      return val
+    })
+    yield put({
+      type: 'family/SET_STATE',
+      payload: {
+        updatedMember: { node: baseResponse },
+        familyMembers: newFamilyMembers,
+        updatedSuccess: true,
       },
     })
   }
@@ -139,5 +181,6 @@ export default function* rootSaga() {
     takeEvery(actions.FAMILY_DETAILS, GetFamilyDetail),
     takeEvery(actions.CREATE_NEW, CreateNewMember),
     takeEvery(actions.EDIT_MEMBER, EditMember),
+    takeEvery(actions.DELETE_MEMBER, DeleteMember),
   ])
 }

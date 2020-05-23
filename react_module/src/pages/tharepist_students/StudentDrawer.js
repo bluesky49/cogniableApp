@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Progress, Drawer, Card } from 'antd'
+import { connect } from 'react-redux'
 import { HeartOutlined, CloseOutlined } from '@ant-design/icons'
 import { gql } from 'apollo-boost'
 import apolloClient from '../../apollo/config'
@@ -8,6 +9,7 @@ import student from '../../images/student.jpg'
 import childMother from '../../images/childMother.jpg'
 import SessionInstruction from './SessionInstructions'
 
+@connect(({ user, sessionrecording }) => ({ user, sessionrecording }))
 class StudentDrawer extends Component {
   constructor(props) {
     super(props)
@@ -22,100 +24,86 @@ class StudentDrawer extends Component {
   }
 
   componentDidMount() {
-    const propData = this.props
-
+    // const propData = this.props
+    const std = JSON.parse(localStorage.getItem('studentId'))
     apolloClient
       .query({
-        query: gql`
-      query{
-        student(id:"${propData.student.id}"){programArea{
-                edges{
-                    node{
-                        id,
-                        name
-                    }
-                }
+        query: gql`{
+        student(id:"${std}"){programArea{
+          edges{
+            node{
+              id,
+              name
             }
+          }
         }
-    }
-          `,
-      })
-      .then(presult => {
-        apolloClient
-          .query({
-            query: gql`
-              query {
-                GetStudentSession(studentId: "U3R1ZGVudFR5cGU6MjYw") {
-                  edges {
-                    node {
-                      id
-                      itemRequired
-                      duration
-                      sessionName {
+      }
+      GetStudentSession(studentId: "${std}") {
+        edges {
+          node {
+            id
+            itemRequired
+            duration
+            sessionName {
+              id
+              name
+            }
+            instruction {
+              edges {
+                node {
+                  id
+                  instruction
+                }
+              }
+            }
+            sessionHost {
+              edges {
+                node {
+                  id
+                  memberName
+                  timeSpent {
+                    edges {
+                      node {
                         id
-                        name
-                      }
-                      instruction {
-                        edges {
-                          node {
-                            id
-                            instruction
-                          }
+                        sessionName {
+                          id
+                          name
                         }
-                      }
-                      sessionHost {
-                        edges {
-                          node {
-                            id
-                            memberName
-                            timeSpent {
-                              edges {
-                                node {
-                                  id
-                                  sessionName {
-                                    id
-                                    name
-                                  }
-                                  duration
-                                }
-                              }
-                            }
-                            relationship {
-                              id
-                              name
-                            }
-                          }
-                        }
-                      }
-                      targets {
-                        edges {
-                          node {
-                            id
-                            time
-                            targetInstr
-                            date
-                            targetAllcatedDetails {
-                              id
-                              targetName
-                            }
-                          }
-                        }
+                        duration
                       }
                     }
                   }
+                  relationship {
+                    id
+                    name
+                  }
                 }
               }
-            `,
-          })
-          .then(qresult => {
-            this.setState({
-              sessions: qresult.data.GetStudentSession.edges,
-              programAreaStatus: presult.data.student.programArea.edges,
-            })
-          })
-          .catch(error => {
-            console.log(error)
-          })
+            }
+            targets {
+              edges {
+                node {
+                  id
+                  time
+                  targetInstr
+                  date
+                  targetAllcatedDetails {
+                    id
+                    targetName
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }`,
+      })
+      .then(result => {
+        this.setState({
+          sessions: result.data.GetStudentSession.edges,
+          programAreaStatus: result.data.student.programArea.edges,
+        })
       })
       .catch(error => {
         console.log(error)
@@ -134,7 +122,7 @@ class StudentDrawer extends Component {
     if (stateData.programAreaStatus !== undefined) {
       for (let i = 0; i < stateData.programAreaStatus.length; i += 1) {
         array.push(
-          <Card
+          <div
             className={
               propData.selectedArea.toUpperCase() ===
               stateData.programAreaStatus[i].node.name.toUpperCase()
@@ -142,19 +130,21 @@ class StudentDrawer extends Component {
                 : styles.drawerCardItem
             }
           >
-            <div className={styles.drawercardHeading}>
-              <p>{stateData.programAreaStatus[i].node.name}</p>
-            </div>
-            <div className={styles.drawercardDesc}>
-              <p>
-                Fine Motor skills is a coordination of small muscles, in Movements -Usually
-                involving the synchronisation of hands and fingers with eyes.
-              </p>
-            </div>
-            <div className={styles.drawerProgress}>
-              <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
-            </div>
-          </Card>,
+            <Card>
+              <div className={styles.drawercardHeading}>
+                <p>{stateData.programAreaStatus[i].node.name}</p>
+              </div>
+              <div className={styles.drawercardDesc}>
+                <p>
+                  Fine Motor skills is a coordination of small muscles, in Movements -Usually
+                  involving the synchronisation of hands and fingers with eyes.
+                </p>
+              </div>
+              <div className={styles.drawerProgress}>
+                <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
+              </div>
+            </Card>
+          </div>,
         )
       }
     }
@@ -188,10 +178,10 @@ class StudentDrawer extends Component {
                 size="large"
                 className={styles.sesbutton}
                 onClick={() => {
-                  this.openSubDrawer(stateData.sessions[i].node.sessionName.name)
+                  this.openSubDrawer(stateData.sessions[i].node)
                 }}
               >
-                Start New Session
+                Start Session
               </Button>
             </div>
           </div>,
@@ -201,10 +191,19 @@ class StudentDrawer extends Component {
     return array
   }
 
-  openSubDrawer = name => {
+  openSubDrawer = node => {
+    const { dispatch } = this.props
+
+    dispatch({
+      type: 'sessionrecording/SET_STATE',
+      payload: {
+        SessionId: node.id,
+      },
+    })
+
     this.setState({
       // isSubdrawerOper: true,
-      sessionName: name,
+      sessionName: node.sessionName.name,
       visible: true,
     })
   }
@@ -268,22 +267,6 @@ class StudentDrawer extends Component {
                     <p className={styles.stAdd}>Newyork, USA</p>
                   </div>
                 </div>
-                <div className={styles.actbtn}>
-                  <div className={styles.actCon}>
-                    <Button type="primary" ghost style={{ marginTop: '3%', width: '120%' }}>
-                      Contact Student
-                    </Button>
-                  </div>
-                  <div className={styles.actBk}>
-                    <Button
-                      type="primary"
-                      className={styles.actbkcls}
-                      style={{ marginTop: '3%', width: '120%', marginLeft: '24%' }}
-                    >
-                      Book Apointment
-                    </Button>
-                  </div>
-                </div>
 
                 <div className={styles.drawerShell}>
                   <div className={styles.drawerCard}>{this.renderProgramArea()}</div>
@@ -295,44 +278,48 @@ class StudentDrawer extends Component {
             <div className={styles.terms}>
               <div className={styles.shrtTrmGoal}>
                 <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
-                  <div className={styles.termCards}>
-                    <div className={styles.termcardHeading}>
-                      <p className={styles.goal}>Short Term Goal</p>
-                      <p className={styles.goalPerc}>61%</p>
+                  <a href="/#/target/allocation">
+                    <div className={styles.termCards}>
+                      <div className={styles.termcardHeading}>
+                        <p className={styles.goal}>Long Term Goal</p>
+                        <p className={styles.goalPerc}>61%</p>
+                      </div>
+                      {/* <div className={styles.termcardDesc}>
+                        <p>Jan 5- to March 4</p>
+                      </div> */}
+                      <div className={styles.termProgress}>
+                        <Progress
+                          percent={40}
+                          showInfo={false}
+                          strokeColor="orange"
+                          strokeWidth={10}
+                        />
+                      </div>
                     </div>
-                    <div className={styles.termcardDesc}>
-                      <p>Jan 5- to March 4</p>
-                    </div>
-                    <div className={styles.termProgress}>
-                      <Progress
-                        percent={40}
-                        showInfo={false}
-                        strokeColor="orange"
-                        strokeWidth={10}
-                      />
-                    </div>
-                  </div>
+                  </a>
                 </Card>
               </div>
               <div className={styles.lngTrmGoal}>
                 <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
-                  <div className={styles.termCards}>
-                    <div className={styles.termcardHeading}>
-                      <p className={styles.goal}>Short Term Goal</p>
-                      <p className={styles.goalPerc}>61%</p>
+                  <a href="/#/target/allocation">
+                    <div className={styles.termCards}>
+                      <div className={styles.termcardHeading}>
+                        <p className={styles.goal}>Short Term Goal</p>
+                        <p className={styles.goalPerc}>61%</p>
+                      </div>
+                      {/* <div className={styles.termcardDesc}>
+                        <p>Jan 5- to March 4</p>
+                      </div> */}
+                      <div className={styles.termProgress}>
+                        <Progress
+                          percent={40}
+                          showInfo={false}
+                          strokeColor="orange"
+                          strokeWidth={10}
+                        />
+                      </div>
                     </div>
-                    <div className={styles.termcardDesc}>
-                      <p>Jan 5- to March 4</p>
-                    </div>
-                    <div className={styles.termProgress}>
-                      <Progress
-                        percent={40}
-                        showInfo={false}
-                        strokeColor="orange"
-                        strokeWidth={10}
-                      />
-                    </div>
-                  </div>
+                  </a>
                 </Card>
               </div>
               <div className={styles.behaviourAction}>

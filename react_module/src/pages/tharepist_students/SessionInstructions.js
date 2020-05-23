@@ -132,9 +132,11 @@ class SessionInstruction extends Component {
           {this.renderItemRequired()}
           {this.renderInstruction()}
           <div className={styles.sesInsbtn}>
-            <Button type="primary" className={styles.sessionInsButton}>
-              Start New Session
-            </Button>
+            <a href="/#/sessionrecording">
+              <Button type="primary" className={styles.sessionInsButton}>
+                Start New Session
+              </Button>
+            </a>
           </div>
         </div>
       </>

@@ -1,13 +1,15 @@
 /* eslint-disable no-unused-vars */
 import React, { Fragment } from 'react'
-import { Row, Col, Card, Button, Input, Form, Select, Icon, Typography, Avatar, Tag } from 'antd'
+import { Row, Col, Button, Input, Form, Select, Typography, notification, Modal } from 'antd'
 import { connect } from 'react-redux'
-import { PlusOutlined } from '@ant-design/icons'
+import { gql } from 'apollo-boost'
 import fatherAndSon from '../../images/fatherAndSon.jpg'
 import dawn from '../../icons/dawn.png'
 import afternoonsun from '../../icons/afternoon.svg'
 import moon from '../../icons/moon.png'
 import TimeSpend from './TimeSpend'
+import MemersTags from './MemersTags'
+import client from '../../apollo/config'
 
 @connect(({ user, family }) => ({ user, family }))
 class FamilyBasicForm extends React.Component {
@@ -27,6 +29,9 @@ class FamilyBasicForm extends React.Component {
       siblingsCount: 0,
       grandParentsArray: [],
       grandParentsCount: 0,
+      otherMembersArray: [],
+      otherMembersCount: 0,
+      confirmationModalVisible: false,
     }
   }
 
@@ -43,7 +48,7 @@ class FamilyBasicForm extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { processData, family, form } = this.props
+    const { processData, family, form, familyMembers, updatedMember } = this.props
     if (
       prevProps.processData.relationId !== processData.relationId &&
       prevProps.processData.relationName !== processData.relationName
@@ -73,6 +78,10 @@ class FamilyBasicForm extends React.Component {
             val => val.node.relationship.name === 'Grand Parents',
           )
           const grandParentsCount = grandParentsArray.length
+          const otherMembersArray = family.familyMembers.filter(
+            val => val.node.relationship.name === 'Other Members',
+          )
+          const otherMembersCount = otherMembersArray.length
           obj = {
             relationId: processData.relationId,
             relationName: processData.relationName,
@@ -87,6 +96,8 @@ class FamilyBasicForm extends React.Component {
             siblingsCount,
             grandParentsCount,
             grandParentsArray,
+            otherMembersArray,
+            otherMembersCount,
           }
         } else {
           const siblingsArray = family.familyMembers.filter(
@@ -97,6 +108,10 @@ class FamilyBasicForm extends React.Component {
             val => val.node.relationship.name === 'Grand Parents',
           )
           const grandParentsCount = grandParentsArray.length
+          const otherMembersArray = family.familyMembers.filter(
+            val => val.node.relationship.name === 'Other Members',
+          )
+          const otherMembersCount = otherMembersArray.length
           obj = {
             relationId: processData.relationId,
             relationName: processData.relationName,
@@ -111,6 +126,8 @@ class FamilyBasicForm extends React.Component {
             siblingsCount,
             grandParentsCount,
             grandParentsArray,
+            otherMembersArray,
+            otherMembersCount,
           }
         }
       } else {
@@ -122,6 +139,10 @@ class FamilyBasicForm extends React.Component {
           val => val.node.relationship.name === 'Grand Parents',
         )
         const grandParentsCount = grandParentsArray.length
+        const otherMembersArray = family.familyMembers.filter(
+          val => val.node.relationship.name === 'Other Members',
+        )
+        const otherMembersCount = otherMembersArray.length
         obj = {
           relationId: '',
           relationName: '',
@@ -136,9 +157,39 @@ class FamilyBasicForm extends React.Component {
           siblingsCount,
           grandParentsCount,
           grandParentsArray,
+          otherMembersCount,
+          otherMembersArray,
         }
       }
       form.setFieldsValue({ name: obj.memberName })
+      this.updateState(obj)
+    }
+
+    if (
+      family.familyMembers !== prevProps.family.familyMembers ||
+      family.updatedMember !== prevProps.family.updatedMember
+    ) {
+      let obj = {}
+      const siblingsArray = family.familyMembers.filter(
+        val => val.node.relationship.name === 'Sibling',
+      )
+      const siblingsCount = siblingsArray.length
+      const grandParentsArray = family.familyMembers.filter(
+        val => val.node.relationship.name === 'Grand Parents',
+      )
+      const grandParentsCount = grandParentsArray.length
+      const otherMembersArray = family.familyMembers.filter(
+        val => val.node.relationship.name === 'Other Members',
+      )
+      const otherMembersCount = otherMembersArray.length
+      obj = {
+        siblingsArray,
+        siblingsCount,
+        grandParentsCount,
+        grandParentsArray,
+        otherMembersCount,
+        otherMembersArray,
+      }
       this.updateState(obj)
     }
   }
@@ -205,7 +256,14 @@ class FamilyBasicForm extends React.Component {
 
     const studentId = localStorage.getItem('studentId')
 
-    console.log(form.getFieldValue('name'))
+    if (morning + evening + afternoon <= 0) {
+      notification.error({
+        message: 'Fill time spend hours',
+        description: 'Please fill atlest 1 hour of the day',
+      })
+      return
+    }
+
     if (memberId) {
       dispatch({
         type: 'family/EDIT_MEMBER',
@@ -270,9 +328,9 @@ class FamilyBasicForm extends React.Component {
     }))
   }
 
-  addNewSibling = () => {
+  addNewMember = type => {
     const { memberClickHandler, family, form } = this.props
-    const relationshipId = family.relations.filter(d => d.name === 'Sibling')
+    const relationshipId = family.relations.filter(d => d.name === type)
     if (relationshipId.length > 0) {
       memberClickHandler(relationshipId[0].id, relationshipId[0].name, true)
       this.setState(state => ({
@@ -283,27 +341,84 @@ class FamilyBasicForm extends React.Component {
           memberName: '',
         },
         memberName: '',
+        morning: 0,
+        afternoon: 0,
+        evening: 0,
       }))
     }
     form.setFieldsValue({ name: '' })
   }
 
-  addNewGrandParent = () => {
-    const { memberClickHandler, family, form } = this.props
-    const relationshipId = family.relations.filter(d => d.name === 'Grand Parents')
-    if (relationshipId.length > 0) {
-      memberClickHandler(relationshipId[0].id, relationshipId[0].name, true)
-      this.setState(state => ({
-        memberId: null,
-        relationId: relationshipId[0].id,
-        memberData: {
-          ...state.memberData,
-          memberName: '',
-        },
-        memberName: '',
-      }))
+  deleteMember = (member, relation) => {
+    this.setState({
+      deleteMember: member,
+      deleteRelation: relation,
+      confirmationModalVisible: true,
+    })
+  }
+
+  deleteMemberConfirm = () => {
+    const {
+      siblingsArray,
+      grandParentsArray,
+      otherMembersArray,
+      deleteMember: member,
+      deleteRelation: relation,
+    } = this.state
+    let obj = {
+      confirmationModalVisible: false,
     }
-    form.setFieldsValue({ name: '' })
+
+    client
+      .mutate({
+        mutation: gql`mutation {
+          deleteMember(input:{pk:"${member.node.id}"})
+             {
+                 ok
+             }
+        }`,
+      })
+      .then(result => {
+        if (result.data.deleteMember.ok) {
+          notification.success({
+            message: 'Family Member Deleted successfully',
+          })
+          if (relation === 'Sibling') {
+            const filteredMember = siblingsArray.filter(sib => sib.node.id !== member.node.id)
+            obj = {
+              ...obj,
+              siblingsArray: filteredMember,
+            }
+          } else if (relation === 'Grand Parents') {
+            const filteredMember = grandParentsArray.filter(sib => sib.node.id !== member.node.id)
+            obj = {
+              ...obj,
+              grandParentsArray: filteredMember,
+            }
+          } else {
+            const filteredMember = otherMembersArray.filter(sib => sib.node.id !== member.node.id)
+            obj = {
+              ...obj,
+              otherMembersArray: filteredMember,
+            }
+          }
+          this.updateState(obj)
+        }
+      })
+      .catch(error => {
+        error.graphQLErrors.map(item => {
+          return notification.error({
+            message: 'Somthing want wrong',
+            description: item.message,
+          })
+        })
+      })
+  }
+
+  hideModal = () => {
+    this.setState({
+      confirmationModalVisible: false,
+    })
   }
 
   render() {
@@ -322,69 +437,43 @@ class FamilyBasicForm extends React.Component {
       currentIndex,
       siblingsArray,
       grandParentsArray,
+      otherMembersArray,
       relationId,
       memberName,
+      confirmationModalVisible,
     } = this.state
 
-    const { CheckableTag } = Tag
-    const { Text, Paragraph } = Typography
+    const { Text } = Typography
     if (isLoaded) {
       return <div>Loding...</div>
     }
+    let memberArray = []
+    if (relationName === 'Sibling') memberArray = siblingsArray
+    else if (relationName === 'Grand Parents') memberArray = grandParentsArray
+    else memberArray = otherMembersArray
+
     return (
-      <Form onSubmit={e => this.handleMemberSubmit(e)}>
+      <Form onSubmit={this.handleMemberSubmit}>
         <div className="name-card">
           <Row className="relationship">
             <Col sm={20}>
               <Text>{relationName}</Text>
             </Col>
           </Row>
-          {relationName === 'Sibling' ? (
-            <div className="siblings">
-              {siblingsArray.map((sib, index) => {
-                return (
-                  <CheckableTag
-                    className="tag"
-                    key={sib.node.id}
-                    checked={currentIndex === index}
-                    onChange={() => {
-                      this.handleNextMember(index)
-                    }}
-                  >
-                    {sib.node.memberName}
-                  </CheckableTag>
-                )
-              })}
-              <Tag className="tag" onClick={this.addNewSibling}>
-                <PlusOutlined />
-              </Tag>
-            </div>
+          {relationName === 'Sibling' ||
+          relationName === 'Grand Parents' ||
+          relationName === 'Other Members' ? (
+            <MemersTags
+              membersArray={memberArray}
+              currentIndex={currentIndex}
+              handleNextMember={this.handleNextMember}
+              addNewMember={() => this.addNewMember(relationName)}
+              deleteMember={member => this.deleteMember(member, relationName)}
+            />
           ) : (
             <></>
           )}
-          {relationName === 'Grand Parents' ? (
-            <div className="siblings">
-              {grandParentsArray.map((sib, index) => {
-                return (
-                  <CheckableTag
-                    className="tag"
-                    key={sib.node.id}
-                    checked={currentIndex === index}
-                    onChange={() => {
-                      this.handleNextMember(index)
-                    }}
-                  >
-                    {sib.node.memberName}
-                  </CheckableTag>
-                )
-              })}
-              <Tag className="tag" onClick={this.addNewGrandParent}>
-                <PlusOutlined />
-              </Tag>
-            </div>
-          ) : (
-            <></>
-          )}
+
           <Row
             type="flex"
             style={{
@@ -420,7 +509,7 @@ class FamilyBasicForm extends React.Component {
                     rules: [{ required: true, message: 'Please Select Name!' }],
                   })(
                     <Fragment>
-                      {processData.newMember && processData.relationName === 'Other Members' ? (
+                      {processData.newMember && processData.relationName === '' ? (
                         <Select
                           placeholder="Select relation with student"
                           onChange={e => this.handleSelect(e)}
@@ -474,7 +563,7 @@ class FamilyBasicForm extends React.Component {
           <Col>
             <Text className="time-spend">How much time do you spent with {studentName}</Text>
             {/* <Paragraph type="secondary" className="how-much-time">
-              
+
             </Paragraph> */}
           </Col>
           <TimeSpend
@@ -502,6 +591,17 @@ class FamilyBasicForm extends React.Component {
         <Button type="primary" htmlType="submit" className="save-btn">
           SAVE DETAILS
         </Button>
+
+        <Modal
+          title="Confirm Delete"
+          visible={confirmationModalVisible}
+          onOk={this.deleteMemberConfirm}
+          onCancel={this.hideModal}
+          okText="Delete"
+          cancelText="Cancel"
+        >
+          <p>Do you want to delete Member</p>
+        </Modal>
       </Form>
     )
   }

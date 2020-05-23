@@ -3,8 +3,6 @@ import { Button, Typography } from 'antd'
 
 const FamilyMemberCard = ({ onClick, heading, text, selected }) => {
   const { Text } = Typography
-  console.log('selected==>', selected)
-
   let buttonStyle = {
     boxShadow: '0 3px 10px rgba(0,0,0,0.1)',
     width: '100%',

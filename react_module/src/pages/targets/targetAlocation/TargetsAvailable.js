@@ -38,7 +38,6 @@ const TargetsAvailable = ({
 
   const getDomainByProgramAreaQuery = async pId => {
     const domainResp = await getDomainByProgramArea(pId)
-    console.log('domainResp==>', domainResp)
     if (notNull(domainResp)) setDomain(domainResp.data.programDetails.domain.edges)
   }
 

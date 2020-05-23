@@ -95,6 +95,24 @@ main {
   transform: translateY(5px);
 }
 
+.studentItemSelected {
+  width: 95%;
+  border: 1px solid #e4e9f0;
+  background-color: darkorange !important;
+  color: white !important;
+  border-radius: 10px !important;
+  outline: none;
+  margin-top: 4%;
+  margin-left: 2.5%;
+  cursor: pointer;
+}
+// .studentItemSel:active {
+//   background-color: darkorange !important;
+//   color: white !important;
+//   border-radius: 10px !important;
+//   outline: none;
+// }
+
 .studentCards {
   margin-top: 2%;
   margin-left: 4%;
@@ -214,7 +232,7 @@ main {
   margin-left: 5%;
   margin-top: 4%;
   font-weight: bold;
-  font-size: 25px;
+  font-size: 20px;
   color: black;
 }
 
@@ -237,6 +255,7 @@ main {
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
+  width: 100%;
 }
 
 .detCardone::-webkit-scrollbar {

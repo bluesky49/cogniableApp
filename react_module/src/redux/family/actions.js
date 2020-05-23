@@ -4,6 +4,7 @@ const actions = {
   FAMILY_DETAILS: 'family/FAMILY_DETAILS',
   CREATE_NEW: 'family/CREATE_NEW',
   EDIT_MEMBER: 'family/EDIT_MEMBER',
+  DELETE_MEMBER: 'family/DELETE_MEMBER',
 }
 
 export default actions

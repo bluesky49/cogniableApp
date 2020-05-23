@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import {
   Menu,
   Dropdown,
@@ -10,29 +10,24 @@ import {
   Switch,
   Modal,
   Card,
+  Icon,
 } from 'antd'
 import { DownOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import { gql } from 'apollo-boost'
+import { connect } from 'react-redux'
 import apolloClient from '../../apollo/config'
 import styles from './style.module.scss'
-import student from '../../images/student.jpg'
+import studentImg from '../../images/student.jpg'
 import StudentDrawer from './StudentDrawer'
 import StudentProgramLinks from './studentProgramLinks'
 import DataRecording from './DataRecordingTh'
 
-const menu = (
-  <Menu>
-    <Menu.Item key="1">1st menu item</Menu.Item>
-    <Menu.Item key="2">2nd menu item</Menu.Item>
-    <Menu.Item key="3">3rd item</Menu.Item>
-  </Menu>
-)
-
-class TharepistStudents extends Component {
+@connect(({ student }) => ({ student }))
+class TharepistStudents extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      isClicked: false,
+      // isClicked: false,
       isDrawer: false,
       students: [],
       selectedNode: {},
@@ -41,7 +36,7 @@ class TharepistStudents extends Component {
       programAreaStatus: [],
       show: false,
       selectedArea: '',
-      // popvisible: false,
+      isPresent: false,
     }
     this.closeDrawer = this.closeDrawer.bind(this)
   }
@@ -50,21 +45,20 @@ class TharepistStudents extends Component {
     apolloClient
       .query({
         query: gql`
-          {
-            students {
+          query {
+            students(authStaff_Id: "U3RhZmZUeXBlOjIxOQ==") {
               edges {
                 node {
                   id
                   firstname
                   internalNo
-                }
-              }
-            }
-            programArea(school: "U2Nob29sVHlwZTo4") {
-              edges {
-                node {
-                  id
-                  name
+                  parent {
+                    id
+                    username
+                  }
+                  school {
+                    id
+                  }
                 }
               }
             }
@@ -72,10 +66,66 @@ class TharepistStudents extends Component {
         `,
       })
       .then(qresult => {
-        this.setState({
-          students: qresult.data.students.edges,
-          programArea: qresult.data.programArea.edges,
-        })
+        apolloClient
+          .query({
+            query: gql`
+              query {
+                programArea(school: "U2Nob29sVHlwZTo4") {
+                  edges {
+                    node {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+            `,
+          })
+          .then(presult => {
+            const storage = localStorage.getItem('studentId')
+            if (storage !== null) {
+              apolloClient
+                .query({
+                  query: gql`
+                    query {
+                      student(id: ${storage}) {
+                        programArea {
+                          edges {
+                            node {
+                              id
+                              name
+                            }
+                          }
+                        }
+                      }
+                    }
+                  `,
+                })
+                .then(iniResult => {
+                  const result = storage.substring(1, storage.length - 1)
+                  // pass result below
+                  const refinedArray = this.move(qresult.data.students.edges, result)
+                  this.setState({
+                    programAreaStatus: iniResult.data.student.programArea.edges,
+                    students: refinedArray,
+                    programArea: presult.data.programArea.edges,
+                    isPresent: true,
+                    selectedNode: refinedArray[0].node,
+                  })
+                })
+                .catch(error => {
+                  console.log(error)
+                })
+            } else {
+              this.setState({
+                students: qresult.data.students.edges,
+                programArea: presult.data.programArea.edges,
+              })
+            }
+          })
+          .catch(error => {
+            console.log(error)
+          })
       })
       .catch(error => {
         console.log(error)
@@ -87,7 +137,7 @@ class TharepistStudents extends Component {
     for (let i = 0; i < 6; i += 1) {
       students.push(
         <div className={styles.stuImg} key={i}>
-          <img src={student} alt="not_found" />
+          <img src={studentImg} alt="not_found" />
           <p>Elliot Alderson</p>
         </div>,
       )
@@ -102,26 +152,24 @@ class TharepistStudents extends Component {
     // getting student program area
     apolloClient
       .query({
-        query: gql`
-        query{
-          student(id:"${node.id}"){programArea{
-                  edges{
-                      node{
-                          id,
-                          name
-                      }
-                  }
-              }
+        query: gql`{
+        student(id:"${node.id}"){programArea{
+          edges{
+            node{
+              id,
+              name
+            }
           }
+        }
       }
-            `,
+    }`,
       })
       .then(presult => {
         this.setState({
           programAreaStatus: presult.data.student.programArea.edges,
-          isClicked: true,
           isDrawer: false,
           selectedNode: node,
+          isPresent: false,
         })
       })
       .catch(error => {
@@ -129,15 +177,28 @@ class TharepistStudents extends Component {
       })
   }
 
+  move = (data, storageData) => {
+    data.forEach(function(item, i) {
+      if (item.node.id.toUpperCase() === storageData.toUpperCase()) {
+        data.splice(i, 1)
+        data.unshift(item)
+      }
+    })
+    return data
+  }
+
   renderStudentCards = () => {
     const stateData = this.state
     const cards = []
+    console.log(stateData)
     if (stateData.students !== undefined) {
       for (let i = 0; i < stateData.students.length; i += 1) {
         cards.push(
           <>
             <div
-              className={styles.studentItem}
+              className={
+                stateData.isPresent && i === 0 ? styles.studentItemSelected : styles.studentItem
+              }
               role="presentation"
               tabIndex={`-${i}`}
               onClick={() => {
@@ -146,7 +207,7 @@ class TharepistStudents extends Component {
             >
               <div className={styles.studentDesc}>
                 <div className={styles.studentProfile}>
-                  <img src={student} alt="not_found" />
+                  <img src={studentImg} alt="not_found" />
                 </div>
                 <div className={styles.studentName}>
                   <p className={styles.name}>{stateData.students[i].node.firstname}</p>
@@ -175,6 +236,11 @@ class TharepistStudents extends Component {
     }
     if (checked) {
       finalArrayone.push(`"${selectedArea.id}"`)
+    } else {
+      const index = finalArrayone.indexOf(`"${selectedArea.id}"`)
+      if (index > -1) {
+        finalArrayone.splice(index, 1)
+      }
     }
     apolloClient
       .mutate({
@@ -197,19 +263,28 @@ class TharepistStudents extends Component {
         `,
       })
       .then(presult => {
-        const obj = {
-          node: {
-            id: `${selectedArea.id}`,
-            name: `${selectedArea.name}`,
-          },
+        if (checked) {
+          const obj = {
+            node: {
+              id: `${selectedArea.id}`,
+              name: `${selectedArea.name}`,
+            },
+          }
+          const newNode = stateData.programAreaStatus
+          const newProgramList = newNode.push(obj)
+          this.setState({
+            programAreaStatus: newNode,
+            // isClicked: true,
+            isDrawer: false,
+            isPresent: false,
+          })
+        } else {
+          this.setState({
+            // isClicked: true,
+            isDrawer: false,
+            isPresent: false,
+          })
         }
-        const newNode = stateData.programAreaStatus
-        const newProgramList = newNode.push(obj)
-        this.setState({
-          programAreaStatus: newNode,
-          isClicked: true,
-          isDrawer: false,
-        })
       })
       .catch(error => {
         console.log(error)
@@ -254,70 +329,55 @@ class TharepistStudents extends Component {
     if (stateData.programArea !== undefined) {
       for (let i = 0; i < stateData.programArea.length; i += 1) {
         const checked = this.renderSwitch(stateData.programArea[i].node.name)
-        if (checked) {
-          program.push(
-            <Card
-              onClick={() => {
-                this.showDrawr(stateData.programArea[i].node.name)
-              }}
-              className={styles.detailCardItem}
-            >
-              <>
-                <div className={styles.detailcardHeading}>
-                  <p>{stateData.programArea[i].node.name}</p>
-                  <div className={styles.toggle}>
-                    <Switch
-                      defaultChecked={checked}
-                      onClick={(checkedUser, event) => {
-                        this.handleToggle(checkedUser, event, stateData.programArea[i].node)
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className={styles.detcardDesc}>
-                  <p>
-                    Fine Motor skills is a coordination of small muscles, in Movements -Usually
-                    involving the synchronisation of hands and fingers with eyes.
-                  </p>
-                </div>
-                <div className={styles.detProgress}>
-                  <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
-                </div>
-              </>
-            </Card>,
-          )
-        } else {
-          program.push(
-            <div
-              role="presentation"
-              className={styles.detailCardItem}
-              onClick={() => {
-                this.showModal()
-              }}
-            >
-              <div className={styles.detailcardHeading}>
-                <p>{stateData.programArea[i].node.name}</p>
-                <div className={styles.toggle}>
+        console.log('====> checked', checked)
+        program.push(
+          <div
+            role="presentation"
+            className={styles.detailCardItem}
+            onClick={
+              checked
+                ? () => {
+                    this.showDrawr(stateData.programArea[i].node)
+                  }
+                : () => {
+                    this.showModal()
+                  }
+            }
+          >
+            <div className={styles.detailcardHeading}>
+              <p>{stateData.programArea[i].node.name}</p>
+              <div className={styles.toggle}>
+                {checked ? (
                   <Switch
-                    defaultChecked={checked}
+                    checkedChildren={<Icon type="check" />}
+                    unCheckedChildren={<Icon type="close" />}
+                    defaultChecked
                     onClick={(checkedUser, event) => {
                       this.handleToggle(checkedUser, event, stateData.programArea[i].node)
                     }}
                   />
-                </div>
+                ) : (
+                  <Switch
+                    checkedChildren={<Icon type="check" />}
+                    unCheckedChildren={<Icon type="close" />}
+                    onClick={(checkedUser, event) => {
+                      this.handleToggle(checkedUser, event, stateData.programArea[i].node)
+                    }}
+                  />
+                )}
               </div>
-              <div className={styles.detcardDesc}>
-                <p>
-                  Fine Motor skills is a coordination of small muscles, in Movements -Usually
-                  involving the synchronisation of hands and fingers with eyes.
-                </p>
-              </div>
-              <div className={styles.detProgress}>
-                <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
-              </div>
-            </div>,
-          )
-        }
+            </div>
+            <div className={styles.detcardDesc}>
+              <p>
+                Fine Motor skills is a coordination of small muscles, in Movements -Usually
+                involving the synchronisation of hands and fingers with eyes.
+              </p>
+            </div>
+            <div className={styles.detProgress}>
+              <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
+            </div>
+          </div>,
+        )
       }
     }
     return program
@@ -325,12 +385,56 @@ class TharepistStudents extends Component {
 
   renderDetail = () => {
     const data = this.state
-    if (data.isClicked && !data.isDrawer) {
+    // const storageData = localStorage.getItem('studentId')
+    // const refinedArray = this.move(data.students, storageData)
+
+    if (data.isPresent) {
       return (
         <>
           <div className={styles.detailHeader}>
             <div className={styles.detailImg}>
-              <img src={student} alt="not_found" />
+              <img src={studentImg} alt="not_found" />
+            </div>
+            <div className={styles.NameAdd}>
+              <p className={styles.detName}>{data.students[0].node.firstname}</p>
+              <p className={styles.Add}>Newyork, USA</p>
+            </div>
+            <div className={styles.actionone}>
+              <Button size="large" style={{ color: 'black' }}>
+                Contact Student
+              </Button>
+            </div>
+            <div className={styles.actiontwo}>
+              <Button
+                type="primary"
+                style={{ backgroundColor: 'darkblue', fontSize: '20px', height: '40%' }}
+              >
+                Book Apointment
+              </Button>
+            </div>
+          </div>
+          <div className={styles.detCardone}>{this.renderProgramArea()}</div>
+          <div className={styles.mealCards}>
+            <div className={styles.dataRecording}>
+              <p>Data Recording</p>
+              <div className={styles.detailCardtwo}>
+                <DataRecording />
+              </div>
+            </div>
+            <div className={styles.detailMealCard}>
+              <StudentProgramLinks />
+            </div>
+          </div>
+        </>
+      )
+    }
+
+    if (!data.isDrawer) {
+      return (
+        <>
+          <div className={styles.detailHeader}>
+            <div className={styles.detailImg}>
+              <img src={studentImg} alt="not_found" />
             </div>
             <div className={styles.NameAdd}>
               <p className={styles.detName}>{data.selectedNode.firstname}</p>
@@ -401,11 +505,23 @@ class TharepistStudents extends Component {
     })
   }
 
-  showDrawr = selectedPArea => {
+  // when user select program area card
+  showDrawr = node => {
+    // console.log('===> selected program area : ', node )
+    // setting student selected program area to store
+    const { dispatch } = this.props
+    dispatch({
+      type: 'student/SET_STATE',
+      payload: {
+        ProgramAreaId: node.id,
+      },
+    })
+
     this.setState({
       isDrawer: true,
       visible: true,
-      selectedArea: selectedPArea,
+      isPresent: false,
+      selectedArea: node.name,
     })
   }
 
@@ -430,21 +546,6 @@ class TharepistStudents extends Component {
             <div className={styles.students}>
               <div className={styles.stuHeader}>
                 <p>Students</p>
-                <div className={styles.drpStudent}>
-                  {/* <Dropdown overlay={menu}>
-                    <Button
-                      style={{
-                        fontSize: '15px',
-                        fontWeight: 'bold',
-                        color: 'black',
-                        border: '1px solid #D9D9D9',
-                        borderRadius: '5px',
-                      }}
-                    >
-                      Select Students <DownOutlined />
-                    </Button>
-                  </Dropdown> */}
-                </div>
               </div>
             </div>
             <div className={styles.studentCards}>{this.renderStudentCards()}</div>

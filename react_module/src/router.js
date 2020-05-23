@@ -187,7 +187,7 @@ const routes = [
     component: loadable(() => import('pages/sessionDetails/index')),
   },
   {
-    path: '/staffManagement',
+    path: '/partners/staffManagement',
     component: loadable(() => import('pages/StaffManagement/index')),
   },
 
