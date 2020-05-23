@@ -41,6 +41,11 @@ class ExtraAppsJiraAgileBoard extends React.Component {
   componentWillMount() {
     if (localStorage.getItem('studentId')) {
       const { dispatch } = this.props
+
+      dispatch({
+        type: 'user/GET_STUDENT_NAME',
+      })
+
       dispatch({
         type: 'sessiontargetallocation/GET_ALLOCATED_TARGETS',
         payload: {
@@ -139,6 +144,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
         EveningSession,
         CurrentSession,
       },
+      user: { studentName },
     } = this.props
 
     const { Search } = Input
@@ -207,7 +213,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
         <div className={style.targetAllocation}>
           <Helmet title="Jira Agile Board" />
           <div className={style.heading}>
-            <span>Target List</span>
+            <span>{studentName}&apos;s Target List</span>
           </div>
 
           <div className="row">
