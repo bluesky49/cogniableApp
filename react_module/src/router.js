@@ -190,6 +190,10 @@ const routes = [
     path: '/partners/staffManagement',
     component: loadable(() => import('pages/StaffManagement/index')),
   },
+  {
+    path: '/appointmentData/',
+    component: loadable(() => import('pages/appointmentdata/index')),
+  },
 
   // Therapist Urls
   {

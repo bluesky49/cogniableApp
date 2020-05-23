@@ -5,7 +5,21 @@ import targetImg1 from './images/motherChild.jpg'
 
 const { Title, Text } = Typography
 
-const TargetCard = ({ style, title, setUpdateTargetId, id, setUpdateTargetDrawer }) => {
+const TargetCard = ({
+  style,
+  title,
+  setUpdateTargetId,
+  id,
+  setName,
+  setUpdateTargetDrawer,
+  setInstr,
+  instr,
+}) => {
+  const onCopyClick = () => {
+    setInstr(instr)
+    setName(title)
+  }
+
   return (
     <div
       style={{
@@ -82,6 +96,7 @@ const TargetCard = ({ style, title, setUpdateTargetId, id, setUpdateTargetDrawer
               marginLeft: 'auto',
               padding: 0,
             }}
+            onClick={onCopyClick}
           >
             <CopyOutlined style={{ fontSize: 28, color: 'green' }} />
           </Button>

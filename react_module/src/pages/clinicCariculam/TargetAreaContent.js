@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Typography, Drawer } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { Drawer } from 'antd'
 import gql from 'graphql-tag'
 import { useQuery } from 'react-apollo'
 import UpdateTargetForm from './UpdateTargetForm'
@@ -8,13 +7,13 @@ import TargetAreaCard from './TargetAreaCard'
 import TargetCard from './TargetCard'
 import TargetFrom from './TargetFrom'
 
-const { Text } = Typography
-
 const TargetAreaContent = ({ targetArea, setUpdateTarArea, domainId }) => {
   const [newTargetDrawer, setNewTargetDrawer] = useState(false)
   const [updateTargetDrawer, setUpdateTargetDrawer] = useState(false)
   const [newTarget, setNewTarget] = useState()
   const [updateTargetId, setUpdateTargetId] = useState()
+  const [selectName, setName] = useState()
+  const [selectInstr, setInstr] = useState()
 
   const [targets, setTargets] = useState()
   const TARGET_QUERY = gql`
@@ -50,7 +49,17 @@ const TargetAreaContent = ({ targetArea, setUpdateTarArea, domainId }) => {
     }
   }, [newTarget])
 
+  useEffect(() => {
+    if (selectName) {
+      setNewTargetDrawer(true)
+    }
+  }, [selectName])
+
   const handelNewTargetDrawer = () => {
+    if (setNewTargetDrawer) {
+      setName('')
+      setInstr('')
+    }
     setNewTargetDrawer(state => !state)
   }
 
@@ -73,43 +82,24 @@ const TargetAreaContent = ({ targetArea, setUpdateTarArea, domainId }) => {
         style={{ marginBottom: 33 }}
         targetAreaId={targetArea.id}
         setUpdateTarArea={setUpdateTarArea}
+        handelNewTargetDrawer={handelNewTargetDrawer}
       />
       {targets &&
         targets.map(({ node }) => {
           return (
             <TargetCard
+              key={node.id}
               title={node.targetMain.targetName}
               style={{ marginTop: 16 }}
               setUpdateTargetId={setUpdateTargetId}
               id={node.id}
               setUpdateTargetDrawer={setUpdateTargetDrawer}
+              setName={setName}
+              setInstr={setInstr}
+              instr={node.targetInstr}
             />
           )
         })}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          marginTop: 50,
-          alignItems: 'center',
-        }}
-      >
-        <Button
-          onClick={handelNewTargetDrawer}
-          style={{
-            width: 210,
-            height: 40,
-            background: '#F9F9F9',
-            border: '1px solid #E4E9F0',
-            boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
-            borderRadius: 6,
-            marginLeft: 'auto',
-          }}
-        >
-          <PlusOutlined style={{ fontSize: 20, color: '#000' }} />
-          <Text style={{ fontSize: 16, lineHeight: '22px', color: '#000' }}>New Target</Text>
-        </Button>
-      </div>
       <Drawer
         width="400px"
         visible={newTargetDrawer}
@@ -131,6 +121,8 @@ const TargetAreaContent = ({ targetArea, setUpdateTarArea, domainId }) => {
             targetAreaId={targetArea.id}
             setNewTarget={setNewTarget}
             handelNewTargetDrawer={handelNewTargetDrawer}
+            name={selectName}
+            instr={selectInstr}
           />
         </div>
       </Drawer>

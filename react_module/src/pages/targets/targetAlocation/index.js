@@ -23,13 +23,14 @@ import TargetsAvailable from './TargetsAvailable'
 
 const longGoalBtn = {
   color: '#fff',
-  backgroundColor: '#66ff33',
+  backgroundColor: '#0B35B3',
   // border: '1px solid #0B35B3',
 }
 
 const shortGoalBtn = {
-  color: '#FFF',
-  backgroundColor: '#0B35B3',
+  border: 0,
+  color: '#000',
+  backgroundColor: '#66ff33',
 }
 
 const selectPatientStyle = {

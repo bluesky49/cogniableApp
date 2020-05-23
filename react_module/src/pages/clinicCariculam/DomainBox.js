@@ -1,5 +1,6 @@
+/* eslint-disable array-callback-return */
 import React, { useState, useEffect } from 'react'
-import { Button, Card, Typography, Input, Modal, Select, notification } from 'antd'
+import { Button, Card, Typography, Input, Modal, notification, AutoComplete } from 'antd'
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import Scrollbars from 'react-custom-scrollbars'
 import gql from 'graphql-tag'
@@ -7,7 +8,6 @@ import { useMutation, useLazyQuery } from 'react-apollo'
 import DoaminCard from './DoaminCard'
 
 const { Title, Text } = Typography
-const { Option } = Select
 
 const CREATE_DOMAIN = gql`
   mutation domainProgram($label: String!, $key: String!, $programArea: ID!) {
@@ -48,6 +48,8 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
   const [liveDomains, setLiveDomains] = useState(domains)
   const [createDomainModel, setCreateDomainModel] = useState(false)
   const [searchText, setSearchText] = useState()
+
+  const [resutl, setResult] = useState(domains)
   const [newDomainName, setNewDomainName] = useState('')
   const [key, setKey] = useState('mand1')
 
@@ -60,25 +62,47 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
     },
   )
 
-  const [createDomain, { data: createDomainData, error: createDomainError }] = useMutation(
-    CREATE_DOMAIN,
-    {
-      variables: {
-        label: key !== 'mand1' ? 'mand1' : newDomainName,
-        key,
-        programArea,
-      },
+  const [
+    createDomain,
+    { data: createDomainData, error: createDomainError, loading: createDomainLoading },
+  ] = useMutation(CREATE_DOMAIN, {
+    variables: {
+      label: key !== 'mand1' ? 'mand1' : newDomainName,
+      key: key === 'mand1' ? newDomainName : key,
+      programArea,
     },
-  )
+  })
 
-  const handleNewDomainNameChange = value => {
-    setNewDomainName(value)
+  const handelNewDomainSearch = value => {
+    let res = []
+
+    if (!value) {
+      res = domains
+    } else {
+      // eslint-disable-next-line consistent-return
+      res = domains
+        // eslint-disable-next-line consistent-return
+        .map(domain => {
+          if (domain.node.domain.toLowerCase().match(value.toLowerCase())) {
+            return domain
+          }
+        })
+        .filter(Boolean)
+    }
+
+    setResult(res)
   }
 
   const handelCreateDomainModel = () => setCreateDomainModel(state => !state)
 
   const handelCreateNewDomain = () => {
-    createDomain()
+    if (newDomainName) {
+      createDomain()
+    } else {
+      notification.info({
+        message: 'Please type or select a domain name',
+      })
+    }
   }
 
   useEffect(() => {
@@ -98,10 +122,11 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
   useEffect(() => {
     if (createDomainData) {
       notification.success({
-        message: 'Meal Data',
-        description: 'Updated Meal Successfully',
+        message: 'Clinic Cariculam',
+        description: 'Create Domain Successfully',
       })
       setNewDomainName('')
+      setKey('mand1')
       setCreateDomainModel(false)
     }
   }, [createDomainData])
@@ -110,7 +135,7 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
     if (createDomainError) {
       notification.error({
         message: 'Somthing want wrong',
-        description: createDomainError,
+        description: createDomainError.message,
       })
     }
   }, [createDomainError])
@@ -144,11 +169,11 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
         onChange={e => setSearchText(e.target.value)}
       />
       {filterDomainLoading && <Text style={{ marginTop: 24 }}>Loading...</Text>}
-      <Scrollbars style={{ marginTop: 24, height: 'calc(100vh - 435px)' }}>
+      <Scrollbars style={{ marginTop: 24, height: '600px' }}>
         {liveDomains.map(({ node }, index) => {
           return (
             <DoaminCard
-              selected={selectDomain.id === node.id ? true : null}
+              selected={selectDomain && selectDomain.id === node.id ? true : null}
               title={node.domain}
               handleSelectDomain={handleSelectDomain(node)}
               key={node.id}
@@ -165,7 +190,12 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
         title="Title"
         onCancel={handelCreateDomainModel}
         footer={[
-          <Button key="submit" type="primary" onClick={handelCreateNewDomain}>
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handelCreateNewDomain}
+            loading={createDomainLoading}
+          >
             Create
           </Button>,
         ]}
@@ -177,28 +207,25 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
             background: '#fff',
           }}
         >
-          <Select
-            placeholder="Domain Name"
-            onChange={value => setKey(value)}
-            showSearch
-            optionFilterProp="name"
-            onSearch={handleNewDomainNameChange}
-            style={{
-              width: 300,
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              display: 'block',
-            }}
+          <AutoComplete
+            value={newDomainName}
+            onSearch={handelNewDomainSearch}
+            onSelect={v => setKey(v)}
+            onChange={v => setNewDomainName(v)}
             size="large"
+            style={{
+              width: '100%',
+            }}
+            placeholder="Plase type the domain name"
           >
-            {domains.map(({ node }) => {
+            {resutl.map(({ node }) => {
               return (
-                <Option value={node.id} name={node.domain}>
+                <AutoComplete.Option value={node.id} name={node.domain}>
                   {node.domain}
-                </Option>
+                </AutoComplete.Option>
               )
             })}
-          </Select>
+          </AutoComplete>
         </div>
       </Modal>
     </Card>

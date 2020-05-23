@@ -52,7 +52,7 @@ const TabContent = ({ programArea }) => {
   return (
     <Row gutter={[52, 0]}>
       <Col style={{ maxWidth: 460 }} span={8}>
-        {data && selectDomain && (
+        {data && (
           <DomainBox
             domains={data.domain.edges}
             selectDomain={selectDomain}

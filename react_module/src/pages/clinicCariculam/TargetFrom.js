@@ -30,7 +30,15 @@ const CREATE_TARGET = gql`
   }
 `
 
-const TargetForm = ({ domainId, targetAreaId, form, setNewTarget, handelNewTargetDrawer }) => {
+const TargetForm = ({
+  domainId,
+  targetAreaId,
+  form,
+  setNewTarget,
+  handelNewTargetDrawer,
+  name,
+  instr,
+}) => {
   const [createTarget, { data, loading, error }] = useMutation(CREATE_TARGET)
 
   useEffect(() => {
@@ -43,6 +51,7 @@ const TargetForm = ({ domainId, targetAreaId, form, setNewTarget, handelNewTarge
       form.resetFields()
       handelNewTargetDrawer()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   useEffect(() => {
@@ -75,12 +84,14 @@ const TargetForm = ({ domainId, targetAreaId, form, setNewTarget, handelNewTarge
     <Form name="targetForm" onSubmit={handleSubmit}>
       <Form.Item label="Target Name">
         {form.getFieldDecorator('targetname', {
+          initialValue: name,
           rules: [{ required: true, message: 'Please enter Target Name' }],
         })(<Input placeholder="Target Name" size="large" />)}
       </Form.Item>
 
       <Form.Item label="Target Instration">
         {form.getFieldDecorator('targetInstr', {
+          initialValue: instr,
           rules: [{ required: true, message: 'Please enter Target Instration!' }],
         })(<Input placeholder="Target Instration" size="large" />)}
       </Form.Item>

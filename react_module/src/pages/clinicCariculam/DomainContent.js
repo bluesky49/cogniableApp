@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Select, Modal, Input, notification } from 'antd'
+import { Button, Select, Modal, Input, notification, Typography } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
 import { useMutation } from 'react-apollo'
 import TargetAreaContent from './TargetAreaContent'
 
 const { Option } = Select
+const { Text } = Typography
 
 const CREATE_TARGET_AREA = gql`
   mutation($domainId: ID!, $name: String!) {
@@ -107,44 +109,38 @@ const DomainContent = ({ targetAreas, domainId }) => {
         <Select
           placeholder="Target Area"
           style={{
-            width: 200,
+            width: 300,
             borderRadius: 4,
             marginRight: 38,
           }}
           value={selectValue}
           onChange={handleSelectChange}
           size="large"
+          showSearch
+          optionFilterProp="name"
         >
           {allTargetArea.map(({ node }) => {
             return (
-              <Option key={node.id} value={node.id}>
+              <Option key={node.id} value={node.id} name={node.Area}>
                 {node.Area}
               </Option>
             )
           })}
         </Select>
         <Button
-          type="primary"
-          style={{
-            height: 40,
-            width: 200,
-            marginRight: 38,
-            background: ' #0B35B3',
-            fontSize: 16,
-            lineHeight: '22px',
-          }}
-        >
-          Search
-        </Button>
-        <Button
-          type="link"
-          style={{
-            fontSize: 14,
-            lineHeight: '19px',
-          }}
           onClick={handelCreateTargetAreaModel}
+          style={{
+            width: 210,
+            height: 40,
+            background: '#F9F9F9',
+            border: '1px solid #E4E9F0',
+            boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
+            borderRadius: 6,
+            marginLeft: 'auto',
+          }}
         >
-          Add Target Area
+          <PlusOutlined style={{ fontSize: 20, color: '#000' }} />
+          <Text style={{ fontSize: 16, lineHeight: '22px', color: '#000' }}>Add Target Area</Text>
         </Button>
       </div>
       <div style={{ marginTop: 20 }}>

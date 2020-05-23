@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-closing-tag-location */
 import React, { useState, useEffect } from 'react'
 import { Button, Card, Typography, Input, notification } from 'antd'
-import { FormOutlined } from '@ant-design/icons'
+import { FormOutlined, PlusOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
 import { useMutation } from 'react-apollo'
 
@@ -20,7 +20,7 @@ const UPDATE_TARGET_AREA = gql`
   }
 `
 
-const TargetAreaCard = ({ style, name, targetAreaId, setUpdateTarArea }) => {
+const TargetAreaCard = ({ style, name, targetAreaId, setUpdateTarArea, handelNewTargetDrawer }) => {
   const [editMode, setEditMode] = useState(false)
   const [stateName, setStateName] = useState(name)
   const [newName, setNewName] = useState(stateName)
@@ -102,9 +102,34 @@ const TargetAreaCard = ({ style, name, targetAreaId, setUpdateTarArea }) => {
             {stateName}
           </Text>
         )}
+        {!editMode && (
+          <Button
+            onClick={handelNewTargetDrawer}
+            style={{
+              width: 210,
+              height: 40,
+              background: 'rgb(10, 133, 10)',
+              border: '1px solid #E4E9F0',
+              boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
+              borderRadius: 6,
+              marginLeft: 'auto',
+            }}
+          >
+            <PlusOutlined style={{ fontSize: 20, color: 'rgb(238, 241, 249)' }} />
+            <Text
+              style={{
+                fontSize: 16,
+                lineHeight: '22px',
+                color: 'rgb(238, 241, 249)',
+              }}
+            >
+              New Target
+            </Text>
+          </Button>
+        )}
 
         {!editMode && (
-          <Button style={{ marginLeft: 'auto' }} type="link" onClick={() => setEditMode(true)}>
+          <Button type="link" onClick={() => setEditMode(true)}>
             <FormOutlined style={{ fontSize: 28, color: '#e9e9e9' }} />
           </Button>
         )}
