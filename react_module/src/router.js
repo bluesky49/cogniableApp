@@ -186,6 +186,10 @@ const routes = [
     path: '/sessionDetails',
     component: loadable(() => import('pages/sessionDetails/index')),
   },
+  {
+    path: '/staffManagement',
+    component: loadable(() => import('pages/StaffManagement/index')),
+  },
 
   // Therapist Urls
   {
