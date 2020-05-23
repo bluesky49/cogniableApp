@@ -83,6 +83,9 @@ class LearnerTable extends React.Component {
 
   info = e => {
     const { dispatch } = this.props
+    // setting student id to local storage for further operations
+    localStorage.setItem('studentId', JSON.stringify(e.id))
+
     dispatch({
       type: 'learners/SET_STATE',
       payload: {
@@ -299,6 +302,16 @@ class LearnerTable extends React.Component {
     })
   }
 
+  showProgram = () => {
+    console.log('===> studnet selected')
+    window.location.href = '/#/therapistStudent'
+  }
+
+  showSession = () => {
+    console.log('===> studnet selected')
+    window.location.href = '/#/sessionDetails'
+  }
+
   filterToggle(toggle) {
     if (toggle) {
       this.setState({
@@ -339,7 +352,9 @@ class LearnerTable extends React.Component {
         fixed: 'left',
         render: () => (
           <span>
-            <a style={{ marginRight: 16, color: '#0190fe' }}>Session</a>
+            <Button onClick={this.showSession} style={{ color: '#0190fe', border: 'none' }}>
+              Session
+            </Button>
           </span>
         ),
       },
@@ -350,7 +365,9 @@ class LearnerTable extends React.Component {
         fixed: 'left',
         render: () => (
           <span>
-            <a style={{ color: '#0190fe' }}>Program</a>
+            <Button onClick={this.showProgram} style={{ color: '#0190fe', border: 'none' }}>
+              Program
+            </Button>
           </span>
         ),
       },
