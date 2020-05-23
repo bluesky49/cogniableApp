@@ -405,12 +405,14 @@ class TharepistStudents extends PureComponent {
               </Button>
             </div>
             <div className={styles.actiontwo}>
-              <Button
-                type="primary"
-                style={{ backgroundColor: 'darkblue', fontSize: '20px', height: '40%' }}
-              >
-                Book Apointment
-              </Button>
+              <a href="/#/appointmentData/">
+                <Button
+                  type="primary"
+                  style={{ backgroundColor: 'darkblue', fontSize: '20px', height: '40%' }}
+                >
+                  Book Apointment
+                </Button>
+              </a>
             </div>
           </div>
           <div className={styles.detCardone}>{this.renderProgramArea()}</div>
