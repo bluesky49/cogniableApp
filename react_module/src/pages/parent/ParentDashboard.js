@@ -1,4 +1,6 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable array-callback-return */
 import React, { useState } from 'react'
 import { Layout, Row, Col, Typography, Icon, Button } from 'antd'
 import './parentDashboard.scss'
@@ -215,19 +217,25 @@ const ParentDashboard = () => {
 
             <div className="taskSection" style={{ position: 'relative', marginBottom: 15 }}>
               <Row gutter={[45, 0]}>
-                {data.sessions.edges.map(({ node }) => {
-                  return (
-                    <Col key={node.id} xs={24} lg={8}>
-                      <SessionCard
-                        id={node.id}
-                        sessionName={node.sessionName.name}
-                        duration={node.duration}
-                        hostList={node.sessionHost.edges}
-                        session={node}
-                      />
-                    </Col>
-                  )
-                })}
+                {data.sessions.edges.map(({ node }) => (
+                  <>
+                    {node.targets.edgeCount > 0 ? (
+                      <>
+                        <Col key={node.id} xs={24} lg={8}>
+                          <SessionCard
+                            id={node.id}
+                            sessionName={node.sessionName.name}
+                            duration={node.duration}
+                            hostList={node.sessionHost.edges}
+                            session={node}
+                          />
+                        </Col>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                  </>
+                ))}
               </Row>
             </div>
 

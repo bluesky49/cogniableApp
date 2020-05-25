@@ -82,7 +82,9 @@ const TaskCard = ({ style, id, sessionName, duration, hostList, session }) => {
             {sessionName} Session
           </Title>
           <Text style={{ fontWeight: 600 }}>
-            {data && data.getChildSession.edges[0].node.status}
+            {data && data.getChildSession.edges.length > 0
+              ? data.getChildSession.edges[0].node.status
+              : 'PENDING'}
           </Text>
         </div>
 
