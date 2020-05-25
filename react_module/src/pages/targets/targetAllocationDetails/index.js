@@ -269,7 +269,7 @@ const TargetAllocationDetails = ({
               title="Consecutive Days"
               number={sessionConsecutiveDays}
               setNumber={num => onChangeNumber('scd', num)}
-              unit="%"
+              // unit="%"
             />
           </div>
 

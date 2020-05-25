@@ -36,12 +36,12 @@ const AddLongAndShortGoalForm = props => {
     const dataObj = type === 'long-edit' ? activeLongTermGoal : activeShortTermGoal
     if (type === 'long-edit' || type === 'short-edit') {
       form.setFieldsValue({
-        endDate: moment(dataObj.node.dateEnd, 'YYYY-MM-DD'),
-        dateIntiated: moment(dataObj.node.dateInitialted, 'YYYY-MM-DD'),
-        description: dataObj.node.description,
-        goalName: dataObj.node.goalName,
-        goalStatus: dataObj.node.goalStatus.id,
-        responsible: dataObj.node.responsibility.id,
+        endDate: moment(dataObj?.node?.dateEnd, 'YYYY-MM-DD'),
+        dateIntiated: moment(dataObj?.node?.dateInitialted, 'YYYY-MM-DD'),
+        description: dataObj?.node?.description,
+        goalName: dataObj?.node?.goalName,
+        goalStatus: dataObj?.node?.goalStatus?.id,
+        responsible: dataObj?.node?.responsibility?.id,
       })
     } else {
       resetForm()
@@ -64,7 +64,6 @@ const AddLongAndShortGoalForm = props => {
     let formValues = null
 
     form.validateFields((error, values) => {
-      console.log('error, values==>', error, values)
       isError = error
       formValues = values
     })

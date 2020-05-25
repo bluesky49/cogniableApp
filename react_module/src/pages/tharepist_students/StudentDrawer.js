@@ -19,6 +19,7 @@ class StudentDrawer extends Component {
       // isSubdrawerOper: false,
       sessionName: '',
       programAreaStatus: [],
+      isSelected: false,
     }
     this.onClose = this.onClose.bind(this)
   }
@@ -81,6 +82,7 @@ class StudentDrawer extends Component {
               }
             }
             targets {
+              edgeCount
               edges {
                 node {
                   id
@@ -115,6 +117,22 @@ class StudentDrawer extends Component {
     propData.closeDrawer(true)
   }
 
+  handleClick = node => {
+    // bind the event from here or after setState()
+    // setting program area id to redux store for target allocation
+    const { dispatch } = this.props
+    dispatch({
+      type: 'student/SET_STATE',
+      payload: {
+        ProgramAreaId: node.id,
+      },
+    })
+
+    this.setState({
+      isSelected: true,
+    })
+  }
+
   renderProgramArea = () => {
     const stateData = this.state
     const propData = this.props
@@ -123,27 +141,31 @@ class StudentDrawer extends Component {
       for (let i = 0; i < stateData.programAreaStatus.length; i += 1) {
         array.push(
           <div
+            role="presentation"
+            tabIndex={`-${i}`}
             className={
               propData.selectedArea.toUpperCase() ===
-              stateData.programAreaStatus[i].node.name.toUpperCase()
+                stateData.programAreaStatus[i].node.name.toUpperCase() && !stateData.isSelected
                 ? styles.drawerCardItemSelected
                 : styles.drawerCardItem
             }
+            onClick={() => {
+              this.handleClick(propData.programs[i].node)
+            }}
+            key={i}
           >
-            <Card>
-              <div className={styles.drawercardHeading}>
-                <p>{stateData.programAreaStatus[i].node.name}</p>
-              </div>
-              <div className={styles.drawercardDesc}>
-                <p>
-                  Fine Motor skills is a coordination of small muscles, in Movements -Usually
-                  involving the synchronisation of hands and fingers with eyes.
-                </p>
-              </div>
-              <div className={styles.drawerProgress}>
-                <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
-              </div>
-            </Card>
+            <div className={styles.drawercardHeading}>
+              <p>{propData.programs[i].node.name}</p>
+            </div>
+            <div className={styles.drawercardDesc}>
+              <p>
+                Fine Motor skills is a coordination of small muscles, in Movements -Usually
+                involving the synchronisation of hands and fingers with eyes.
+              </p>
+            </div>
+            <div className={styles.drawerProgress}>
+              <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
+            </div>
           </div>,
         )
       }
@@ -178,10 +200,10 @@ class StudentDrawer extends Component {
                 size="large"
                 className={styles.sesbutton}
                 onClick={() => {
-                  this.openSubDrawer(stateData.sessions[i].node)
+                  this.openSubDrawer(stateData.sessions[i].node.sessionName.name)
                 }}
               >
-                Start Session
+                Start New Session
               </Button>
             </div>
           </div>,
@@ -191,19 +213,10 @@ class StudentDrawer extends Component {
     return array
   }
 
-  openSubDrawer = node => {
-    const { dispatch } = this.props
-
-    dispatch({
-      type: 'sessionrecording/SET_STATE',
-      payload: {
-        SessionId: node.id,
-      },
-    })
-
+  openSubDrawer = name => {
     this.setState({
       // isSubdrawerOper: true,
-      sessionName: node.sessionName.name,
+      sessionName: name,
       visible: true,
     })
   }
@@ -267,6 +280,22 @@ class StudentDrawer extends Component {
                     <p className={styles.stAdd}>Newyork, USA</p>
                   </div>
                 </div>
+                <div className={styles.actbtn}>
+                  <div className={styles.actCon}>
+                    <Button type="primary" ghost style={{ marginTop: '3%', width: '120%' }}>
+                      Contact Student
+                    </Button>
+                  </div>
+                  <div className={styles.actBk}>
+                    <Button
+                      type="primary"
+                      className={styles.actbkcls}
+                      style={{ marginTop: '3%', width: '120%', marginLeft: '24%' }}
+                    >
+                      Book Apointment
+                    </Button>
+                  </div>
+                </div>
 
                 <div className={styles.drawerShell}>
                   <div className={styles.drawerCard}>{this.renderProgramArea()}</div>
@@ -278,48 +307,44 @@ class StudentDrawer extends Component {
             <div className={styles.terms}>
               <div className={styles.shrtTrmGoal}>
                 <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
-                  <a href="/#/target/allocation">
-                    <div className={styles.termCards}>
-                      <div className={styles.termcardHeading}>
-                        <p className={styles.goal}>Long Term Goal</p>
-                        <p className={styles.goalPerc}>61%</p>
-                      </div>
-                      {/* <div className={styles.termcardDesc}>
-                        <p>Jan 5- to March 4</p>
-                      </div> */}
-                      <div className={styles.termProgress}>
-                        <Progress
-                          percent={40}
-                          showInfo={false}
-                          strokeColor="orange"
-                          strokeWidth={10}
-                        />
-                      </div>
+                  <div className={styles.termCards}>
+                    <div className={styles.termcardHeading}>
+                      <p className={styles.goal}>Short Term Goal</p>
+                      <p className={styles.goalPerc}>61%</p>
                     </div>
-                  </a>
+                    <div className={styles.termcardDesc}>
+                      <p>Jan 5- to March 4</p>
+                    </div>
+                    <div className={styles.termProgress}>
+                      <Progress
+                        percent={40}
+                        showInfo={false}
+                        strokeColor="orange"
+                        strokeWidth={10}
+                      />
+                    </div>
+                  </div>
                 </Card>
               </div>
               <div className={styles.lngTrmGoal}>
                 <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
-                  <a href="/#/target/allocation">
-                    <div className={styles.termCards}>
-                      <div className={styles.termcardHeading}>
-                        <p className={styles.goal}>Short Term Goal</p>
-                        <p className={styles.goalPerc}>61%</p>
-                      </div>
-                      {/* <div className={styles.termcardDesc}>
-                        <p>Jan 5- to March 4</p>
-                      </div> */}
-                      <div className={styles.termProgress}>
-                        <Progress
-                          percent={40}
-                          showInfo={false}
-                          strokeColor="orange"
-                          strokeWidth={10}
-                        />
-                      </div>
+                  <div className={styles.termCards}>
+                    <div className={styles.termcardHeading}>
+                      <p className={styles.goal}>Short Term Goal</p>
+                      <p className={styles.goalPerc}>61%</p>
                     </div>
-                  </a>
+                    <div className={styles.termcardDesc}>
+                      <p>Jan 5- to March 4</p>
+                    </div>
+                    <div className={styles.termProgress}>
+                      <Progress
+                        percent={40}
+                        showInfo={false}
+                        strokeColor="orange"
+                        strokeWidth={10}
+                      />
+                    </div>
+                  </div>
                 </Card>
               </div>
               <div className={styles.behaviourAction}>

@@ -392,8 +392,8 @@ const TargetAllocation = () => {
                               <div
                                 className={
                                   addTargetMode === 'list'
-                                    ? 'col-lg-12 col-md-12'
-                                    : 'col-lg-8 col-md-12'
+                                    ? 'col-lg-10 col-md-10'
+                                    : 'col-lg-8 col-md-10'
                                 }
                               >
                                 <span className={styles.behaviourHeading}>
@@ -406,8 +406,8 @@ const TargetAllocation = () => {
                               <div
                                 className={
                                   addTargetMode === 'list'
-                                    ? 'col-lg-12 col-md-12'
-                                    : 'col-lg-4 col-md-12'
+                                    ? 'col-lg-11 col-md-11'
+                                    : 'col-lg-3 col-md-11'
                                 }
                               >
                                 {editAble ? (

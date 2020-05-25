@@ -5,6 +5,7 @@ import { Link, withRouter } from 'react-router-dom'
 import store from 'store'
 import _ from 'lodash'
 import styles from './style.module.scss'
+import ProfileMenu from './ProfileMenu'
 
 const { SubMenu, Divider } = Menu
 
@@ -70,6 +71,7 @@ class MenuTop extends React.Component {
     const { menuData = [] } = this.props
     const generateItem = item => {
       const { key, title, url, icon, pro, disabled } = item
+      console.log(item)
       if (item.divider) {
         return <Divider key={Math.random()} />
       }
@@ -159,6 +161,9 @@ class MenuTop extends React.Component {
           mode="horizontal"
         >
           {this.generateMenuItems()}
+          <Menu.Item style={{ float: 'right' }}>
+            <ProfileMenu />
+          </Menu.Item>
         </Menu>
       </div>
     )
