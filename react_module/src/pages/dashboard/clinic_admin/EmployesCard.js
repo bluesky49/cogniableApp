@@ -1,5 +1,5 @@
 import React from 'react'
-import { Select, Typography, Button } from 'antd'
+import { Select, Typography, Button, Tooltip } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
 import { useQuery } from 'react-apollo'
@@ -10,7 +10,7 @@ const { Option } = Select
 
 const EMPLOYES = gql`
   query {
-    employee: staffs(first: 2) {
+    employee: staffs {
       edges {
         node {
           id
@@ -24,6 +24,10 @@ const EMPLOYES = gql`
 
 const EmployesCard = ({ style }) => {
   const { loading, data, error } = useQuery(EMPLOYES)
+
+  const onSelectStaff = (id) => {
+    window.location.href = '/#/partners/staffManagement'
+  }
 
   return (
     <div style={{ ...style }}>
@@ -50,33 +54,53 @@ const EmployesCard = ({ style }) => {
                 >
                   Employees
                 </Title>
-                <Select
-                  style={{
-                    width: 200,
-                    height: 40,
-                  }}
-                  size="large"
-                  placeholder="Select  Employee"
-                >
-                  {data.employee.edges.map(({ node }) => {
-                    return <Option key={node.id}>{node.name}</Option>
-                  })}
-                </Select>
+                <Tooltip placement="topRight" title="Click to select employee">
+                  <Select
+                    style={{
+                      width: 200,
+                      height: 40,
+                    }}
+                    size="large"
+                    showSearch
+                    optionFilterProp="name"
+                    onSelect={onSelectStaff}
+                    placeholder="Select  Employee"
+                  >
+                    {data.employee.edges.map(({ node }) => {
+                      return <Option key={node.id} name={node.name}>{node.name}</Option>
+                    })}
+                  </Select>
+                </Tooltip>
               </div>
 
               <div>
-                {data.employee.edges.map(({ node }) => {
-                  return (
-                    <EmployeCard
-                      key={node.key}
-                      name={node.name}
-                      designation={node.designation}
-                      profileImg={node.profileImg}
-                      leaveRequest={node.leaveRequest}
-                      style={{ marginTop: 18 }}
-                    />
-                  )
-                })}
+                {data.employee.edges.length > 3 ?
+                  data.employee.edges.slice(0, 2).map(({ node }) => {
+                    return (
+                      <EmployeCard
+                        key={node.key}
+                        name={node.name}
+                        designation={node.designation}
+                        profileImg={node.profileImg}
+                        leaveRequest={node.leaveRequest}
+                        style={{ marginTop: 18 }}
+                      />
+                    )
+                  })
+                  :
+                  data.employee.edges.map(({ node }) => {
+                    return (
+                      <EmployeCard
+                        key={node.key}
+                        name={node.name}
+                        designation={node.designation}
+                        profileImg={node.profileImg}
+                        leaveRequest={node.leaveRequest}
+                        style={{ marginTop: 18 }}
+                      />
+                    )
+                  })
+                }
               </div>
 
               <div
@@ -88,6 +112,7 @@ const EmployesCard = ({ style }) => {
               >
                 <Button
                   type="link"
+                  href="/#/partners/staffManagement"                  
                   style={{
                     marginTop: 39,
                     fontSize: 18,

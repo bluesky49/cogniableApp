@@ -13,7 +13,7 @@ class SessionInstruction extends Component {
           <p>{propData.session.duration}</p>
         </div>
         <div className={styles.sesTarget}>
-          <p>{propData.session.targets.edgeCount} Target</p>
+          <p>{propData.session.targets.edges.length} Target</p>
         </div>
         {/* change here for trials */}
         <div className={styles.sesTrial}>

@@ -3,6 +3,7 @@
 /* eslint-disable react/jsx-indent-props */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable object-shorthand */
+/* eslint-disable react/destructuring-assignment */
 
 import React from 'react'
 import { Form, Input, Button, Select, DatePicker } from 'antd'
@@ -60,6 +61,7 @@ class BasicInformationForm extends React.Component {
             values: values,
           },
         })
+        this.props.CloseDrawer()
         form.resetFields()
       }
     })
@@ -129,11 +131,13 @@ class BasicInformationForm extends React.Component {
           )}
         </Form.Item>
         <Form.Item label="Date of Diagnosis" style={itemStyle}>
-          {form.getFieldDecorator('dateOfDiagnosis')(<DatePicker />)}
+          {form.getFieldDecorator('dateOfDiagnosis', {
+            rules: [{ message: 'Please provide date of Diagnosis!' }],
+          })(<DatePicker />)}
         </Form.Item>
         <Form.Item label="Clinic Location" style={itemStyle}>
           {form.getFieldDecorator('clinicLocation', {
-            rules: [{ required: true, message: 'Please provide Clinic Location!' }],
+            rules: [{ required: false, message: 'Please provide Clinic Location!' }],
           })(
             <Select placeholder="Select a Clinic location" allowClear>
               {clinicLocationList.map(item => (

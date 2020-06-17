@@ -40,6 +40,15 @@ export async function login(payload) {
           edges {
             node {
               id
+              parentName
+            }
+          }
+        }
+        staffSet{
+          edges {
+            node {
+              id
+              name
             }
           }
         }
@@ -74,7 +83,7 @@ export async function StudentIdFromUserId(payload) {
           students (parent:"${payload}")  {
             edges {
               node {
-                id, firstname,
+                id, parentName,
               }
             }
           }
@@ -92,6 +101,33 @@ export async function StudentIdFromUserId(payload) {
       })
     })
 }
+
+export async function StaffIdFromUserId(payload) {
+  return apolloClient
+    .query({
+      query: gql`{
+          staffs (user:"${payload}")  {
+            edges {
+              node {
+                id, name,
+              }
+            }
+          }
+        }`,
+    })
+    .then(result => {
+      return result
+    })
+    .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
+        })
+      })
+    })
+}
+
 
 export async function GetUserDetailsByUsername(payload) {
   return apolloClient

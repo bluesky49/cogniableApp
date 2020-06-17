@@ -53,7 +53,7 @@ const LearnerCard = ({ style, node, name }) => {
             >
               Student
             </span>
-            <span style={{ color: '#FF5454' }}>Pending leave request</span>
+            <span style={{ color: '#FF5454' }}>{node.category.category}</span>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Form, Input, Button, Select, notification, DatePicker } from 'antd'
 import gql from 'graphql-tag'
+import { useSelector } from 'react-redux'
 import { useMutation, useQuery } from 'react-apollo'
 import moment from 'moment'
 import './appiorMentForm.scss'
@@ -10,14 +11,14 @@ const { Option } = Select
 
 const CREATE_APPIORMENTS = gql`
   mutation CreateAppointment(
-    $therapistId: ID!
-    $studentId: ID!
-    $locationId: ID!
-    $title: String
-    $purposeAssignment: String!
-    $note: String!
-    $start: DateTime!
-    $end: DateTime!
+    $therapistId: ID!,
+    $studentId: ID!,
+    $locationId: ID,
+    $title: String,
+    $purposeAssignment: String!,
+    $note: String,
+    $start: DateTime!,
+    $end: DateTime!,
   ) {
     CreateAppointment(
       input: {
@@ -81,6 +82,10 @@ const ALL_LOCATION = gql`
 `
 
 const AppiorMentForm = ({ setNewAppiormentCreated, form }) => {
+
+  const userRole = useSelector(state => state.user.role)
+  const therapistReduxId = useSelector(state => state.user.staffId)
+
   const { data: allSudent, loading: allSudentLoading } = useQuery(ALL_STUDENT)
 
   const { data: allTherapist, loading: allTherapistLoading } = useQuery(ALL_THERAPIST)
@@ -96,7 +101,7 @@ const AppiorMentForm = ({ setNewAppiormentCreated, form }) => {
     if (createAppiormentsData) {
       notification.success({
         message: 'Clinic Dashboard',
-        description: 'Appiorment create Successfully',
+        description: 'Appointment created Successfully',
       })
       form.resetFields()
       if (setNewAppiormentCreated) {
@@ -109,7 +114,7 @@ const AppiorMentForm = ({ setNewAppiormentCreated, form }) => {
   useEffect(() => {
     if (createAppiormentsError) {
       notification.error({
-        message: 'Somthing want wrong',
+        message: 'Something went wrong!',
         description: createAppiormentsError.message,
       })
     }
@@ -121,12 +126,12 @@ const AppiorMentForm = ({ setNewAppiormentCreated, form }) => {
       if (!error) {
         createAppiorments({
           variables: {
-            therapistId: values.therapist,
+            therapistId: userRole === 'therapist' ? therapistReduxId : values.therapist,
             studentId: values.student,
             title: values.title,
-            locationId: values.location,
+            locationId: values.location ? values.location : '',
             purposeAssignment: values.purposeAssignment,
-            note: values.note,
+            note: values.note ? values.note : "" ,
             start: values.start,
             end: values.end,
           },
@@ -151,12 +156,12 @@ const AppiorMentForm = ({ setNewAppiormentCreated, form }) => {
           })(<Input placeholder="Title" size="large" />)}
         </Form.Item>
 
-        <Form.Item label="Select Student">
+        <Form.Item label="Select Learner">
           {form.getFieldDecorator('student', {
-            rules: [{ required: true, message: 'Please select a student' }],
+            rules: [{ required: true, message: 'Please select a Learner' }],
           })(
             <Select
-              placeholder="Select Student"
+              placeholder="Select Learner"
               size="large"
               loading={allSudentLoading}
               showSearch
@@ -172,29 +177,22 @@ const AppiorMentForm = ({ setNewAppiormentCreated, form }) => {
           )}
         </Form.Item>
 
-        <Form.Item label="Purpose of Assignment">
+        <Form.Item label="Appointment Reason">
           {form.getFieldDecorator('purposeAssignment', {
             rules: [
               {
                 required: true,
-                message: 'Please give the purpose of assignment',
+                message: 'Please give the Appointment Reason',
               },
             ],
-          })(<Input placeholder="Purpose of Assignment" size="large" />)}
+          })(<Input placeholder="Appointment Reason" size="large" />)}
         </Form.Item>
 
         <Form.Item
           label="Location"
           rules={[{ required: true, message: 'Please select a location!' }]}
         >
-          {form.getFieldDecorator('location', {
-            rules: [
-              {
-                required: true,
-                message: 'Please select a location',
-              },
-            ],
-          })(
+          {form.getFieldDecorator('location')(
             <Select
               placeholder="Select Location"
               size="large"
@@ -260,34 +258,37 @@ const AppiorMentForm = ({ setNewAppiormentCreated, form }) => {
           )}
         </Form.Item>
 
-        <Form.Item
-          label="Select Therapist"
-          rules={[{ required: true, message: 'Please select a therapist!' }]}
-        >
-          {form.getFieldDecorator('therapist', {
-            rules: [
-              {
-                required: true,
-                message: 'Please select a Therapist',
-              },
-            ],
-          })(
-            <Select
-              placeholder="Select Therafist"
-              size="large"
-              loading={allTherapistLoading}
-              showSearch
-              optionFilterProp="name"
-            >
-              {allTherapist &&
-                allTherapist.staffs.edges.map(({ node }) => (
-                  <Option key={node.id} name={node.name}>
-                    {node.name}
-                  </Option>
-                ))}
-            </Select>,
-          )}
-        </Form.Item>
+        {userRole === 'therapist' ?
+          ''
+        :
+          <Form.Item
+            label="Select Therapist"
+          >
+            {form.getFieldDecorator('therapist', {
+              rules: [
+                {
+                  required: true,
+                  message: 'Please select a Therapist',
+                },
+              ],
+            })(
+              <Select
+                placeholder="Select Therapist"
+                size="large"
+                loading={allTherapistLoading}
+                showSearch
+                optionFilterProp="name"
+              >
+                {allTherapist &&
+                  allTherapist.staffs.edges.map(({ node }) => (
+                    <Option key={node.id} name={node.name}>
+                      {node.name}
+                    </Option>
+                  ))}
+              </Select>,
+            )}
+          </Form.Item>          
+        }
 
         <Form.Item label="Note">
           {form.getFieldDecorator('note')(
@@ -313,7 +314,7 @@ const AppiorMentForm = ({ setNewAppiormentCreated, form }) => {
               marginBottom: 20,
             }}
           >
-            Create Appiorment
+            Create Appointment
           </Button>
         </Form.Item>
       </Form>

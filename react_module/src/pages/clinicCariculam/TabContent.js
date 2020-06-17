@@ -6,36 +6,39 @@ import DomainBox from './DomainBox'
 import DomainContent from './DomainContent'
 
 const DOMAIN = gql`
-  query domain($programArea: [ID]) {
-    domain(programarea: $programArea) {
-      edges {
-        node {
-          id
-          domain
-          targetArea {
-            edges {
-              node {
-                id
-                Area
-              }
+query domain($programArea: ID!) {
+  programDetails(id: $programArea) {
+      domain
+      {
+        edges {
+            node {
+             id
+             domain
+             targetArea {
+                edges {
+                  node {
+                        id
+                        Area
+                      }
+                    }
+                  }
             }
-          }
-        }
       }
-    }
+      }
   }
+}
 `
 
 const TabContent = ({ programArea }) => {
-  const { data, error, loading } = useQuery(DOMAIN, { variables: { programArea: [programArea] } })
+  const { data, error, loading } = useQuery(DOMAIN, { variables: { programArea: programArea } })
 
   const [selectDomain, setSelectDomain] = useState()
 
   useEffect(() => {
-    if (data) {
-      setSelectDomain(data.domain.edges[0] ? data.domain.edges[0].node : null)
+    if (data && !selectDomain) {
+      setSelectDomain(data.programDetails.domain.edges[0] ? data.programDetails.domain.edges[0].node : null)
     }
-  }, [data])
+  }, [data, selectDomain])
 
   const handleSelectDomain = domain => () => {
     setSelectDomain(domain)
@@ -54,7 +57,7 @@ const TabContent = ({ programArea }) => {
       <Col style={{ maxWidth: 460 }} span={8}>
         {data && (
           <DomainBox
-            domains={data.domain.edges}
+            domains={data.programDetails.domain.edges}
             selectDomain={selectDomain}
             handleSelectDomain={handleSelectDomain}
             programArea={programArea}

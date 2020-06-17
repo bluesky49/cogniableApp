@@ -29,7 +29,7 @@ export default function userReducer(state = initialState, action) {
     case actions.APPEND_LERNERS_LIST:
       return {
         ...state,
-        LearnersList: [...state.LearnersList, action.payload.student],
+        LearnersList: [action.payload.student, ...state.LearnersList],
       }
     case actions.UPDATE_LEARNER_ACTIVE_INACTIVE:
       return {

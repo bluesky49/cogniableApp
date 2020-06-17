@@ -28,7 +28,7 @@ const TargetAreaContent = ({ targetArea, setUpdateTarArea, domainId }) => {
             }
           }
         }
-      }           
+      }
     }
   `
   const { data, loading, error } = useQuery(TARGET_QUERY)
@@ -101,7 +101,7 @@ const TargetAreaContent = ({ targetArea, setUpdateTarArea, domainId }) => {
           )
         })}
       <Drawer
-        width="400px"
+        width="650px"
         visible={newTargetDrawer}
         placement="right"
         onClose={handelNewTargetDrawer}
@@ -127,11 +127,11 @@ const TargetAreaContent = ({ targetArea, setUpdateTarArea, domainId }) => {
         </div>
       </Drawer>
       <Drawer
-        width="400px"
+        width="650px"
         visible={updateTargetDrawer}
         placement="right"
         onClose={handleUpdateTargetDrawer}
-        title="Add New Target"
+        title="Update Target"
       >
         <div
           style={{

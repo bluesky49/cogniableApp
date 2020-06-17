@@ -18,6 +18,10 @@ const LEARNERS = gql`
           firstname
           lastname
           internalNo
+          category {
+            id
+            category
+          }
         }
       }
     }
@@ -26,6 +30,11 @@ const LEARNERS = gql`
 
 const LearnersCard = () => {
   const { data, loading, error } = useQuery(LEARNERS)
+
+  const onStudentSelect = (id) => {
+    localStorage.setItem('studentId', JSON.stringify(id))
+    window.location.href = '/#/therapistStudent'
+  }
 
   return (
     <div
@@ -67,6 +76,7 @@ const LearnersCard = () => {
                   size="large"
                   placeholder="Select Learner"
                   showSearch
+                  onSelect={onStudentSelect}
                   optionFilterProp="name"
                 >
                   {data.students.edges.map(({ node }) => {

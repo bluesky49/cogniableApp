@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Select, Modal, Input, notification, Typography } from 'antd'
+import { Button, Select, Modal, Input, notification, Typography, Tooltip } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
 import { useMutation } from 'react-apollo'
@@ -10,7 +10,7 @@ const { Text } = Typography
 
 const CREATE_TARGET_AREA = gql`
   mutation($domainId: ID!, $name: String!) {
-    addTargetArea(input: { domainId: $domainId, name: $name }) {
+    addTargetArea(input: { domainId: $domainId, name: $name }) {  
       status
       message
       details {
@@ -53,6 +53,10 @@ const DomainContent = ({ targetAreas, domainId }) => {
   const handelCreateTargetArea = () => {
     createTargetArea()
   }
+
+  useEffect(() => {
+    setAllTargetArea(targetAreas)
+  }, [targetAreas])
 
   useEffect(() => {
     if (updateTarArea) {
@@ -106,42 +110,46 @@ const DomainContent = ({ targetAreas, domainId }) => {
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Select
-          placeholder="Target Area"
-          style={{
-            width: 300,
-            borderRadius: 4,
-            marginRight: 38,
-          }}
-          value={selectValue}
-          onChange={handleSelectChange}
-          size="large"
-          showSearch
-          optionFilterProp="name"
-        >
-          {allTargetArea.map(({ node }) => {
-            return (
-              <Option key={node.id} value={node.id} name={node.Area}>
-                {node.Area}
-              </Option>
-            )
-          })}
-        </Select>
-        <Button
-          onClick={handelCreateTargetAreaModel}
-          style={{
-            width: 210,
-            height: 40,
-            background: '#F9F9F9',
-            border: '1px solid #E4E9F0',
-            boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
-            borderRadius: 6,
-            marginLeft: 'auto',
-          }}
-        >
-          <PlusOutlined style={{ fontSize: 20, color: '#000' }} />
-          <Text style={{ fontSize: 16, lineHeight: '22px', color: '#000' }}>Add Target Area</Text>
-        </Button>
+        <Tooltip placement="topRight" title="Click here to add domain">
+          <Select
+            placeholder="Target Area"
+            style={{
+              width: 300,
+              borderRadius: 4,
+              marginRight: 38,
+            }}
+            value={selectValue}
+            onChange={handleSelectChange}
+            size="large"
+            showSearch
+            optionFilterProp="name"
+          >
+            {allTargetArea.map(({ node }) => {
+              return (
+                <Option key={node.id} value={node.id} name={node.Area}>
+                  {node.Area}
+                </Option>
+              )
+            })}
+          </Select>
+        </Tooltip>
+        <Tooltip placement="topRight" title="Click here to add new target area">
+          <Button
+            onClick={handelCreateTargetAreaModel}
+            style={{
+              width: 210,
+              height: 40,
+              background: '#F9F9F9',
+              border: '1px solid #E4E9F0',
+              boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
+              borderRadius: 6,
+              marginLeft: 'auto',
+            }}
+          >
+            <PlusOutlined style={{ fontSize: 20, color: '#000' }} />
+            <Text style={{ fontSize: 16, lineHeight: '22px', color: '#000' }}>Add Target Area</Text>
+          </Button>
+        </Tooltip>
       </div>
       <div style={{ marginTop: 20 }}>
         {selectTargetArea && (

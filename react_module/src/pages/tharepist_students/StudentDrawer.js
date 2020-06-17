@@ -1,5 +1,9 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { Component } from 'react'
-import { Button, Progress, Drawer, Card } from 'antd'
+import { Button, Progress, Drawer, Card, Layout, Row, Col, Typography, Switch, Icon, notification } from 'antd'
+import { Helmet } from 'react-helmet'
+import Authorize from 'components/LayoutComponents/Authorize'
 import { connect } from 'react-redux'
 import { HeartOutlined, CloseOutlined } from '@ant-design/icons'
 import { gql } from 'apollo-boost'
@@ -8,6 +12,11 @@ import styles from './style.module.scss'
 import student from '../../images/student.jpg'
 import childMother from '../../images/childMother.jpg'
 import SessionInstruction from './SessionInstructions'
+import LearnerCard from './LearnerCard'
+import SessionCard from '../parent/ParentDashboard/SessionCard'
+
+const { Content } = Layout
+const { Title, Text } = Typography
 
 @connect(({ user, sessionrecording }) => ({ user, sessionrecording }))
 class StudentDrawer extends Component {
@@ -26,19 +35,11 @@ class StudentDrawer extends Component {
 
   componentDidMount() {
     // const propData = this.props
+    const { areas } = this.props
     const std = JSON.parse(localStorage.getItem('studentId'))
     apolloClient
       .query({
         query: gql`{
-        student(id:"${std}"){programArea{
-          edges{
-            node{
-              id,
-              name
-            }
-          }
-        }
-      }
       GetStudentSession(studentId: "${std}") {
         edges {
           node {
@@ -82,7 +83,6 @@ class StudentDrawer extends Component {
               }
             }
             targets {
-              edgeCount
               edges {
                 node {
                   id
@@ -104,7 +104,7 @@ class StudentDrawer extends Component {
       .then(result => {
         this.setState({
           sessions: result.data.GetStudentSession.edges,
-          programAreaStatus: result.data.student.programArea.edges,
+          programAreaStatus: areas,
         })
       })
       .catch(error => {
@@ -117,17 +117,8 @@ class StudentDrawer extends Component {
     propData.closeDrawer(true)
   }
 
-  handleClick = node => {
+  handleClick = () => {
     // bind the event from here or after setState()
-    // setting program area id to redux store for target allocation
-    const { dispatch } = this.props
-    dispatch({
-      type: 'student/SET_STATE',
-      payload: {
-        ProgramAreaId: node.id,
-      },
-    })
-
     this.setState({
       isSelected: true,
     })
@@ -150,22 +141,18 @@ class StudentDrawer extends Component {
                 : styles.drawerCardItem
             }
             onClick={() => {
-              this.handleClick(propData.programs[i].node)
+              this.handleClick()
             }}
             key={i}
           >
-            <div className={styles.drawercardHeading}>
-              <p>{propData.programs[i].node.name}</p>
-            </div>
-            <div className={styles.drawercardDesc}>
-              <p>
-                Fine Motor skills is a coordination of small muscles, in Movements -Usually
-                involving the synchronisation of hands and fingers with eyes.
-              </p>
-            </div>
-            <div className={styles.drawerProgress}>
-              <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
-            </div>
+            <Card>
+              <div className={styles.drawercardHeading}>
+                <p>{stateData.programAreaStatus[i].node.name}</p>
+              </div>
+              {/* <div className={styles.drawerProgress}> */}
+              <Progress percent={stateData.programAreaStatus[i].node.percentageLong ? stateData.programAreaStatus[i].node.percentageLong : 0} strokeColor="#0059b3" />
+              {/* </div> */}
+            </Card>
           </div>,
         )
       }
@@ -178,45 +165,35 @@ class StudentDrawer extends Component {
     const array = []
     if (stateData.sessions !== undefined) {
       for (let i = 0; i < stateData.sessions.length; i += 1) {
-        array.push(
-          <div className={styles.sesCards} key={i}>
-            <div className={styles.sesImage}>
-              <img src={childMother} alt="not_found" />
-              <div className={styles.imageDesc}>
-                <div className={styles.seslike}>
-                  <div className={styles.sesText}>
-                    <p>{stateData.sessions[i].node.sessionName.name}</p>
-                  </div>
-                  <div className={styles.likeHeart}>
-                    <HeartOutlined style={{ color: '#D4237A' }} size="large" />
-                  </div>
-                </div>
-                <p>{stateData.sessions[i].node.itemRequired}</p>
-              </div>
-            </div>
-            <div className={styles.sesbtn}>
-              <Button
-                type="primary"
-                size="large"
-                className={styles.sesbutton}
-                onClick={() => {
-                  this.openSubDrawer(stateData.sessions[i].node.sessionName.name)
-                }}
-              >
-                Start New Session
-              </Button>
-            </div>
-          </div>,
-        )
+        if (stateData.sessions[i].node.targets.edges.length > 0) {
+          array.push(
+            <SessionCard
+              id={stateData.sessions[i].node.id}
+              sessionName={stateData.sessions[i].node.sessionName.name}
+              duration={stateData.sessions[i].node.duration}
+              hostList={stateData.sessions[i].node.sessionHost.edges}
+              session={stateData.sessions[i].node}
+            />,
+          )
+        }
       }
     }
     return array
   }
 
-  openSubDrawer = name => {
+  openSubDrawer = node => {
+    const { dispatch } = this.props
+
+    dispatch({
+      type: 'sessionrecording/SET_STATE',
+      payload: {
+        SessionId: node.id,
+      },
+    })
+
     this.setState({
       // isSubdrawerOper: true,
-      sessionName: name,
+      sessionName: node.sessionName.name,
       visible: true,
     })
   }
@@ -238,142 +215,231 @@ class StudentDrawer extends Component {
     return {}
   }
 
+  generateNotification = (text) => {
+    notification.warning({
+      message: 'Warning',
+      description: text,
+    })
+  }
+
   render() {
     const propData = this.props
+    console.log('areas: ', propData.areas)
     const stateData = this.state
     const filteredArray = this.getFilteredArray()
+    const checked = false
     return (
       <>
-        <Drawer
-          placement="right"
-          closable={false}
-          maskStyle={{ display: 'flex' }}
-          visible={stateData.visible}
-          width={500}
-        >
-          <SessionInstruction
-            session={filteredArray}
-            closeModal={() => {
-              this.onClose()
-            }}
-          />
-        </Drawer>
-        <div className={styles.drawerBody}>
-          <div className={styles.overlayBody}>
-            <div
-              className={styles.cancel}
-              role="presentation"
-              onClick={() => {
-                this.close()
+        <Authorize roles={['therapist', 'school_admin']} redirect to="/dashboard/beta">
+          <Helmet title="Dashboard Alpha" />
+          <Layout style={{ padding: '0px' }}>
+            <Content
+              style={{
+                padding: '0px',
+                maxWidth: 1300,
+                width: '100%',
+                margin: '0px auto',
               }}
             >
-              <CloseOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
-            </div>
-            <div className={styles.studentAct}>
-              <div className={styles.studentthCard}>
-                <div className={styles.studet}>
-                  <div className={styles.imgcrd}>
-                    <img src={student} alt="not_found" />
+              <Row style={{ width: '100%', margin: 0 }} gutter={[41, 0]}>
+                <Drawer
+                  placement="right"
+                  closable={false}
+                  maskStyle={{ display: 'flex' }}
+                  visible={stateData.visible}
+                  width={500}
+                >
+                  <SessionInstruction
+                    session={filteredArray}
+                    closeModal={() => {
+                      this.onClose()
+                    }}
+                  />
+                </Drawer>
+                <Col span={8}>
+                  <div
+                    style={{
+                      marginLeft: '20px',
+                      background: '#F9F9F9',
+                      borderRadius: 10,
+                      padding: '28px 27px 20px',
+                    }}
+                  >
+                    <LearnerCard
+                      key={propData.student.id}
+                      node={propData.student}
+                      name={propData.student.firstname}
+                      style={{ backgroundColor: 'white' }}
+                      leaveRequest={propData.student.leaveRequest}
+                    />
+                    <div style={{ height: '620px', overflow: 'auto' }}>
+                      <div className={styles.drawerShell}>
+                        <div className={styles.drawerCard}>{this.renderProgramArea()}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className={styles.det}>
-                    <p className={styles.stName}>{propData.student.firstname}</p>
-                    <p className={styles.stAdd}>Newyork, USA</p>
-                  </div>
-                </div>
-                <div className={styles.actbtn}>
-                  <div className={styles.actCon}>
-                    <Button type="primary" ghost style={{ marginTop: '3%', width: '120%' }}>
-                      Contact Student
-                    </Button>
-                  </div>
-                  <div className={styles.actBk}>
-                    <Button
-                      type="primary"
-                      className={styles.actbkcls}
-                      style={{ marginTop: '3%', width: '120%', marginLeft: '24%' }}
+                </Col>
+                <Col span={8}>
+                  <div
+                    style={{
+                      background: '#F9F9F9',
+                      borderRadius: 10,
+                      padding: '28px 27px 28px 27px',
+                    }}
+                  >
+                    <Title style={{ fontSize: 20, lineHeight: '27px' }}>Goals</Title>
+
+                    <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
+                      <a href="/#/target/allocation">
+                        <Title style={{ fontSize: '18px' }}>Long Term Goal</Title>
+                        <Progress
+                          percent={40}
+                          showInfo={false}
+                          strokeColor="#0059b3"
+                          strokeWidth={10}
+                        />
+                      </a>
+                    </Card>
+
+                    <Card style={{ borderRadius: '10px', cursor: 'pointer', marginTop: '10px' }}>
+                      <a href="/#/target/allocation">
+                        <Title style={{ fontSize: '18px' }}>Short Term Goal</Title>
+                        <Progress
+                          percent={40}
+                          showInfo={false}
+                          strokeColor="#0059b3"
+                          strokeWidth={10}
+                        />
+                      </a>
+                    </Card>
+
+                    <Title style={{ fontSize: 20, lineHeight: '27px', marginTop: '20px' }}>
+                      Assessments
+                    </Title>
+
+                    <div
+                      style={{
+                        overflowX: 'scroll',
+                        overflowY: 'hidden',
+                        whiteSpace: 'nowrap'
+                      }}
                     >
-                      Book Apointment
-                    </Button>
-                  </div>
-                </div>
 
-                <div className={styles.drawerShell}>
-                  <div className={styles.drawerCard}>{this.renderProgramArea()}</div>
-                </div>
-              </div>
-            </div>
-            {/* change here */}
+                      <Card
+                        style={{
+                          display: 'inline-block',
+                          borderRadius: '10px',
+                          marginRight: '10px',
+                          cursor: 'pointer'
+                        }}
+                        bodyStyle={{
+                          minHeight: '80px',
+                          minWidth: '250px'
+                        }}
+                        role="presentation"
+                        onClick={
+                          checked
+                            ? () => {
+                              this.generateNotification('PEAK assessment is activated')
+                            }
+                            : () => {
+                              this.generateNotification('PEAK assessment is not activated')
+                            }
+                        }
+                      >
+                        <Title style={{ fontSize: '18px' }}>PEAK</Title>
+                        <Switch
+                          checkedChildren={<Icon type="check" />}
+                          unCheckedChildren={<Icon type="close" />}
+                          onClick={(e) => console.log(e)}
 
-            <div className={styles.terms}>
-              <div className={styles.shrtTrmGoal}>
-                <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
-                  <div className={styles.termCards}>
-                    <div className={styles.termcardHeading}>
-                      <p className={styles.goal}>Short Term Goal</p>
-                      <p className={styles.goalPerc}>61%</p>
-                    </div>
-                    <div className={styles.termcardDesc}>
-                      <p>Jan 5- to March 4</p>
-                    </div>
-                    <div className={styles.termProgress}>
-                      <Progress
-                        percent={40}
-                        showInfo={false}
-                        strokeColor="orange"
-                        strokeWidth={10}
-                      />
-                    </div>
-                  </div>
-                </Card>
-              </div>
-              <div className={styles.lngTrmGoal}>
-                <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
-                  <div className={styles.termCards}>
-                    <div className={styles.termcardHeading}>
-                      <p className={styles.goal}>Short Term Goal</p>
-                      <p className={styles.goalPerc}>61%</p>
-                    </div>
-                    <div className={styles.termcardDesc}>
-                      <p>Jan 5- to March 4</p>
-                    </div>
-                    <div className={styles.termProgress}>
-                      <Progress
-                        percent={40}
-                        showInfo={false}
-                        strokeColor="orange"
-                        strokeWidth={10}
-                      />
-                    </div>
-                  </div>
-                </Card>
-              </div>
-              <div className={styles.behaviourAction}>
-                <p className={styles.behHeader}>Behaviour Assessment</p>
-                <div className={styles.behaviourActionbtn}>
-                  <div className={styles.btnActionone}>
-                    <Button type="primary" size="large" className={styles.behActone}>
-                      PEAK
-                    </Button>
-                  </div>
-                  <div className={styles.btnActiontwo}>
-                    <Button type="primary" size="large" className={styles.behActtwo}>
-                      VB-MAPP
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
+                        />
+                      </Card>
 
-            <div className={styles.sessions}>
-              <div className={styles.sessHeader}>
-                <p>Sessions</p>
-              </div>
-              <div className={styles.sesSHell}>
-                <div className={styles.sessubshell}>{this.renderSessionCards()}</div>
-              </div>
-            </div>
-          </div>
-        </div>
+                      <Card
+                        style={{
+                          display: 'inline-block',
+                          borderRadius: '10px',
+                          marginRight: '10px',
+                          cursor: 'pointer'
+                        }}
+                        bodyStyle={{
+                          minHeight: '80px',
+                          minWidth: '250px'
+                        }}
+                        role="presentation"
+                        onClick={
+                          checked
+                            ? () => {
+                              this.generateNotification('VB-MAPP assessment is activated')
+                            }
+                            : () => {
+                              this.generateNotification('VB-MAPP assessment is not activated')
+                            }
+                        }
+                      >
+                        <Title style={{ fontSize: '18px' }}>VB-MAPP</Title>
+                        <Switch
+                          checkedChildren={<Icon type="check" />}
+                          unCheckedChildren={<Icon type="close" />}
+
+                        />
+                      </Card>
+                      <Card
+                        style={{
+                          display: 'inline-block',
+                          borderRadius: '10px',
+                          marginRight: '10px',
+                          cursor: 'pointer'
+                        }}
+                        bodyStyle={{
+                          minHeight: '80px',
+                          minWidth: '250px'
+                        }}
+                        role="presentation"
+                        onClick={
+                          checked
+                            ? () => {
+                              this.generateNotification('CogniAble assessment is activated')
+                            }
+                            : () => {
+                              this.generateNotification('CogniAble assessment is not activated')
+                            }
+                        }
+                      >
+                        <Title style={{ fontSize: '18px' }}>CogniAble</Title>
+                        <Switch
+                          checkedChildren={<Icon type="check" />}
+                          unCheckedChildren={<Icon type="close" />}
+
+                        />
+                      </Card>
+
+
+                    </div>
+                  </div>
+                </Col>
+                <Col span={8}>
+                  <div
+                    role="presentation"
+                    onClick={() => {
+                      this.close()
+                    }}
+                    style={{ float: 'right' }}
+                  >
+                    <CloseOutlined
+                      style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }}
+                    />
+                  </div>
+                  <Title style={{ fontSize: 20, lineHeight: '27px' }}>Sessions</Title>
+                  <div style={{ height: '650px', overflow: 'auto' }}>
+                    {this.renderSessionCards()}
+                  </div>
+                </Col>
+              </Row>
+            </Content>
+          </Layout>
+        </Authorize>
       </>
     )
   }

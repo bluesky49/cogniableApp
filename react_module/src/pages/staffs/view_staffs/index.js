@@ -6,6 +6,7 @@
 /* eslint-disable react/jsx-closing-tag-location */
 /* eslint-disable react/jsx-indent-props */
 /* eslint-disable react/jsx-indent */
+/* eslint-disable object-shorthand */
 
 import React from 'react'
 import { Helmet } from 'react-helmet'
@@ -182,6 +183,22 @@ class StaffTable extends React.Component {
     this.setState({ divShow: true })
   }
 
+  staffActiveInactive = checked => {
+    const {
+      dispatch,
+      staffs: { StaffProfile },
+    } = this.props
+    console.log(StaffProfile.id, checked)
+
+    dispatch({
+      type: 'staffs/STAFF_ACTIVE_INACTIVE',
+      payload: {
+        id: StaffProfile.id,
+        checked: checked,
+      },
+    })
+  }
+
   selectActiveStatus = value => {
     if (value === 'all') {
       client
@@ -263,6 +280,10 @@ class StaffTable extends React.Component {
     }
   }
 
+  showSession = () => {
+    window.location.href = '/#/partners/staffManagement'
+  }
+
   selectDateRange = value => {
     this.setState({
       isLoaded: true,
@@ -310,12 +331,26 @@ class StaffTable extends React.Component {
         ...this.getColumnSearchProps('name'),
       },
       {
+        title: 'Session',
+        width: 100,
+        key: 'x',
+        fixed: 'left',
+        render: () => (
+          <span>
+            <Button onClick={this.showSession} style={{ color: '#0190fe', border: 'none' }}>
+              Time 
+            </Button>
+          </span>
+        ),
+      },
+      {
         title: 'Email',
         dataIndex: 'email',
         key: 'email',
         width: 250,
         ...this.getColumnSearchProps('email'),
       },
+      
       {
         title: 'Role',
         dataIndex: 'userRole.name',
@@ -395,7 +430,7 @@ class StaffTable extends React.Component {
                   <Button onClick={this.showDrawer}>
                     Add Staff <PlusOutlined />
                   </Button>
-                  <Button>
+                  {/* <Button>
                     Excel <FileExcelOutlined />
                   </Button>
                   <Button>
@@ -403,7 +438,7 @@ class StaffTable extends React.Component {
                   </Button>
                   <Button>
                     Print <PrinterOutlined />
-                  </Button>
+                  </Button> */}
                 </p>
               </div>
             </div>
@@ -488,7 +523,7 @@ class StaffTable extends React.Component {
                       </Button>
                     </div>
                     <div>
-                      <p style={{ textAlign: 'center' }}>
+                      {/* <p style={{ textAlign: 'center' }}>
                         <span style={{ padding: '5px' }}>
                           <ContactsOutlined /> Appointment
                         </span>
@@ -501,7 +536,7 @@ class StaffTable extends React.Component {
                         <span style={{ padding: '5px' }}>
                           <UserOutlined /> Timesheet
                         </span>
-                      </p>
+                      </p> */}
                       <Card style={{ marginTop: '26px', border: 'none' }}>
                         <Meta
                           avatar={
@@ -517,6 +552,29 @@ class StaffTable extends React.Component {
                           title={
                             <h5 style={{ marginTop: '20px' }}>
                               {StaffProfile ? StaffProfile.name : ''}
+                              <span
+                                style={{
+                                  float: 'right',
+                                  fontSize: '12px',
+                                  padding: '5px',
+                                  color: '#0190fe',
+                                }}
+                              >
+                                {StaffProfile.isActive === true ? (
+                                  <Switch
+                                    checkedChildren={<Icon type="check" />}
+                                    unCheckedChildren={<Icon type="close" />}
+                                    defaultChecked
+                                    onChange={this.staffActiveInactive}
+                                  />
+                                ) : (
+                                  <Switch
+                                    checkedChildren={<Icon type="check" />}
+                                    unCheckedChildren={<Icon type="close" />}
+                                    onChange={this.staffActiveInactive}
+                                  />
+                                )}
+                              </span>
                               {/* <span style={{float:'right', fontSize:'12px', padding:'5px'}}>delete</span>
                             <span style={{float:'right', fontSize:'12px', padding:'5px'}}>edit</span> */}
                             </h5>
@@ -575,7 +633,7 @@ class StaffTable extends React.Component {
             onClose={this.onClose}
             visible={this.state.visible}
           >
-            <CreateStaff />
+            <CreateStaff CloseDrawer={this.onClose} />
           </Drawer>
         </div>
       </Authorize>

@@ -89,10 +89,16 @@ main {
   cursor: pointer;
 }
 
+.studentItem:active {
+  transition: transform 0.1s ease-out;
+  box-shadow: 0 5px #e4e9f0;
+  transform: translateY(5px);
+}
+
 .studentItemSelected {
   width: 95%;
   border: 1px solid #e4e9f0;
-  background-color: darkorange !important;
+  background-color: #0059b3 !important;
   color: white !important;
   border-radius: 10px !important;
   outline: none;
@@ -101,7 +107,7 @@ main {
   cursor: pointer;
 }
 // .studentItemSel:active {
-//   background-color: darkorange !important;
+//   background-color: #0059b3 !important;
 //   color: white !important;
 //   border-radius: 10px !important;
 //   outline: none;
@@ -138,12 +144,12 @@ main {
 }
 
 .studentItem:hover {
-  background-color: darkorange !important;
+  background-color: #0059b3 !important;
   color: white !important;
   border-radius: 10px !important;
 }
 .studentItem:focus {
-  background-color: darkorange !important;
+  background-color: #0059b3 !important;
   color: white !important;
   border-radius: 10px !important;
   outline: none;
@@ -467,7 +473,7 @@ main {
 
 .drawerCardItem {
   width: 95%;
-  border: 4px solid #e4e9f0;
+  border: 1px solid #e4e9f0;
   border-radius: 10px;
   margin-top: 5%;
   margin-left: 2.5%;
@@ -475,19 +481,14 @@ main {
   margin-bottom: 4%;
   cursor: pointer;
 }
-
-.drawerCardItem:hover {
-  border: 4px solid darkorange;
-  border-radius: 10px !important;
-}
 .drawerCardItem:focus {
-  border: 4px solid darkorange;
+  border: 4px solid #0059b3;
   border-radius: 10px !important;
   outline: none;
 }
 
 .drawerCardItemSelected {
-  border: 4px solid darkorange;
+  border: 4px solid #0059b3;
   width: 95%;
   border-radius: 10px;
   margin-top: 5%;
@@ -505,8 +506,6 @@ main {
 }
 
 .drawercardHeading p {
-  margin-left: 5%;
-  margin-top: 4%;
   font-weight: bold;
   font-size: 25px;
   color: black;
@@ -536,7 +535,6 @@ main {
 }
 
 .drawercardDesc p {
-  margin-left: 5%;
   font-size: 18px;
   color: darkgray;
   word-wrap: break-word;
@@ -551,8 +549,6 @@ main {
 
 .drawerProgress {
   width: 80%;
-  margin-left: 4%;
-  margin-bottom: 4%;
 }
 
 .termProgress {
@@ -670,7 +666,7 @@ main {
 
 .behActone {
   margin-left: 3%;
-  background-color: darkorange;
+  background-color: #0059b3;
   outline: none;
   font-weight: bold;
   border: none;
@@ -679,7 +675,7 @@ main {
 }
 .behActone:hover {
   margin-left: 3%;
-  background-color: darkorange;
+  background-color: #0059b3;
   outline: none;
   font-weight: bold;
   border: none;
@@ -688,7 +684,7 @@ main {
 }
 .behActone:focus {
   margin-left: 3%;
-  background-color: darkorange;
+  background-color: #0059b3;
   outline: none;
   font-weight: bold;
   border: none;
@@ -698,7 +694,7 @@ main {
 
 .behActtwo {
   margin-left: 80%;
-  background-color: darkorange;
+  background-color: #0059b3;
   outline: none;
   font-weight: bold;
   border: none;
@@ -707,7 +703,7 @@ main {
 }
 .behActtwo:hover {
   margin-left: 80%;
-  background-color: darkorange;
+  background-color: #0059b3;
   outline: none;
   font-weight: bold;
   border: none;
@@ -716,7 +712,7 @@ main {
 }
 .behActtwo:focus {
   margin-left: 80%;
-  background-color: darkorange;
+  background-color: #0059b3;
   outline: none;
   font-weight: bold;
   border: none;
@@ -855,7 +851,7 @@ main {
 .insIcon {
   width: 50%;
   border-radius: 23%;
-  background-color: darkorange;
+  background-color: #0059b3;
   text-align: center;
   align-items: center;
   height: 25px;

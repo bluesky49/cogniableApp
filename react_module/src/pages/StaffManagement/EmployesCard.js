@@ -29,7 +29,10 @@ const EmployesCard = ({ style, activeEm, setActiveEm }) => {
 
   useEffect(() => {
     if (data) {
-      setActiveEm(data.employee.edges[0].node.id)
+      if(data.employee.edges.length > 0)
+      {
+        setActiveEm(data.employee.edges[0].node.id)
+      }     
     }
   }, [data, setActiveEm])
 

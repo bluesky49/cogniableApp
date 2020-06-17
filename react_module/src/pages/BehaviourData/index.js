@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable array-callback-return */
+/* eslint-disable consistent-return */
 /* eslint-disable react/jsx-closing-tag-location */
 import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
@@ -7,6 +10,7 @@ import { useQuery } from 'react-apollo'
 import gql from 'graphql-tag'
 import Calendar from 'components/Calander'
 import Scrollbars from 'react-custom-scrollbars'
+import Search from 'antd/lib/input/Search'
 import BehaviourCard from './BehaviourCard'
 import TemplateForm from './Templateform'
 import TamplateCard from './TamplateCard'
@@ -14,11 +18,10 @@ import CreateDehavrioDrawer from './CreateDehavrioDrawer'
 import UpdateTemplateForm from './UpdateTemplateForm'
 
 const { Content } = Layout
-const { Title } = Typography
-
+const { Title, Text } = Typography
 const BEHAVIOUR_RECORD_DATA = gql`
-  query getDecelData($date: Date!, $studentId: ID!) {
-    getDecelData(template_Student: $studentId, date_Gte: $date, date_Lte: $date) {
+  query getDecelData($date: Date!, $studentId: ID!, $status: ID) {
+    getDecelData(template_Student: $studentId, date_Gte: $date, date_Lte: $date, status: $status) {
       edges {
         node {
           id
@@ -26,9 +29,14 @@ const BEHAVIOUR_RECORD_DATA = gql`
           note
           duration
           template {
+            id
             behavior {
               behaviorName
             }
+          }
+          status {
+            id
+            statusName
           }
           frequency {
             edges {
@@ -72,9 +80,17 @@ const GET_TEMPLETES = gql`
   }
 `
 
+const STUDNET_INFO = gql`
+  query student($studentId: ID!) {
+    student(id: $studentId) {
+      firstname
+    }
+  }
+`
+
 export default () => {
   const [date, setDate] = useState(moment().format('YYYY-MM-DD'))
-  const [newTamplateCreated, setNewTamplateCreated] = useState(false)
+  const [newTamplate, setNewTamplate] = useState(false)
   const [newTampletFromOpen, setNewTamplateFromOpen] = useState(false)
   const [newRecordDrawer, setNewRecordDrawer] = useState(false)
   const studentId = localStorage.getItem('studentId')
@@ -82,8 +98,19 @@ export default () => {
   const [updateTempId, setUpdateTempId] = useState()
   const [viewBehaviorRecordData, setViewBehaviorRecordData] = useState()
   const [newRecord, setNewRecord] = useState()
+  const [deleteTem, setDeleteTem] = useState()
+  const [tamplateList, setTamplateList] = useState()
+  const [filterTemText, setFilterTemText] = useState('')
+  const [updateBehavior, setUpdateBehavior] = useState()
+
+  const { data: studnetInfo } = useQuery(STUDNET_INFO, {
+    variables: {
+      studentId,
+    },
+  })
 
   const { data, loading, error } = useQuery(BEHAVIOUR_RECORD_DATA, {
+    fetchPolicy: 'no-cache',
     variables: {
       studentId,
       date,
@@ -94,7 +121,6 @@ export default () => {
     data: dancleTemplateData,
     error: dancleTemplateError,
     loading: dancleTemplateLoading,
-    refetch: dancleTempleteRefatch,
   } = useQuery(GET_TEMPLETES, {
     variables: {
       studentId,
@@ -102,28 +128,76 @@ export default () => {
   })
 
   useEffect(() => {
+    if (filterTemText.length > 0) {
+      const searchText = filterTemText.trim().toLowerCase()
+      const filteredTem = tamplateList.filter(tem => {
+        return tem.node.behavior.behaviorName.toLowerCase().match(searchText)
+      })
+      setTamplateList(filteredTem)
+    }
+    if (filterTemText.length === 0 && dancleTemplateData) {
+      setTamplateList([...dancleTemplateData.getTemplate.edges])
+    }
+  }, [filterTemText, dancleTemplateData])
+
+  useEffect(() => {
+    if (updateBehavior) {
+      setViewBehaviorRecordData(state => {
+        const newState = state.map(beh => {
+          console.log(updateBehavior)
+          if (beh.node.id === updateBehavior.id) {
+            beh.node = updateBehavior
+          }
+          return beh
+        })
+        return newState
+      })
+    }
+  }, [updateBehavior])
+
+  useEffect(() => {
     if (data) {
-      console.log(data)
       setViewBehaviorRecordData([...data.getDecelData.edges])
     }
   }, [data])
 
-  // need fix
+  useEffect(() => {
+    if (deleteTem) {
+      setTamplateList(state => {
+        return state.filter(({ node }) => node.id !== deleteTem)
+      })
+      setDeleteTem(null)
+      setViewBehaviorRecordData(state => {
+        return state.filter(({ node }) => node.template.id !== deleteTem)
+      })
+    }
+  }, [deleteTem])
+
   useEffect(() => {
     if (newRecord) {
-      setViewBehaviorRecordData(state => {
-        return [...state, newRecord]
-      })
+      if (newRecord.node.date === date) {
+        setViewBehaviorRecordData(state => {  
+          return [newRecord, ...state]
+        })
+      }
     }
   }, [newRecord])
 
   useEffect(() => {
-    if (newTamplateCreated) {
-      dancleTempleteRefatch()
-      setNewTamplateCreated(false)
+    if (dancleTemplateData) {
+      return setTamplateList([...dancleTemplateData.getTemplate.edges])
+    }
+  }, [dancleTemplateData])
+
+  useEffect(() => {
+    if (newTamplate) {
+      setTamplateList(state => {
+        return [newTamplate, ...state]
+      })
+      setNewTamplate(null)
       setNewTamplateFromOpen(false)
     }
-  }, [dancleTempleteRefatch, newTamplateCreated])
+  }, [newTamplate])
 
   const handleSelectDate = newDate => {
     setDate(moment(newDate).format('YYYY-MM-DD'))
@@ -141,12 +215,22 @@ export default () => {
             margin: '0px auto',
           }}
         >
+          {studnetInfo && (
+            <Title
+              style={{
+                marginBottom: 30,
+                fontSize: 25,
+              }}
+            >
+              {studnetInfo.student.firstname}&apos;s Behavior Data
+            </Title>
+          )}
           <Row gutter={[46, 0]}>
             <Col span={16}>
               <Calendar value={date} handleOnChange={handleSelectDate} />
               <div
                 style={{
-                  marginTop: 41,
+                  marginTop: 25,
                 }}
               >
                 <div
@@ -187,7 +271,7 @@ export default () => {
                   lineHeight: '41px',
                 }}
               >
-                {newTampletFromOpen ? 'New Behaviour Templates' : 'Behaviour Templates'}
+                {newTampletFromOpen ? 'New Behavior Templates' : 'Behavior Templates'}
               </Title>
               <div
                 style={{
@@ -204,7 +288,7 @@ export default () => {
                     {newTampletFromOpen ? (
                       <TemplateForm
                         setNewTampletFromOpen={setNewTamplateFromOpen}
-                        setNewTamplateCreated={setNewTamplateCreated}
+                        setNewTamplate={setNewTamplate}
                       />
                     ) : (
                       <div>
@@ -223,28 +307,64 @@ export default () => {
                               height: 'calc(100vh - 320px)',
                               minHeight: 'calc(100vh - 320px)',
                             }}
+                            autoHide
                           >
                             {dancleTemplateError && 'Opps their is something wrong'}
-                            {dancleTemplateData &&
-                              dancleTemplateData.getTemplate.edges.map(({ node }, index) => {
-                                return (
-                                  <TamplateCard
-                                    key={node.id}
-                                    id={node.id}
-                                    behaviourName={node.behavior.behaviorName}
-                                    description={node.behaviorDescription}
-                                    status={node.status.statusName}
-                                    envsNum={node.environment.edges.length}
-                                    setNewRecordDrawer={setNewRecordDrawer}
-                                    style={{
-                                      marginTop: index === 0 ? 0 : 20,
-                                    }}
-                                    setSelectTamplate={setSelectTamplate}
-                                    setTemDataUpdate={setNewTamplateCreated}
-                                    setUpdateTempId={setUpdateTempId}
-                                  />
-                                )
-                              })}
+
+                            <Search
+                              placeholder="search by template name"
+                              size="large"
+                              style={{
+                                width: '99.70%',
+                                marginLeft: 'auto',
+                                marginBottom: 10,
+                                marginRight: 'auto',
+                              }}
+                              value={filterTemText}
+                              onChange={e => setFilterTemText(e.target.value)}
+                            />
+
+                            {tamplateList?.length === 0 && (
+                              <div
+                                style={{
+                                  width: '100%',
+                                  height: '70%',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    textAlign: 'center',
+                                  }}
+                                >
+                                  There is no Behavior Tamplate <br />
+                                  Please create One.
+                                </Text>
+                              </div>
+                            )}
+
+                            {tamplateList?.map(({ node }, index) => {
+                              return (
+                                <TamplateCard
+                                  key={node.id}
+                                  id={node.id}
+                                  behaviourName={node.behavior.behaviorName}
+                                  description={node.behaviorDescription}
+                                  status={node.status.statusName}
+                                  envsNum={node.environment.edges.length}
+                                  setNewRecordDrawer={setNewRecordDrawer}
+                                  style={{
+                                    marginTop: index === 0 ? 0 : 20,
+                                  }}
+                                  setSelectTamplate={setSelectTamplate}
+                                  setDeleteTem={setDeleteTem}
+                                  setUpdateTempId={setUpdateTempId}
+                                />
+                              )
+                            })}
                           </Scrollbars>
                         )}
                         <Button
@@ -292,6 +412,7 @@ export default () => {
                 selectTamplate={selectTamplate}
                 setNewRecord={setNewRecord}
                 setSelectTamplate={setSelectTamplate}
+                setUpdateBehavior={setUpdateBehavior}
               />
             )}
           </Drawer>

@@ -2,7 +2,10 @@ import React from 'react'
 import { Layout, Row, Col, Button, Icon } from 'antd'
 import { Helmet } from 'react-helmet'
 import Authorize from 'components/LayoutComponents/Authorize'
-import InfoCard from 'components/dashboard/InfoCard'
+// import InfoCard from 'components/dashboard/InfoCard'
+import ParentCommunity from 'components/dashboard/ParentCommunity'
+import Doctors from 'components/dashboard/VerifiedDoctors'
+import Acceptance from 'components/dashboard/Acceptence'
 import doctorIcon from 'icons/doctor.png'
 import parentCildIcon from 'icons/parentChild.png'
 import safeGardIcon from 'icons/safeGard.png'
@@ -16,69 +19,69 @@ import TaskCard from './TaskCard'
 
 const { Content } = Layout
 
-const SESSIONS = gql`
-  query sessions($studentId: ID!) {
-    sessions: GetStudentSession(studentId: $studentId) {
-      edges {
-        node {
-          id
-          sessionName {
-            id
-            name
-          }
-          duration
-          sessionHost {
-            edges {
-              node {
-                relationship {
-                  name
-                }
-              }
-            }
-          }
-          targets(first: 2) {
-            edgeCount
+// const SESSIONS = gql`
+//   query sessions($studentId: ID!) {
+//     sessions: GetStudentSession(studentId: $studentId) {
+//       edges {
+//         node {
+//           id
+//           sessionName {
+//             id
+//             name
+//           }
+//           duration
+//           sessionHost {
+//             edges {
+//               node {
+//                 relationship {
+//                   name
+//                 }
+//               }
+//             }
+//           }
+//           targets(first: 2) {
+//             edgeCount
 
-            edges {
-              node {
-                id
-                targetlikeSet {
-                  edgeCount
-                }
-                targetId {
-                  domain {
-                    domain
-                  }
-                }
-                targetAllcatedDetails {
-                  id
-                  targetName
-                }
-              }
-            }
-          }
-          childsessionSet(last: 1) {
-            edges {
-              node {
-                id
-                status
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`
+//             edges {
+//               node {
+//                 id
+//                 targetlikeSet {
+//                   edgeCount
+//                 }
+//                 targetId {
+//                   domain {
+//                     domain
+//                   }
+//                 }
+//                 targetAllcatedDetails {
+//                   id
+//                   targetName
+//                 }
+//               }
+//             }
+//           }
+//           childsessionSet(last: 1) {
+//             edges {
+//               node {
+//                 id
+//                 status
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// `
 
 export default () => {
-  const studentId = localStorage.getItem('studentId')
+  // const studentId = localStorage.getItem('studentId')
 
-  const { data: sessions, error: sessionsError, loading: sessionsLoading } = useQuery(SESSIONS, {
-    variables: {
-      studentId,
-    },
-  })
+  // const { data: sessions, error: sessionsError, loading: sessionsLoading } = useQuery(SESSIONS, {
+  //   variables: {
+  //     studentId,
+  //   },
+  // })
 
   return (
     <Authorize roles={['therapist']} redirect to="/dashboard/beta">
@@ -95,31 +98,22 @@ export default () => {
           <Row style={{ width: '100%', margin: 0 }} gutter={[41, 0]}>
             <Col span={8} style={{ paddingLeft: 0 }}>
               <LearnersCard />
-              <InfoCard
-                title="Acceptance & Commitment"
-                icon={safeGardIcon}
+              <Acceptance
                 style={{
-                  height: 140,
                   margin: 0,
                   marginTop: 20,
                   maxWidth: '100%',
                 }}
               />
-              <InfoCard
-                title="Verified Doctors"
-                icon={doctorIcon}
+              <Doctors
                 style={{
-                  height: 140,
                   margin: 0,
                   marginTop: 20,
                   maxWidth: '100%',
                 }}
               />
-              <InfoCard
-                title="Parent  Community"
-                icon={parentCildIcon}
+              <ParentCommunity
                 style={{
-                  height: 140,
                   margin: 0,
                   marginTop: 20,
                   maxWidth: '100%',
@@ -127,7 +121,7 @@ export default () => {
               />
             </Col>
             <Col span={16} style={{ paddingRight: 0 }}>
-              <div
+              {/* <div
                 style={{
                   minHeight: 374,
                 }}
@@ -194,8 +188,8 @@ export default () => {
                       </div>
                     )
                   })}
-              </div>
-              <AppiorMentsCard style={{ marginTop: 13 }} />
+              </div> */}
+              <AppiorMentsCard style={{ marginTop: 13 }} /> 
               <TasksCard style={{ marginTop: 27 }} />
             </Col>
           </Row>

@@ -22,6 +22,7 @@ export function* GET_DATA({ payload }) {
   const response = yield call(getAllocatedTargets, payload)
 
   if (response) {
+    console.log(response)
     let morning = null
     let afternoon = null
     let evening = null
@@ -48,6 +49,8 @@ export function* GET_DATA({ payload }) {
       })
     }
 
+    console.log(response.data.student)
+
     yield put({
       type: 'sessiontargetallocation/SET_STATE',
       payload: {
@@ -55,7 +58,8 @@ export function* GET_DATA({ payload }) {
         MorningSession: morning,
         AfternoonSession: afternoon,
         EveningSession: evening,
-        FamilyMemberList: response.data.student.family.members.edges,
+        FamilyMemberList: response.data.student.family,
+        AuthStaffList: response.data.student.authStaff
       },
     })
   }
@@ -119,6 +123,8 @@ export function* UPDATE_SESSION_DETAILS({ payload }) {
     // selecting morning session id from store
     sessionObject = yield select(state => state.sessiontargetallocation.EveningSession)
   }
+
+  console.log(payload)
 
   // console.log(payload)
   const response = yield call(updateSessionDetails, {

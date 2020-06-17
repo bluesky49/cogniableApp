@@ -43,7 +43,7 @@ const MealCard = ({ style, behaviorName, time, note, irt, frequently }) => {
             marginRight: 33,
           }}
         >
-          {time}
+          {Math.floor(time / 1000)}s
         </Text>
 
         <Button

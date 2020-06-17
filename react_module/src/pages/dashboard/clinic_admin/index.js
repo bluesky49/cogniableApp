@@ -2,7 +2,10 @@ import React from 'react'
 import { Layout, Row, Col } from 'antd'
 import { Helmet } from 'react-helmet'
 import Authorize from 'components/LayoutComponents/Authorize'
-import InfoCard from 'components/dashboard/InfoCard'
+// import InfoCard from 'components/dashboard/InfoCard'
+import ParentCommunity from 'components/dashboard/ParentCommunity'
+import Doctors from 'components/dashboard/VerifiedDoctors'
+import Acceptance from 'components/dashboard/Acceptence'
 import doctorIcon from 'icons/doctor.png'
 import parentCildIcon from 'icons/parentChild.png'
 import safeGardIcon from 'icons/safeGard.png'
@@ -51,17 +54,13 @@ export default () => {
           {/* Last Row */}
           <Row gutter={[45, 0]} style={{ marginTop: 41 }}>
             <Col xs={24} lg={8}>
-              <InfoCard title="Acceptance & Commitment" icon={safeGardIcon} />
+              <Acceptance />
             </Col>
             <Col xs={24} lg={8}>
-              <InfoCard title="Verified Doctors" icon={doctorIcon} />
+              <Doctors />                
             </Col>
             <Col xs={24} lg={8}>
-              <InfoCard
-                title="Parent  Community"
-                icon={parentCildIcon}
-                style={{ marginRight: 0 }}
-              />
+              <ParentCommunity />
             </Col>
           </Row>
         </Content>

@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable react/jsx-boolean-value */
 import React, { useEffect, useState } from 'react'
 import { Typography, Card, Button, Drawer } from 'antd'
 import gql from 'graphql-tag'
@@ -129,7 +130,7 @@ const TaskCard = ({ style, id, sessionName, duration, hostList, session }) => {
           </Button>
         </div>
       </Card>
-      <Drawer width={500} placement="right" closable={false} onClose={onClose} visible={visible}>
+      <Drawer width={500} placement="right" title="Session Preview" closable={true} onClose={onClose} visible={visible}>
         <SessionInstructionDrawer session={session} />
       </Drawer>
     </div>

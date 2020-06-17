@@ -16,10 +16,11 @@ textarea {
 
 .cardHeader {
   padding: 0;
+  margin-top: 0;
 }
 
 .feed {
-  max-width: rem(1250);
+  max-width: rem(1300);
   margin: 0 auto;
 }
 
@@ -49,7 +50,7 @@ textarea {
 .partition {
   padding-bottom: rem(10);
   margin-bottom: rem(30);
-  border-bottom: 1px solid $gray-border;
+  // border-bottom: 1px solid $gray-border;
 }
 
 .leftPanel {
@@ -125,7 +126,7 @@ textarea {
 }
 
 .sessionBtns {
-  text-align: center;
+  text-align: left;
   margin-bottom: 30px;
 }
 
@@ -188,7 +189,7 @@ textarea {
 
 .shortGoalBtn {
   margin-top: 12px;
-  text-align: center;
+  text-align: right;
 }
 
 .longtGoalBtn {

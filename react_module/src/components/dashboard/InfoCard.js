@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { Row, Col, Typography } from 'antd'
+import { Row, Col, Typography, Button } from 'antd'
 
 const { Text, Paragraph } = Typography
 
 const InfoCard = ({ title, icon, style }) => {
+
   return (
     <div
       style={{
@@ -20,6 +21,7 @@ const InfoCard = ({ title, icon, style }) => {
         ...style,
       }}
     >
+
       <Row type="flex" justify="space-between" style={{ color: '#000' }}>
         <Col span={20}>
           <Text style={{ fontSize: '20px', lineHeight: '27px', color: '#000' }}>{title}</Text>
@@ -31,6 +33,7 @@ const InfoCard = ({ title, icon, style }) => {
       <Paragraph style={{ fontSize: '14px', color: '#000' }}>
         Lorem ipsum dolor sit amet consectetur.
       </Paragraph>
+
     </div>
   )
 }

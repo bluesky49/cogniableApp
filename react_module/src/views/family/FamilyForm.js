@@ -3,7 +3,7 @@ import React, { Fragment } from 'react'
 import { Row, Col, Button, Input, Form, Select, Typography, notification, Modal } from 'antd'
 import { connect } from 'react-redux'
 import { gql } from 'apollo-boost'
-import fatherAndSon from '../../images/fatherAndSon.jpg'
+import fatherAndSon from '../../images/fatherAndSon2.jpg'
 import dawn from '../../icons/dawn.png'
 import afternoonsun from '../../icons/afternoon.svg'
 import moon from '../../icons/moon.png'
@@ -561,7 +561,7 @@ class FamilyBasicForm extends React.Component {
           }}
         >
           <Col>
-            <Text className="time-spend">How much time do you spent with {studentName}</Text>
+            <Text className="time-spend">How much time do you spend with {studentName}?</Text>
             {/* <Paragraph type="secondary" className="how-much-time">
 
             </Paragraph> */}

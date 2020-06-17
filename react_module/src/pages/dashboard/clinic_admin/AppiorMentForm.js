@@ -105,7 +105,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
     if (createAppiormentsData) {
       notification.success({
         message: 'Clinic Dashboard',
-        description: 'Appiorment create Successfully',
+        description: 'Appiontment created Successfully',
       })
       setNewAppiormentCreated(true)
       handelNewAppiormentDrawer()
@@ -116,7 +116,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
   useEffect(() => {
     if (createAppiormentsError) {
       notification.error({
-        message: 'Somthing want wrong',
+        message: 'Something went wrong!',
         description: createAppiormentsError,
       })
     }
@@ -180,16 +180,16 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
         </Form.Item>
 
         <Form.Item
-          label="Purpose of Assignment"
+          label="Appointment Reason"
           rules={[
             {
               required: true,
-              message: 'Please type the purpose of assignment',
+              message: 'Please type the Appointment Reason',
             },
           ]}
         >
           <Input
-            placeholder="Purpose of Assignment"
+            placeholder="Appointment Reason"
             value={purposeAssignment}
             size="large"
             onChange={e => setPurposeAssignment(e.target.value)}
@@ -221,7 +221,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
 
         <Form.Item
           label="Start Time"
-          rules={[{ required: true, message: 'Please select a start time!' }]}
+          rules={[{ required: true, message: 'Please select start time!' }]}
         >
           <DatePicker
             style={{
@@ -240,7 +240,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
 
         <Form.Item
           label="End Time"
-          rules={[{ required: true, message: 'Please select a end time!' }]}
+          rules={[{ required: true, message: 'Please select end time!' }]}
         >
           <DatePicker
             style={{
@@ -300,7 +300,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
               marginBottom: 20,
             }}
           >
-            Create Appiorment
+            Create Appiontment
           </Button>
         </Form.Item>
       </Form>

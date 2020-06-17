@@ -1,8 +1,14 @@
 import { GraphQLClient } from 'graphql-request'
 
-const client = new GraphQLClient('https://development.cogniable.us/apis/graphql', {
+let token = ''
+if (!(localStorage.getItem('token') === null) && localStorage.getItem('token')) {
+  token = JSON.parse(localStorage.getItem('token'))
+}
+
+const client = new GraphQLClient('https://application.cogniable.us/apis/graphql', {
   headers: {
     database: 'india',
+    Authorization: token ? `JWT ${token}` : '',
   },
 })
 

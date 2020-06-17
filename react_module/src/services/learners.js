@@ -5,6 +5,7 @@
 
 import { notification } from 'antd'
 import { gql } from 'apollo-boost'
+import moment from 'moment'
 import apolloClient from '../apollo/config'
 
 export async function getClinicLearners() {
@@ -107,32 +108,38 @@ export async function updateLearner(payload) {
     payload.values.authStaff.map(item => authStaffList.push(`"${item}"`))
   }
 
+  // let date = ''
+  // if (payload.values.dateOfDiagnosis){
+  //   date = moment(payload.values.dateOfDiagnosis).format('YYYY-MM-DD')
+  // }
+
   return apolloClient
     .mutate({
-      mutation: gql`mutation {
+      mutation: gql`mutation UpdateStudent (
+        $date: Date
+        $number: String
+      ) {
             updateStudent(input:{
                 studentData:{
-                    id:"${payload.id}", 
-                    clientId:"${payload.values.clientId}", 
-                    category:"${payload.values.category}", 
-                    email:"${payload.values.email}", 
-                    gender:"${payload.values.gender}", 
+                    id:"${payload.id}",
+                    clientId:"${payload.values.clientId}",
+                    category:"${payload.values.category}",
+                    email:"${payload.values.email}",
+                    gender:"${payload.values.gender}",
                     dob:"${payload.values.dob._d.toISOString().slice(0, 10)}",
-                    dateOfDiagnosis:"${payload.values.dateOfDiagnosis._d
-                      .toISOString()
-                      .slice(0, 10)}", 
-                    clinicLocation:"${payload.values.clinicLocation}", 
-                    firstname:"${payload.values.firstName}", 
-                    lastname:"${payload.values.lastName}", 
+                    dateOfDiagnosis: $date,
+                    clinicLocation:"${payload.values.clinicLocation}",
+                    firstname:"${payload.values.firstName}",
+                    lastname:"${payload.values.lastName}",
                     authStaff:[${authStaffList}],
                     parentName:"${payload.values.parentFirstName}",
-                    parentMobile:"${payload.values.parentMobileNumber}",
+                    parentMobile: $number,
                     ssnAadhar:"${payload.values.ssnCard}",
                     mobileno: "${payload.values.mobileNo}",
                     address: "${payload.values.address}",
                 }
             })
-            { 
+            {
                 student {
                     id,
                     firstname,
@@ -164,10 +171,14 @@ export async function updateLearner(payload) {
                         }
                     },
                     isActive
-                    
+
                 }
             }
         }`,
+        variables: {
+          date: payload.values.dateOfDiagnosis ?  moment(payload.values.dateOfDiagnosis).format('YYYY-MM-DD') : null,
+          number: payload.values.mobileNo
+        }
     })
     .then(result => result)
     .catch(error => {
@@ -181,33 +192,50 @@ export async function updateLearner(payload) {
 }
 
 export async function createLearner(payload) {
-  const authStaffList = []
-  if (payload.values.authStaff.length > 0) {
-    payload.values.authStaff.map(item => authStaffList.push(`"${item}"`))
-  }
+  // const authStaffList = []
+  // if (payload.values.authStaff.length > 0) {
+  //   payload.values.authStaff.map(item => authStaffList.push(`"${item}"`))
+  // }
+  console.log(payload.values)
+
+
 
   return apolloClient
     .mutate({
-      mutation: gql`mutation {
+      mutation: gql`mutation CreateLearner (
+        $clientId: String!,
+        $category: ID!,
+        $email: String!,
+        $gender: String!,
+        $dob: Date!,
+        $dateOfDiagnosis: Date,
+        $clinicLocation: ID,
+        $firstName: String!,
+        $lastName: String,
+        $authStaffList: [ID],
+        $parentFirstName: String!,
+        $parentMobileNumber: String,
+        $ssnCard: String,
+        $mobileNo: String,
+        $address: String
+      ) {
             createStudent(input:{
                 studentData:{
-                    clientId:"${payload.values.clientId}", 
-                    category:"${payload.values.category}", 
-                    email:"${payload.values.email}", 
-                    gender:"${payload.values.gender}", 
-                    dob:"${payload.values.dob._d.toISOString().slice(0, 10)}",
-                    dateOfDiagnosis:"${payload.values.dateOfDiagnosis._d
-                      .toISOString()
-                      .slice(0, 10)}", 
-                    clinicLocation:"${payload.values.clinicLocation}", 
-                    firstname:"${payload.values.firstName}", 
-                    lastname:"${payload.values.lastName}", 
-                    authStaff:[${authStaffList}],
-                    parentName:"${payload.values.parentFirstName}",
-                    parentMobile:"${payload.values.parentMobileNumber}",
-                    ssnAadhar:"${payload.values.ssnCard}",
-                    mobileno: "${payload.values.mobileNo}",
-                    address: "${payload.values.address}",
+                    clientId: $clientId, 
+                    category: $category, 
+                    email: $email, 
+                    gender: $gender, 
+                    dob: $dob,
+                    dateOfDiagnosis: $dateOfDiagnosis, 
+                    clinicLocation: $clinicLocation, 
+                    firstname: $firstName, 
+                    lastname: $lastName, 
+                    authStaff: $authStaffList,
+                    parentName: $parentFirstName,
+                    parentMobile: $parentMobileNumber,
+                    ssnAadhar: $ssnCard,
+                    mobileno:  $mobileNo,
+                    address:  $address,
                 }
             })
             { 
@@ -246,6 +274,23 @@ export async function createLearner(payload) {
                 }
             }
         }`,
+        variables: {
+          clientId: payload.values.clientId,
+          category: payload.values.category,
+          email: payload.values.email,
+          gender: payload.values.gender,
+          dob: moment(payload.values.dob).format('YYYY-MM-DD'),
+          dateOfDiagnosis: payload.values.dateOfDiagnosis ? moment(payload.values.dob).format('YYYY-MM-DD') : null,
+          clinicLocation: payload.values.clinicLocation,
+          firstName: payload.values.firstName,
+          lastName: payload.values.lastName,
+          authStaffList: payload.values.authStaff ? payload.values.authStaff : [],
+          parentFirstName: payload.values.parentFirstName,
+          parentMobileNumber: payload.values.parentMobileNumber,
+          ssnCard: payload.values.ssnCard,
+          mobileNo: payload.values.mobileNo,
+          address: payload.values.address
+        }
     })
     .then(result => result)
     .catch(error => {
@@ -264,15 +309,15 @@ export async function learnerActiveInactive(payload) {
       mutation: gql`mutation {
             updateStudent(input:{
                 studentData:{
-                    id:"${payload.id}", 
+                    id:"${payload.id}",
                     isActive: ${payload.checked}
                 }
             })
-            { 
+            {
                 student {
                     id,
                     isActive
-                    
+
                 }
             }
         }`,

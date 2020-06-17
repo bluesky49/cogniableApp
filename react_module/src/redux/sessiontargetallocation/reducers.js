@@ -3,6 +3,7 @@ import actions from './actions'
 const initialState = {
   AllocatedTargetsList: [],
   FamilyMemberList: [],
+  AuthStaffList: [],
   MorningSession: null,
   AfternoonSession: null,
   EveningSession: null,

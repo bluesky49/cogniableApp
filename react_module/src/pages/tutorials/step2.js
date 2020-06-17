@@ -15,6 +15,7 @@ class TutorialStep2 extends React.Component {
     this.state = {
       isLoading: true,
       currentVideoURL: props.location.videoUrl,
+      currentVideoId: props.location.videoId,
       currentVideoTitle: props.location.videoTitle,
       currentVideoDuration: props.location.videoDuration,
       currentProjectId: props.location.projectId,
@@ -24,19 +25,80 @@ class TutorialStep2 extends React.Component {
   }
 
   componentDidMount() {
-    const { currentProjectId } = this.state
+    const { currentProjectId, currentVideoId } = this.state
+    client
+      .mutate({
+        mutation: gql`mutation{
+    videoStatus(input:{
+        project:"${currentProjectId}",
+        video:"${currentVideoId}",
+        status:"Watching"
+    }){ 
+        result{
+            video,
+            status,
+            user{
+                id,
+                username
+            }
+            project{
+                id,
+                name
+            }
+        }
+    }
+}`,
+      })
+      .then(result => {
+        console.log(JSON.stringify(result))
+        /* let already = false
+        result.data.VimeoVideos.edges.forEach(video => {
+          if (already === false) {
+            switch (video.node.status) {
+              case '1':
+                break
+
+              case '2':
+                this.setState({
+                  continueURL: video.node.url,
+                })
+                already = true
+                break
+
+              case '3':
+                this.setState({
+                  continueURL: video.node.url,
+                })
+                already = true
+                break
+
+              default:
+                console.log('Default')
+                break
+            }
+          }
+        })
+        if (already === false) {
+          this.setState({
+            continueURL: result.data.VimeoVideos.edges[0].node.url,
+          })
+        } */
+      })
+      .catch(err => console.log(err))
     this.getUpcomingVideos(currentProjectId)
   }
 
   getUpcomingVideos = projectId => {
-    fetch(`https://api.vimeo.com/users/100800066/projects/${projectId}/videos`, {
-      method: 'GET',
-      page: 1,
-      headers: new Headers({
-        'Content-Type': 'application/vnd.vimeo.*+json',
-        Authorization: 'Bearer 57fe5b03eac21264d45df680fb335a42',
-      }),
-    })
+    fetch(
+      `https://api.vimeo.com/users/100800066/projects/${projectId}/videos?sort=last_user_action_event_date&page=1`,
+      {
+        method: 'GET',
+        headers: new Headers({
+          'Content-Type': 'application/vnd.vimeo.*+json',
+          Authorization: 'Bearer 57fe5b03eac21264d45df680fb335a42',
+        }),
+      },
+    )
       .then(res => res.json())
       .then(res => {
         console.log(res.data)
@@ -96,6 +158,7 @@ class TutorialStep2 extends React.Component {
       currentVideoDesription,
     } = this.state
 
+    console.log(currentVideoURL)
     const { location } = this.props
     if (isLoading) {
       return <div>Loading....</div>
@@ -107,7 +170,7 @@ class TutorialStep2 extends React.Component {
             <div className="col-sm-12 col-md-7">
               <div className="row mb-5">
                 <div className="col-sm-12 col-md-12">
-                  <ReactPlayer url={currentVideoURL} width="100%" />
+                  <ReactPlayer url={currentVideoURL} controls width="100%" />
                 </div>
               </div>
               <div className="row">
@@ -155,6 +218,7 @@ class TutorialStep2 extends React.Component {
                             currentVideoTitle: video.name,
                             currentVideoDuration: this.secondsToHms(video.duration),
                           })
+                          window.scrollTo(0, 0)
                           this.getUpcomingVideos(currentProjectId)
                         }}
                         onKeyDown={this.handleKeyDown}

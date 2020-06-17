@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Typography } from 'antd'
+import { Typography, DatePicker } from 'antd'
 import { range } from 'ramda'
 import moment from 'moment'
 import { usePrevious } from 'react-delta'
@@ -51,7 +51,7 @@ const constructDate = (mainDateStr, day) => {
   return newDate
 }
 
-const Calander = ({ value, handleOnChange }) => {
+const Calander = ({ value, handleOnChange, style }) => {
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
   const [selectDate, setSelectDate] = useState(moment(value).date())
   const thisWeekDate = useRef(inRange(moment(value).day(), moment(value).date()))
@@ -71,63 +71,89 @@ const Calander = ({ value, handleOnChange }) => {
       style={{
         background: '#F9F9F9',
         borderRadius: 10,
-        padding: '20px 30px',
-        display: 'flex',
-        justifyContent: 'center',
+        padding: '15px 30px',
+        ...style,
       }}
     >
-      {days.map((day, index) => {
-        const date = thisWeekDate.current[index]
-        return (
-          <button
-            key={day}
-            type="button"
-            className="calEle"
-            style={{
-              background: date === selectDate ? '#E58425' : 'none',
-              borderRadius: 10,
-              width: 100,
-              height: 100,
-              paddingTop: 10,
-              display: 'fex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-            onClick={() => {
-              const newDate = constructDate(value, date)
-              handleOnChange(newDate)
-            }}
-          >
-            <Text
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 15,
+          maxWidth: 640,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
+      >
+        <Text style={{ fontSize: 20, color: '#000', fontWeight: 600 }}>Select By Date</Text>
+        <DatePicker
+          defaultValue={moment(value, 'YYYY-MM-DD')}
+          style={{
+            width: '190px',
+          }}
+          size="large"
+          value={moment(value)}
+          onChange={newDate => {
+            handleOnChange(moment(newDate).format('YYYY-MM-DD'))
+          }}
+          allowClear={false}
+        />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        {days.map((day, index) => {
+          const date = thisWeekDate.current[index]
+          return (
+            <button
+              key={day}
+              type="button"
+              className="calEle"
               style={{
-                fontSize: 18,
-                fontWeight: 600,
-                lineHeight: '25px',
-                display: 'block',
-                textAlign: 'center',
-                color: date === selectDate ? '#fff' : '#000',
+                background: date === selectDate ? '#E58425' : 'none',
+                borderRadius: 10,
+                width: 100,
+                height: 100,
+                paddingTop: 10,
+                display: 'fex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                const newDate = constructDate(value, date)
+                handleOnChange(newDate)
               }}
             >
-              {day}
-            </Text>
-            <Text
-              style={{
-                fontSize: 30,
-                lineHeight: '41px',
-                textAlign: 'center',
-                display: 'block',
-                fontWeight: 600,
-                color: date === selectDate ? '#fff' : '#000',
-                marginTop: 14,
-              }}
-            >
-              {date}
-            </Text>
-          </button>
-        )
-      })}
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  lineHeight: '25px',
+                  display: 'block',
+                  textAlign: 'center',
+                  color: date === selectDate ? '#fff' : '#000',
+                }}
+              >
+                {day}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 30,
+                  lineHeight: '41px',
+                  textAlign: 'center',
+                  display: 'block',
+                  fontWeight: 600,
+                  color: date === selectDate ? '#fff' : '#000',
+                  marginTop: 14,
+                }}
+              >
+                {date}
+              </Text>
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }

@@ -1,3 +1,7 @@
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-tag-spacing */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable array-callback-return */
 import React, { PureComponent } from 'react'
 import {
   Menu,
@@ -11,16 +15,31 @@ import {
   Modal,
   Card,
   Icon,
+  Layout,
+  Row,
+  Col,
+  Input,
+  Typography,
+  notification,
+  Empty,
 } from 'antd'
 import { DownOutlined, ArrowRightOutlined } from '@ant-design/icons'
+import { Helmet } from 'react-helmet'
+import Authorize from 'components/LayoutComponents/Authorize'
 import { gql } from 'apollo-boost'
 import { connect } from 'react-redux'
 import apolloClient from '../../apollo/config'
 import styles from './style.module.scss'
 import studentImg from '../../images/student.jpg'
 import StudentDrawer from './StudentDrawer'
-import StudentProgramLinks from './studentProgramLinks'
-import DataRecording from './DataRecordingTh'
+import LearnerCard from './LearnerCard'
+import LearnerDetailsCard from './LearnerDetailsCard'
+import DailyVitalsCard from './DailyVitalsCard'
+import DataRecordingCards from './DataRecordingCards'
+
+const { Content } = Layout
+const { Title, Text } = Typography
+const { Search } = Input
 
 @connect(({ student }) => ({ student }))
 class TharepistStudents extends PureComponent {
@@ -34,7 +53,6 @@ class TharepistStudents extends PureComponent {
       visible: true,
       programArea: [],
       programAreaStatus: [],
-      show: false,
       selectedArea: '',
       isPresent: false,
     }
@@ -46,12 +64,14 @@ class TharepistStudents extends PureComponent {
       .query({
         query: gql`
           query {
-            students(authStaff_Id: "U3RhZmZUeXBlOjIxOQ==") {
+            students {
               edges {
                 node {
                   id
                   firstname
                   internalNo
+                  mobileno
+                  email
                   parent {
                     id
                     username
@@ -59,6 +79,19 @@ class TharepistStudents extends PureComponent {
                   school {
                     id
                   }
+                  category {
+                    id
+                    category
+                  }
+                }
+              }
+            }
+            programArea {
+              edges {
+                node {
+                  id
+                  name
+                  percentageLong
                 }
               }
             }
@@ -66,87 +99,70 @@ class TharepistStudents extends PureComponent {
         `,
       })
       .then(qresult => {
-        apolloClient
-          .query({
-            query: gql`
-              query {
-                programArea(school: "U2Nob29sVHlwZTo4") {
-                  edges {
-                    node {
-                      id
-                      name
-                    }
-                  }
-                }
-              }
-            `,
-          })
-          .then(presult => {
-            const storage = localStorage.getItem('studentId')
-            if (storage !== null) {
-              apolloClient
-                .query({
-                  query: gql`
+        const storage = localStorage.getItem('studentId')
+        if (storage !== null && storage !== '') {
+          apolloClient
+            .query({
+              query: gql`
                     query {
                       student(id: ${storage}) {
                         programArea {
                           edges {
                             node {
-                              id
-                              name
+                              id,
+                              name,
+                              percentageLong
                             }
                           }
                         }
                       }
                     }
                   `,
-                })
-                .then(iniResult => {
-                  const result = storage.substring(1, storage.length - 1)
-                  // pass result below
-                  const refinedArray = this.move(qresult.data.students.edges, result)
-                  this.setState({
-                    programAreaStatus: iniResult.data.student.programArea.edges,
-                    students: refinedArray,
-                    programArea: presult.data.programArea.edges,
-                    isPresent: true,
-                    selectedNode: refinedArray[0].node,
-                  })
-                })
-                .catch(error => {
-                  console.log(error)
-                })
-            } else {
+            })
+            .then(iniResult => {
+              const result = storage.substring(1, storage.length - 1)
+              // pass result below
+              const refinedArray = this.move(qresult.data.students.edges, result)
               this.setState({
-                students: qresult.data.students.edges,
-                programArea: presult.data.programArea.edges,
+                programAreaStatus: iniResult.data.student.programArea.edges,
+                students: refinedArray,
+                prevData: refinedArray,
+                programArea: qresult.data.programArea.edges,
+                isPresent: true,
+                selectedNode: refinedArray[0].node,
               })
-            }
+            })
+            .catch(error => {
+              console.log(error)
+            })
+        } else {
+          this.setState({
+            students: qresult.data.students.edges,
+            prevData: qresult.data.students.edges,
+            programArea: qresult.data.programArea.edges,
           })
-          .catch(error => {
-            console.log(error)
-          })
+        }
       })
       .catch(error => {
         console.log(error)
       })
   }
 
-  renderStudents = () => {
-    const students = []
-    for (let i = 0; i < 6; i += 1) {
-      students.push(
-        <div className={styles.stuImg} key={i}>
-          <img src={studentImg} alt="not_found" />
-          <p>Elliot Alderson</p>
-        </div>,
-      )
-    }
-    return students
-  }
+  // renderStudents = () => {
+  //   const students = []
+  //   for (let i = 0; i < 6; i += 1) {
+  //     students.push(
+  //       <div className={styles.stuImg} key={i}>
+  //         <img src={studentImg} alt="not_found" />
+  //         <p>Elliot Alderson</p>
+  //       </div>,
+  //     )
+  //   }
+  //   return students
+  // }
 
   setClickHandler = node => {
-    console.log('===> cliked', node.id)
+    // console.log('===> cliked', node.id)
     // setting student id to local storage for further operations
     localStorage.setItem('studentId', JSON.stringify(node.id))
     // getting student program area
@@ -157,7 +173,8 @@ class TharepistStudents extends PureComponent {
           edges{
             node{
               id,
-              name
+              name,
+              percentageLong
             }
           }
         }
@@ -171,6 +188,7 @@ class TharepistStudents extends PureComponent {
           selectedNode: node,
           isPresent: false,
         })
+        
       })
       .catch(error => {
         console.log(error)
@@ -187,6 +205,14 @@ class TharepistStudents extends PureComponent {
     return data
   }
 
+  filter = (data, name) => {
+    return data.filter(function(el) {
+      return (
+        el.node.firstname !== null && el.node.firstname.toUpperCase().includes(name.toUpperCase())
+      )
+    })
+  }
+
   renderStudentCards = () => {
     const stateData = this.state
     const cards = []
@@ -196,27 +222,18 @@ class TharepistStudents extends PureComponent {
         cards.push(
           <>
             <div
-              className={
-                stateData.isPresent && i === 0 ? styles.studentItemSelected : styles.studentItem
-              }
               role="presentation"
-              tabIndex={`-${i}`}
               onClick={() => {
                 this.setClickHandler(stateData.students[i].node)
               }}
             >
-              <div className={styles.studentDesc}>
-                <div className={styles.studentProfile}>
-                  <img src={studentImg} alt="not_found" />
-                </div>
-                <div className={styles.studentName}>
-                  <p className={styles.name}>{stateData.students[i].node.firstname}</p>
-                  <div className={styles.category}>
-                    <p className={styles.categoryName}>Student</p>
-                    {/* <p className={styles.request}>Pending leave request</p> */}
-                  </div>
-                </div>
-              </div>
+              <LearnerCard
+                key={stateData.students[i].node.id}
+                node={stateData.students[i].node}
+                name={stateData.students[i].node.firstname}
+                style={{ marginTop: 18 }}
+                leaveRequest={stateData.students[i].node.leaveRequest}
+              />
             </div>
           </>,
         )
@@ -263,11 +280,37 @@ class TharepistStudents extends PureComponent {
         `,
       })
       .then(presult => {
+      //   apolloClient
+      //   .query({
+      //     query: gql`{
+      //       studentProgramArea(studentId:"${stateData.selectedNode.id}") 
+      //       {
+      //           id
+      //           name
+      //           description
+      //           percentageLong
+               
+      //   }
+      // }`,
+      //   })
+      //   .then(rrrr => {
+      //     console.log("hellodajskdasjda" ,rrrr)
+      //   })
+      //   .catch(error => {
+      //     console.log(error)
+      //   })
+        
+
         if (checked) {
+          notification.success({
+            message: 'Success',
+            description: 'Program Area Activated Successfully',
+          })
           const obj = {
             node: {
               id: `${selectedArea.id}`,
               name: `${selectedArea.name}`,
+              percentageLong: 0,
             },
           }
           const newNode = stateData.programAreaStatus
@@ -278,12 +321,28 @@ class TharepistStudents extends PureComponent {
             isDrawer: false,
             isPresent: false,
           })
+          this.forceUpdate()
         } else {
+          notification.success({
+            message: 'Success',
+            description: 'Program Area Deactivated Successfully',
+          })
+          const arr = stateData.programAreaStatus
+          const removeIndex = arr.map(item => {
+            return item.node.id
+          })
+          const index = removeIndex.indexOf(`${selectedArea.id}`)
+
+          // remove object
+          arr.splice(index, 1)
+
           this.setState({
+            programAreaStatus: arr,
             // isClicked: true,
             isDrawer: false,
             isPresent: false,
           })
+          this.forceUpdate()
         }
       })
       .catch(error => {
@@ -304,22 +363,10 @@ class TharepistStudents extends PureComponent {
     return false
   }
 
-  handleOk = e => {
-    console.log(e)
-    this.setState({
-      show: false,
-    })
-  }
-
   showModal = () => {
-    this.setState({
-      show: true,
-    })
-  }
-
-  handleCancel = e => {
-    this.setState({
-      show: false,
+    notification.warning({
+      message: 'Warning',
+      description: 'This program area is not activated ',
     })
   }
 
@@ -343,38 +390,28 @@ class TharepistStudents extends PureComponent {
                     this.showModal()
                   }
             }
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid #E4E9F0',
+              boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
+              borderRadius: 10,
+              padding: '16px 12px',
+              alignItems: 'center',
+              display: 'inline-block',
+            }}
           >
             <div className={styles.detailcardHeading}>
               <p>{stateData.programArea[i].node.name}</p>
               <div className={styles.toggle}>
-                {checked ? (
-                  <Switch
-                    checkedChildren={<Icon type="check" />}
-                    unCheckedChildren={<Icon type="close" />}
-                    defaultChecked
-                    onClick={(checkedUser, event) => {
-                      this.handleToggle(checkedUser, event, stateData.programArea[i].node)
-                    }}
-                  />
-                ) : (
-                  <Switch
-                    checkedChildren={<Icon type="check" />}
-                    unCheckedChildren={<Icon type="close" />}
-                    onClick={(checkedUser, event) => {
-                      this.handleToggle(checkedUser, event, stateData.programArea[i].node)
-                    }}
-                  />
-                )}
+                <Switch
+                  checkedChildren={<Icon type="check" />}
+                  unCheckedChildren={<Icon type="close" />}
+                  checked={checked}
+                  onClick={(checkedUser, event) => {
+                    this.handleToggle(checkedUser, event, stateData.programArea[i].node)
+                  }}
+                />
               </div>
-            </div>
-            <div className={styles.detcardDesc}>
-              <p>
-                Fine Motor skills is a coordination of small muscles, in Movements -Usually
-                involving the synchronisation of hands and fingers with eyes.
-              </p>
-            </div>
-            <div className={styles.detProgress}>
-              <Progress percent={40} showInfo={false} strokeColor="orange" strokeWidth={10} />
             </div>
           </div>,
         )
@@ -385,48 +422,34 @@ class TharepistStudents extends PureComponent {
 
   renderDetail = () => {
     const data = this.state
-    // const storageData = localStorage.getItem('studentId')
     // const refinedArray = this.move(data.students, storageData)
 
-    if (data.isPresent) {
+    const cardStyle = {
+      background: '#F9F9F9',
+      borderRadius: 10,
+      padding: '28px 27px 20px',
+      marginTop: '2%',
+      marginBottom: '2%',
+      display: 'flex',
+      flexWrap: 'nowrap',
+      overflowX: 'auto',
+      width: '100%',
+    }
+
+    if (data.isPresent && data.students[0] !== undefined) {
       return (
         <>
-          <div className={styles.detailHeader}>
-            <div className={styles.detailImg}>
-              <img src={studentImg} alt="not_found" />
-            </div>
-            <div className={styles.NameAdd}>
-              <p className={styles.detName}>{data.students[0].node.firstname}</p>
-              <p className={styles.Add}>Newyork, USA</p>
-            </div>
-            <div className={styles.actionone}>
-              <Button size="large" style={{ color: 'black' }}>
-                Contact Student
-              </Button>
-            </div>
-            <div className={styles.actiontwo}>
-              <a href="/#/appointmentData/">
-                <Button
-                  type="primary"
-                  style={{ backgroundColor: 'darkblue', fontSize: '20px', height: '40%' }}
-                >
-                  Book Apointment
-                </Button>
-              </a>
-            </div>
-          </div>
-          <div className={styles.detCardone}>{this.renderProgramArea()}</div>
-          <div className={styles.mealCards}>
-            <div className={styles.dataRecording}>
-              <p>Data Recording</p>
-              <div className={styles.detailCardtwo}>
-                <DataRecording />
-              </div>
-            </div>
-            <div className={styles.detailMealCard}>
-              <StudentProgramLinks />
-            </div>
-          </div>
+          <LearnerDetailsCard node={data.students[0].node} style={{ marginTop: 1 }} />
+
+          <div style={cardStyle}>{this.renderProgramArea()}</div>
+          <Row>
+            <Col span={12}>
+              <DailyVitalsCard />
+            </Col>
+            <Col span={12}>
+              <DataRecordingCards />
+            </Col>
+          </Row>
         </>
       )
     }
@@ -434,40 +457,22 @@ class TharepistStudents extends PureComponent {
     if (!data.isDrawer) {
       return (
         <>
-          <div className={styles.detailHeader}>
-            <div className={styles.detailImg}>
-              <img src={studentImg} alt="not_found" />
-            </div>
-            <div className={styles.NameAdd}>
-              <p className={styles.detName}>{data.selectedNode.firstname}</p>
-              <p className={styles.Add}>Newyork, USA</p>
-            </div>
-            <div className={styles.actionone}>
-              <Button size="large" style={{ color: 'black' }}>
-                Contact Student
-              </Button>
-            </div>
-            <div className={styles.actiontwo}>
-              <Button
-                type="primary"
-                style={{ backgroundColor: 'darkblue', fontSize: '20px', height: '40%' }}
-              >
-                Book Apointment
-              </Button>
-            </div>
-          </div>
-          <div className={styles.detCardone}>{this.renderProgramArea()}</div>
-          <div className={styles.mealCards}>
-            <div className={styles.dataRecording}>
-              <p>Data Recording</p>
-              <div className={styles.detailCardtwo}>
-                <DataRecording />
-              </div>
-            </div>
-            <div className={styles.detailMealCard}>
-              <StudentProgramLinks />
-            </div>
-          </div>
+          {localStorage.getItem('studentId') !== '' ? (
+            <>
+              <LearnerDetailsCard node={data.selectedNode} style={{ marginTop: 1 }} />
+              <div style={cardStyle}>{this.renderProgramArea()}</div>
+              <Row>
+                <Col span={12}>
+                  <DailyVitalsCard />
+                </Col>
+                <Col span={12}>
+                  <DataRecordingCards />
+                </Col>
+              </Row>
+            </>
+          ) : (
+            ''
+          )}
         </>
       )
     }
@@ -479,14 +484,17 @@ class TharepistStudents extends PureComponent {
           // onClose={this.onClose}
           visible={data.visible}
           width="100%"
+          key={Math.random()}
         >
           <StudentDrawer
+            key={Math.random()}
             programs={data.programArea}
             closeDrawer={() => {
               this.closeDrawer()
             }}
             student={data.selectedNode}
             selectedArea={data.selectedArea}
+            areas={data.programAreaStatus}
           />
         </Drawer>
       )
@@ -527,43 +535,65 @@ class TharepistStudents extends PureComponent {
     })
   }
 
+  filterLearnerData = e => {
+    const stateData = this.state
+    if (e.target.value === '') {
+      this.setState({
+        students: stateData.prevData,
+      })
+    } else {
+      const filteredArray = this.filter(stateData.students, e.target.value)
+      this.setState({
+        students: filteredArray,
+      })
+    }
+  }
+
   render() {
     const stateData = this.state
+    const checkStudnetOnLocalStorage = localStorage.getItem('studentId')
     return (
-      <>
-        <Modal
-          title="Program Modal"
-          visible={stateData.show}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-        >
-          <p>Please activate the Program Area</p>
-        </Modal>
-        <div className={styles.mainBody}>
-          <div className={styles.studentList}>
-            <div className={styles.studentType}>
-              <p>Recent Students</p>
-              <div className={styles.studentImages}>{this.renderStudents()}</div>
-            </div>
-            <div className={styles.students}>
-              <div className={styles.stuHeader}>
-                <p>Students</p>
-              </div>
-            </div>
-            <div className={styles.studentCards}>{this.renderStudentCards()}</div>
-            <div className={styles.addStudent}>
-              <Button
-                type="primary"
-                ghost
-                style={{ marginTop: '3%', fontSize: '20px', height: '40%', width: '140%' }}
-              >
-                Add New Student
-              </Button>
-            </div>
-          </div>
-          <div className={styles.studentDetail}>{this.renderDetail()}</div>
-        </div>
-      </>
+      <Authorize roles={['therapist', 'school_admin']} redirect to="/dashboard/beta">
+        <Helmet title="Dashboard Alpha" />
+        <Layout style={{ padding: '0px' }}>
+          <Content
+            style={{
+              padding: '0px',
+              maxWidth: 1300,
+              width: '100%',
+              margin: '0px auto',
+            }}
+          >
+            <Row style={{ width: '100%', margin: 0 }} gutter={[41, 0]}>
+              <Col span={8} style={{ paddingLeft: 0 }}>
+                <Title
+                  style={{
+                    fontSize: 20,
+                    lineHeight: '27px',
+                  }}
+                >
+                  Learners
+                </Title>
+                <Search
+                  placeholder="Search learner from the list"
+                  onChange={e => {
+                    this.filterLearnerData(e)
+                  }}
+                  style={{ width: '100%' }}
+                />
+                <div style={{ height: '660px', overflow: 'auto' }}>{this.renderStudentCards()}</div>
+              </Col>
+              <Col span={16} style={{ paddingRight: 0 }}>
+                {checkStudnetOnLocalStorage ? 
+                  this.renderDetail()
+                  :
+                  <Empty />
+                }
+              </Col>
+            </Row>
+          </Content>
+        </Layout>
+      </Authorize>
     )
   }
 }

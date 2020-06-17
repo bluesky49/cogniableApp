@@ -1,43 +1,13 @@
 import React, { Component } from 'react'
-import { Button } from 'antd'
+import { Button, Typography } from 'antd'
 import { UserOutlined, DatabaseOutlined, FileTextOutlined } from '@ant-design/icons'
 import styles from './style.module.scss'
-import student from '../../../images/student.jpg'
+import student from './images/taskCardHero.jpg'
+
+const { Title, Text } = Typography
 
 class SessionInstruction extends Component {
-  renderInsDuration = () => {
-    const propData = this.props
-    return (
-      <div className={styles.sesDuration}>
-        <div className={styles.sestime}>
-          <p>{propData.session.duration}</p>
-        </div>
-        <div className={styles.sesTarget}>
-          <p>{propData.session.targets.edges.length} Target</p>
-        </div>
-        <div className={styles.sesTrial}>
-          <p>{propData.session.targets.edges.length} Trials</p>
-        </div>
-      </div>
-    )
-  }
 
-  renderItemRequired = () => {
-    const propData = this.props
-    return (
-      <div className={styles.sesItemReq}>
-        <div className={styles.sessionHostHeader}>
-          <div className={styles.sessionHostHeaderIcon}>
-            <DatabaseOutlined style={{ color: 'darkorange', fontSize: '22px' }} />
-          </div>
-          <div className={styles.sessionHostHeaderText}>
-            <p>Item Required</p>
-          </div>
-        </div>
-        <div className={styles.sessionHostText}>{propData.session.itemRequired}</div>
-      </div>
-    )
-  }
 
   renderInsList = () => {
     const propData = this.props
@@ -52,32 +22,13 @@ class SessionInstruction extends Component {
               </div>
             </div>
             <div className={styles.insIconText}>
-              <p>{propData.session.instruction.edges[i].node.instruction}</p>
+              <p style={{marginTop:'3px'}}>{propData.session.instruction.edges[i].node.instruction}</p>
             </div>
           </div>
         </div>,
       )
     }
     return itemArray
-  }
-
-  renderInstruction = () => {
-    return (
-      <div className={styles.sesIns}>
-        <div className={styles.sessionHostHeader}>
-          <div className={styles.sessionHostHeaderIcon}>
-            <FileTextOutlined style={{ color: 'darkorange', fontSize: '22px' }} />
-          </div>
-          <div className={styles.sessionHostHeaderText}>
-            <p>Instructions</p>
-          </div>
-        </div>
-        <div className={styles.sessionHostText}>
-          This is a short brief about the assessment & why it matters.
-        </div>
-        {this.renderInsList()}
-      </div>
-    )
   }
 
   renderSessionHost = () => {
@@ -90,36 +41,56 @@ class SessionInstruction extends Component {
   }
 
   render() {
+    const { session } = this.props;
+    console.log(session)
     return (
       <>
-        <div className={styles.subsesshell}>
-          <div className={styles.subSesHeading}>
-            <p>Session Preview</p>
+        <img
+          src={student}
+          alt=""
+          style={{
+            height: 124,
+            width: '100%',
+            borderRadius: 10,
+          }}
+        />
+        <div style={{ padding: '30px' }}>
+          <Text style={{ color: '#0B35B3', marginTop: '20px', fontSize: '20px' }}>
+            {session.duration}
+            <span style={{ marginLeft: '40px', color: 'black' }}>{session.targets.edges.length} Target</span>
+            {/* <span style={{ marginLeft: '40px', color: 'black' }}>{session.targets.edges.length} Trials</span> */}
+          </Text>
+
+          <div style={{marginTop: '20px'}}>
+            <UserOutlined style={{ color: '#0059b3', fontSize: '22px' }} />
+            <Title style={{marginLeft: '20px', fontSize: '20px', display: 'inline-block'}}>Session Host</Title>
           </div>
-          <div className={styles.subSesImg}>
-            <img src={student} alt="not_found" />
+          <div style={{marginTop: '20px'}}>
+            {this.renderSessionHost()}
           </div>
-          {/* <div className={styles.sesimgDes}>
-            <p>Kunal selects an item that doesn&apos;t share the same features</p>
-          </div> */}
-          {this.renderInsDuration()}
-          <div className={styles.sesHosts}>
-            <div className={styles.sessionHostHeader}>
-              <div className={styles.sessionHostHeaderIcon}>
-                <UserOutlined style={{ color: 'darkorange', fontSize: '22px' }} />
-              </div>
-              <div className={styles.sessionHostHeaderText}>
-                <p>Session Host</p>
-              </div>
-            </div>
-            <div className={styles.sessionHostText}>{this.renderSessionHost()}</div>
+
+          <div style={{marginTop: '20px'}}>
+            <DatabaseOutlined style={{ color: '#0059b3', fontSize: '22px' }} />
+            <Title style={{marginLeft: '20px', fontSize: '20px', display: 'inline-block'}}>Item Required</Title>
           </div>
-          {this.renderItemRequired()}
-          {this.renderInstruction()}
-          <div className={styles.sesInsbtn}>
+          <div style={{marginTop: '20px'}}>
+            {session.itemRequired}
+          </div>
+
+          <div style={{marginTop: '20px'}}>
+            <FileTextOutlined style={{ color: '#0059b3', fontSize: '22px' }} />
+            <Title style={{marginLeft: '20px', fontSize: '20px', display: 'inline-block'}}>Instructions</Title>
+          </div>
+          <div style={{marginTop: '20px'}}>
+            {session.itemRequired}
+          </div>
+
+          {this.renderInsList()}
+
+          <div style={{textAlign: 'center'}}>
             <a href="/#/sessionrecording">
-              <Button type="primary" className={styles.sessionInsButton}>
-                Start New Session
+              <Button type="primary" style={{backgroundColor: '#0059b3'}}>
+                Start Session
               </Button>
             </a>
           </div>

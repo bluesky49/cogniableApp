@@ -4,6 +4,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/jsx-closing-tag-location */
 /* eslint-disable object-shorthand */
+/* eslint-disable react/destructuring-assignment */
 import React from 'react'
 import { Form, Input, Button, Select, DatePicker, notification } from 'antd'
 import { connect } from 'react-redux'
@@ -52,6 +53,8 @@ class StaffBasicInfo extends React.Component {
             values: values,
           },
         })
+        this.props.CloseDrawer()
+        form.resetFields()
       }
     })
   }
@@ -96,9 +99,7 @@ class StaffBasicInfo extends React.Component {
           {form.getFieldDecorator('designation', { initialValue: '' })(<Input />)}
         </Form.Item>
         <Form.Item label="Clinic Location" style={itemStyle}>
-          {form.getFieldDecorator('clinicLocation', {
-            rules: [{ required: true, message: 'Please select Clinic Location' }],
-          })(
+          {form.getFieldDecorator('clinicLocation')(
             <Select>
               {clinicLocationList.map(item => (
                 <Select.Option value={item.node.id}>{item.node.location}</Select.Option>

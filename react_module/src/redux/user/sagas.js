@@ -8,6 +8,7 @@ import {
   GetUserDetailsByUsername,
   logout,
   GetStudentNameById,
+  StaffIdFromUserId
 } from 'services/user'
 // import { GraphQLClient } from 'graphql-request'
 import actions from './actions'
@@ -51,6 +52,18 @@ export function* LOGIN({ payload }) {
         type: 'user/SET_STATE',
         payload: {
           studentId: response.tokenAuth.user.studentsSet.edges[0].node.id,
+          parentName: response.tokenAuth.user.studentsSet.edges[0].node.parentName
+        },
+      })
+    }
+
+    if (response.tokenAuth.user.groups.edges[0].node.name === 'therapist') {
+      // const result = yield call(StudentIdFromUserId, response.tokenAuth.user.id)
+      yield put({
+        type: 'user/SET_STATE',
+        payload: {
+          staffId: response.tokenAuth.user.staffSet.edges[0].node.id,
+          staffName: response.tokenAuth.user.staffSet.edges[0].node.name
         },
       })
     }
@@ -92,7 +105,8 @@ export function* LOAD_CURRENT_ACCOUNT() {
           id: result.data.getuser.edges[0].node.id,
           authorized: true,
           loading: false,
-          role: JSON.parse(localStorage.getItem('role')),
+          role: result.data.getuser.edges[0].node.groups.edges[0].node.name,
+          // role: result.data.getuser.edges[0].node.groups[0].node.id,
         },
       })
 
@@ -104,10 +118,27 @@ export function* LOAD_CURRENT_ACCOUNT() {
             type: 'user/SET_STATE',
             payload: {
               studentId: result2.data.students.edges[0].node.id,
+              parentName: result2.data.students.edges[0].node.parentName,
             },
           })
         }
       }
+
+      if (result.data.getuser.edges[0].node.groups.edges[0].node.name === 'therapist') {
+        const result3 = yield call(StaffIdFromUserId, result.data.getuser.edges[0].node.id)
+
+        if (result3) {
+          yield put({
+            type: 'user/SET_STATE',
+            payload: {
+              staffId: result3.data.staffs.edges[0].node.id,
+              staffName: result3.data.staffs.edges[0].node.name,
+            },
+          })
+        }
+      }
+
+
     }
   } else {
     LOGOUT()
@@ -139,9 +170,10 @@ export function* LOGOUT() {
   })
   yield call(logout)
 
-  localStorage.setItem('database', '')
-  localStorage.setItem('token', '')
-  localStorage.setItem('role', '')
+  // localStorage.setItem('database', '')
+  // localStorage.setItem('token', '')
+  // localStorage.setItem('role', '')
+  localStorage.clear()
 }
 
 export function* GET_STUDENT_NAME() {

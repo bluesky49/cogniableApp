@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Typography } from 'antd'
+import { Button, Typography, Tooltip } from 'antd'
 import { FormOutlined, CopyOutlined } from '@ant-design/icons'
 import targetImg1 from './images/motherChild.jpg'
 
@@ -28,7 +28,7 @@ const TargetCard = ({
         border: '1px solid #E4E9F0',
         boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
         borderRadius: 10,
-        padding: '32px 20px',
+        padding: '20px',
         ...style,
       }}
     >
@@ -36,15 +36,15 @@ const TargetCard = ({
         src={targetImg1}
         alt=""
         style={{
-          width: 150,
-          height: 120,
+          width: 80,
+          height: 60,
           border: '1px solid #E4E9F0',
           boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
           borderRadius: 10,
           marginRight: 25,
         }}
       />
-      <div style={{ width: 'calc(100% - 175px)' }}>
+      <div style={{ width: 'calc(100% - 105px)' }}>
         <div
           style={{
             display: 'flex',
@@ -62,44 +62,38 @@ const TargetCard = ({
           >
             {title}
           </Title>
-          <Button
-            type="link"
+          <Tooltip placement="topRight" title="Edit">
+            <Button
+              type="link"
+              style={{
+                marginLeft: 'auto',
+              }}
+              onClick={() => {
+                setUpdateTargetId(id)
+                setUpdateTargetDrawer(true)
+              }}
+            >
+              <FormOutlined style={{ fontSize: 28, color: '#e9e9e9' }} />
+            </Button>
+          </Tooltip>
+          <div
             style={{
-              marginLeft: 'auto',
-            }}
-            onClick={() => {
-              setUpdateTargetId(id)
-              setUpdateTargetDrawer(true)
+              display: 'flex',
             }}
           >
-            <FormOutlined style={{ fontSize: 28, color: '#e9e9e9' }} />
-          </Button>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              lineHeight: '22px',
-              marginRight: 25,
-              color: '#000',
-            }}
-          >
-            Receptive Language
-          </Text>
-          <Button
-            type="link"
-            style={{
-              marginLeft: 'auto',
-              padding: 0,
-            }}
-            onClick={onCopyClick}
-          >
-            <CopyOutlined style={{ fontSize: 28, color: 'green' }} />
-          </Button>
+            <Tooltip placement="topRight" title="Duplicate">
+              <Button
+                type="link"
+                style={{
+                  marginLeft: 'auto',
+                  padding: 0,
+                }}
+                onClick={onCopyClick}
+              >
+                <CopyOutlined style={{ fontSize: 28, color: 'green' }} />
+              </Button>
+            </Tooltip>
+          </div>
         </div>
       </div>
     </div>

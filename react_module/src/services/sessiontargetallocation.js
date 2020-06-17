@@ -7,16 +7,22 @@ import { notification } from 'antd'
 import { gql } from 'apollo-boost'
 import apolloClient from '../apollo/config'
 
+// targetStatus:"U3RhdHVzVHlwZToz"
+
 export async function getAllocatedTargets(payload) {
-  return apolloClient
-    .query({
-      query: gql`
+    return apolloClient
+        .query({
+            query: gql`
         query {
-            targetAllocates(studentId:"${payload.studentId}", targetStatus:"U3RhdHVzVHlwZToz") {
+            targetAllocates(studentId:"${payload.studentId}") {
                 edges {
                     node {
                         id,
                         targetInstr,
+                        targetStatus {
+                            id,
+                            statusName
+                        }
                         targetAllcatedDetails{
                             id,
                             targetName,
@@ -25,6 +31,14 @@ export async function getAllocatedTargets(payload) {
                 }
             },
             student(id:"${payload.studentId}") {
+                authStaff {
+                    edges {
+                        node {
+                            id,
+                            name,
+                        }
+                    }
+                }
                 family{
                     id,
                     members{
@@ -32,6 +46,18 @@ export async function getAllocatedTargets(payload) {
                             node {
                                 id,
                                 memberName,
+                                timeSpent {
+                                    edges {
+                                        node {
+                                            id
+                                            sessionName {
+                                                id
+                                                name
+                                            }
+                                            duration
+                                        }
+                                    }
+                                }
                                 relationship{
                                     id,
                                     name
@@ -56,6 +82,14 @@ export async function getAllocatedTargets(payload) {
                                 node{
                                     id,
                                     instruction
+                                }
+                            }
+                        }
+                        therapistHost{
+                            edges{
+                                node{
+                                    id
+                                    name
                                 }
                             }
                         }
@@ -90,6 +124,10 @@ export async function getAllocatedTargets(payload) {
                                     time,
                                     targetInstr,
                                     date,
+                                    targetStatus {
+                                        id,
+                                        statusName
+                                    }
                                     targetAllcatedDetails{
                                         id,
                                         targetName,
@@ -101,22 +139,22 @@ export async function getAllocatedTargets(payload) {
                 }
             }
         }`,
-    })
-    .then(result => result)
-    .catch(error => {
-      error.graphQLErrors.map(item => {
-        return notification.error({
-          message: 'Somthing want wrong',
-          description: item.message,
         })
-      })
-    })
+        .then(result => result)
+        .catch(error => {
+            error.graphQLErrors.map(item => {
+                return notification.error({
+                    message: 'Somthing want wrong',
+                    description: item.message,
+                })
+            })
+        })
 }
 
 export async function updateSessionTargets(payload) {
-  return apolloClient
-    .mutate({
-      mutation: gql`mutation {
+    return apolloClient
+        .mutate({
+            mutation: gql`mutation {
             updateSessionTargets(input:{
                 sessionId:"${payload.id}",
                 targetsList:[${payload.targetList}]
@@ -139,6 +177,14 @@ export async function updateSessionTargets(payload) {
                             }
                         }
                     }
+                    therapistHost{
+                        edges{
+                            node{
+                                id
+                                name
+                            }
+                        }
+                    }
                     sessionHost {
                         edges{
                             node{
@@ -170,6 +216,10 @@ export async function updateSessionTargets(payload) {
                                 time,
                                 targetInstr,
                                 date,
+                                targetStatus {
+                                    id,
+                                    statusName
+                                }
                                 targetAllcatedDetails{
                                     id,
                                     targetName,
@@ -180,44 +230,60 @@ export async function updateSessionTargets(payload) {
                 }
             }
         }`,
-    })
-    .then(result => result)
-    .catch(error => {
-      error.graphQLErrors.map(item => {
-        return notification.error({
-          message: 'Somthing want wrong',
-          description: item.message,
         })
-      })
-    })
+        .then(result => result)
+        .catch(error => {
+            error.graphQLErrors.map(item => {
+                return notification.error({
+                    message: 'Somthing want wrong',
+                    description: item.message,
+                })
+            })
+        })
 }
 
 export async function updateSessionDetails(objects) {
-  const { payload, sessionObject } = objects
+    const { payload, sessionObject } = objects
 
-  const inst = []
-  const host = []
-  if (payload.values.names.length > 0) {
-    payload.values.names.map(item => {
-      inst.push(`"${item}"`)
-    })
-  }
+    // const inst = []
+    // const host = []
+    // const therapistHost = []
+    // if (payload.values.names.length > 0) {
+    //     payload.values.names.map(item => {
+    //         inst.push(item)
+    //     })
+    // }
 
-  if (payload.values.hosts.length > 0) {
-    payload.values.hosts.map(item => {
-      host.push(`"${item}"`)
-    })
-  }
+    // if (payload.values.hosts.length > 0) {
+    //     payload.values.hosts.map(item => {
+    //         host.push(item)
+    //     })
+    // }
 
-  return apolloClient
-    .mutate({
-      mutation: gql`mutation {
+    // if (payload.values.hosts.length > 0) {
+    //     payload.values.hosts.map(item => {
+    //         host.push(item)
+    //     })
+    // }
+
+    return apolloClient
+        .mutate({
+            mutation: gql`mutation UpdateSessioDetails (
+          $id: ID!,
+          $duration: String!,
+          $items: String!,
+          $instruction: [String],
+          $sessionHost: [ID],
+          $therapistHost: [ID]
+
+      ) {
             updateMasterSession(input:{
-                pk:"${sessionObject.id}",
-                duration:"${sessionObject.duration}",
-                itemRequired:"${payload.values.items}",
-                instruction:[${inst}],
-                sessionHost:[${host}]
+                pk: $id,
+                duration: $duration,
+                itemRequired: $items,
+                instruction: $instruction,
+                sessionHost: $sessionHost,
+                therapistHost: $therapistHost
             })
             {
                 details {
@@ -236,6 +302,14 @@ export async function updateSessionDetails(objects) {
                             }
                         }
                     }
+                    therapistHost{
+                        edges{
+                            node{
+                                id
+                                name
+                            }
+                        }
+                    }
                     sessionHost {
                         edges{
                             node{
@@ -267,6 +341,10 @@ export async function updateSessionDetails(objects) {
                                 time,
                                 targetInstr,
                                 date,
+                                targetStatus {
+                                    id,
+                                    statusName
+                                }
                                 targetAllcatedDetails{
                                     id,
                                     targetName,
@@ -277,14 +355,22 @@ export async function updateSessionDetails(objects) {
                 }
             }
         }`,
-    })
-    .then(result => result)
-    .catch(error => {
-      error.graphQLErrors.map(item => {
-        return notification.error({
-          message: 'Somthing want wrong',
-          description: item.message,
+            variables: {
+                id: sessionObject.id,
+                duration: payload.values.duration,
+                items: payload.values.items,
+                instruction: payload.values.names,
+                sessionHost: payload.values.hosts,
+                therapistHost: payload.values.therapist
+            }
         })
-      })
-    })
+        .then(result => result)
+        .catch(error => {
+            error.graphQLErrors.map(item => {
+                return notification.error({
+                    message: 'Somthing want wrong',
+                    description: item.message,
+                })
+            })
+        })
 }

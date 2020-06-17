@@ -1,11 +1,13 @@
 /* eslint-disable react/jsx-closing-tag-location */
 /* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-boolean-value */
+/* eslint-disable no-else-return */
 import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
-import { Button, Checkbox, Select } from 'antd'
+import { useSelector, useDispatch } from 'react-redux'
+import { Button, Checkbox, Select, Icon, Typography, Drawer } from 'antd'
 import moment from 'moment'
 import { EditOutlined } from '@ant-design/icons'
-import { useSelector } from 'react-redux'
 import styles from './style.module.scss'
 import GoalCard from '../../../components/GoalCard'
 import {
@@ -18,9 +20,11 @@ import {
 import { arrayNotNull, notNull } from '../../../utilities'
 import AddLongAndShortGoal from '../AddLongAndShortGoal'
 import TargetAllocationDetails from '../targetAllocationDetails'
+import EditAllocatedTargetDetails from '../targetAllocationDetails/editAllocatedTargetDetails'
 import AllocatedTarget from './AllocatedTarget'
 import TargetsAvailable from './TargetsAvailable'
 
+const { Title, Text } = Typography
 const longGoalBtn = {
   color: '#fff',
   backgroundColor: '#0B35B3',
@@ -28,9 +32,9 @@ const longGoalBtn = {
 }
 
 const shortGoalBtn = {
-  border: 0,
-  color: '#000',
-  backgroundColor: '#66ff33',
+  // border: 0,
+  color: '#111',
+  backgroundColor: '#FFF',
 }
 
 const selectPatientStyle = {
@@ -46,6 +50,11 @@ const TargetAllocation = () => {
   if (!(localStorage.getItem('studentId') === null) && localStorage.getItem('studentId')) {
     stdId = JSON.parse(localStorage.getItem('studentId'))
   }
+  const dispatch = useDispatch();
+  dispatch({
+    type: 'user/GET_STUDENT_NAME',
+  })
+
   const [selectedStudent, setSelectedStudent] = useState(stdId)
   const [programArea, setProgramArea] = useState([])
 
@@ -71,15 +80,15 @@ const TargetAllocation = () => {
     }
   }, [programArea])
 
-  const alreadyAlloctedTargetQuery = async (
-    studentId = 'U3R1ZGVudFR5cGU6MTYz',
-    targetStatus = 'U3RhdHVzVHlwZToz',
-    targetIdDomain = 'RG9tYWluVHlwZToxMQ==',
-  ) => {
-    const allocatedTargetResp = await alreadyAlloctedTarget(studentId, targetStatus, targetIdDomain)
-    if (notNull(allocatedTargetResp))
-      setAllocatedTarget(allocatedTargetResp.data.targetAllocates.edges)
-  }
+  // const alreadyAlloctedTargetQuery = async (
+  //   studentId = 'U3R1ZGVudFR5cGU6MTYz',
+  //   targetStatus = 'U3RhdHVzVHlwZToz',
+  //   targetIdDomain = 'RG9tYWluVHlwZToxMQ==',
+  // ) => {
+  //   const allocatedTargetResp = await alreadyAlloctedTarget(studentId, targetStatus, targetIdDomain)
+  //   if (notNull(allocatedTargetResp))
+  //     setAllocatedTarget(allocatedTargetResp.data.targetAllocates.edges)
+  // }
 
   const getLongTermGoalsQuery = async (studentId, program) => {
     const longTermGoalResp = await getLongTermGoals(studentId, program)
@@ -217,6 +226,7 @@ const TargetAllocation = () => {
   const [isTargetDetailsVisible, setShowTargetDetailsVisible] = useState(false)
   const [activeSessionDetails, setActiveSessionDetails] = useState(null)
 
+
   const handleCloseTargetDetails = () => {
     setShowTargetDetailsVisible(false)
     setActiveSessionDetails(null)
@@ -225,6 +235,144 @@ const TargetAllocation = () => {
   const allocateSessionToTarget = session => {
     setShowTargetDetailsVisible(true)
     setActiveSessionDetails(session)
+  }
+
+  const [selectedShortTermGoal, setSelectedShortTermGoal] = useState(null)
+  const selectShortTermGoal = stg => {
+    setSelectedShortTermGoal(stg)
+  }
+
+  useEffect(() => {}, [selectedShortTermGoal])
+
+
+  // Edit target
+
+  const [isEditAllocatedTargetVisible, setEditAllocatedTargetVisible] = useState(false)
+  const [activeAllocatedTarget, setActiveAllocatedTarget] = useState(null)
+  
+  const handleCloseEditTargetDetails = () => {
+    setEditAllocatedTargetVisible(false)
+    setActiveAllocatedTarget(null)
+  }
+
+
+  const editAllocatedTarget = node => {
+    setEditAllocatedTargetVisible(true)
+    setActiveAllocatedTarget(node)
+    console.log('got the id', node.id)
+  }
+
+  const onSuccessEditTargetAllocation = resp => {
+    const cloneSelectedShortTermGoal = { 
+        ...selectedShortTermGoal,
+        node : {
+          ...selectedShortTermGoal.node,
+            targetAllocateSet : {
+              ...selectedShortTermGoal.node.targetAllocateSet,
+                edges: [
+                  ...selectedShortTermGoal.node.targetAllocateSet.edges.map(item => {
+                    if( item.node.id === resp.data.updateTargetAllocate.target.id){
+                      return {
+                          node: resp.data.updateTargetAllocate.target
+                      }
+                    }
+                    else{
+                      return item
+                    }
+                  })
+                ]
+            }
+        }
+    }
+    console.log(cloneSelectedShortTermGoal)
+    setSelectedShortTermGoal(cloneSelectedShortTermGoal)
+    setEditAllocatedTargetVisible(false)
+    setActiveAllocatedTarget(null)
+    
+
+    // console.log(longTermGoals, selectedShortTermGoal)
+
+
+    // const newLongTermGoal = {
+    //   ...longTermGoals.map(item => {
+    //     return {
+    //       ...item.node,
+    //       shorttermgoalSet : {
+    //         ...item.node.shorttermgoalSet,
+    //           edges: {
+    //             ...item.node.shorttermgoalSet.edges.map(sItem => {
+    //               if (sItem.node.id === selectedShortTermGoal.node.id ){
+    //                 return {
+    //                   ...sItem,
+    //                     node : {
+    //                       ...sItem.node,
+    //                         targetAllocateSet: {
+    //                           ...sItem.node.targetAllocateSet,
+    //                             edges: {
+    //                               ...sItem.node.targetAllocateSet.edges.map(tItem => {
+    //                                 if( tItem.node.id === resp.data.updateTargetAllocate.id){
+    //                                   return {
+    //                                     ...tItem,
+    //                                       node: resp.data.updateTargetAllocate
+    //                                   }
+    //                                 }
+    //                                 else{
+    //                                   return tItem
+    //                                 }
+    //                               })
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //               }
+    //               else{
+    //                 return sItem
+    //               }
+    //             })
+    //           } 
+    //       }
+    //     }
+    //   })
+    // }
+
+    // if (addTargetMode === 'list') {
+    //   setSuggestedTarget(item =>
+    //     item.filter(target => target.node.id !== activeSessionDetails.node.id),
+    //   )
+    // }
+
+   
+
+
+
+    // if (cloneSelectedShortTermGoal.node.targetAllocateSet){
+
+    //   cloneSelectedShortTermGoal = {
+    //     ...cloneSelectedShortTermGoal.node,
+    //     targetAllocateSet: {
+    //       ...cloneSelectedShortTermGoal.node.targetAllocateSet, 
+    //       edges: {
+    //         ...cloneSelectedShortTermGoal.node.targetAllocateSet.edges.map(item => {
+    //           if (item.node.id === resp.data.updateTargetAllocate.id) {
+    //             return resp.data.updateTargetAllocate.object
+    //           }
+    //           return item
+    //         })
+    //       }
+    //     }
+    //   }
+
+    // }
+
+  }
+
+  // End of Edit allocated target
+
+
+  // for close sugegsted target area
+  const closeSuggestedTargetArea = () => {
+    setAddTargetMode('')
+    setSelectedShortTermGoal(null)
   }
 
   const handleSelectTargetMode = mode => {
@@ -238,26 +386,27 @@ const TargetAllocation = () => {
     }
   }, [addTargetMode])
 
-  const [selectedShortTermGoal, setSelectedShortTermGoal] = useState(null)
-  const selectShortTermGoal = stg => {
-    setSelectedShortTermGoal(stg)
-  }
-
-  useEffect(() => {}, [selectedShortTermGoal])
+  
 
   const onSuccessTargetAllocation = resp => {
     setShowTargetDetailsVisible(false)
     setActiveSessionDetails(null)
 
-    getLongTermGoalsQuery(selectedStudent, selectedProgram)
+    // getLongTermGoalsQuery(selectedStudent, selectedProgram)
 
     const cloneSelectedShortTermGoal = { ...selectedShortTermGoal }
 
-    cloneSelectedShortTermGoal.node.targetAllocateSet.edges.push({
-      node: {
-        ...resp.data.createTargetAllocate.target,
-      },
-    })
+    if (cloneSelectedShortTermGoal.node.targetAllocateSet){
+      cloneSelectedShortTermGoal.node.targetAllocateSet.edges.unshift({
+        node: {
+          ...resp.data.createTargetAllocate.target,
+        },
+      })
+    }
+    else{
+      cloneSelectedShortTermGoal.node = {...cloneSelectedShortTermGoal.node, targetAllocateSet: {edges: [{node : {...resp.data.createTargetAllocate.target}}]}}
+      // console.log(cloneSelectedShortTermGoal)
+    }
 
     setSelectedShortTermGoal(cloneSelectedShortTermGoal)
 
@@ -282,46 +431,93 @@ const TargetAllocation = () => {
     addHeading = 'Add short term details'
   }
 
+  const studentName = useSelector(state => state.user.studentName)
+
   return (
     <div>
       <Helmet title="Target allocation to goals" />
-      <AddLongAndShortGoal
-        show={isAddGoalVisible}
-        onClose={handleCloseAddGoal}
-        heading={addHeading}
-        type={goalType}
-        activeLongTermGoal={activeLongTermGoal}
-        activeShortTermGoal={activeShortTermGoal}
-        student={selectedStudent}
-        program={selectedProgram}
-        goalResponsibilityList={goalResponsibilityList}
-        goalStatusList={goalStatusList}
-        onSuccess={onSuccessAddEditGoal}
-        editAble={editAble}
-      />
 
-      <TargetAllocationDetails
-        selectedShortTermGoal={selectedShortTermGoal}
-        studentId={selectedStudent}
-        show={isTargetDetailsVisible}
+      {/* Goals Drawer */}
+      <Drawer
+        title={addHeading}
+        placement="right"
+        closable={true}
+        width={550}
+        onClose={handleCloseAddGoal}
+        visible={isAddGoalVisible}
+      >
+        <AddLongAndShortGoal
+          type={goalType}
+          activeLongTermGoal={activeLongTermGoal}
+          activeShortTermGoal={activeShortTermGoal}
+          student={selectedStudent}
+          program={selectedProgram}
+          goalResponsibilityList={goalResponsibilityList}
+          goalStatusList={goalStatusList}
+          onSuccess={onSuccessAddEditGoal}
+          editAble={editAble}
+        />
+      </Drawer>
+
+      {/* Target Allocation Drawer */}
+      <Drawer
+        title="Target Allocation"
+        placement="right"
+        closable={true}
+        width={650}
         onClose={handleCloseTargetDetails}
-        heading="Target Allocation Details"
-        activeSessionDetails={activeSessionDetails}
-        addTargetMode={addTargetMode}
-        onSuccessTargetAllocation={onSuccessTargetAllocation}
-      />
+        visible={isTargetDetailsVisible}
+      >
+        <TargetAllocationDetails
+          key={Math.random()}
+          selectedShortTermGoal={selectedShortTermGoal}
+          studentId={selectedStudent}
+          activeSessionDetails={activeSessionDetails}
+          addTargetMode={addTargetMode}
+          onSuccessTargetAllocation={onSuccessTargetAllocation}
+        />
+      </Drawer>
+
+      {/* Edit Allocated Target Drawer */}
+      <Drawer
+        title="Edit Allocated Target Details"
+        placement="right"
+        closable={true}
+        width={650}
+        onClose={handleCloseEditTargetDetails}
+        visible={isEditAllocatedTargetVisible}
+      >
+        <EditAllocatedTargetDetails
+          key={Math.random()}
+          selectedShortTermGoal={selectedShortTermGoal}
+          studentId={selectedStudent}
+          activeAllocatedTarget={activeAllocatedTarget}
+          onSuccessTargetAllocation={onSuccessEditTargetAllocation}
+          editAble={editAble}
+        />
+      </Drawer>
+
+      
 
       <section className="card">
-        <div className={`${styles.cardHeader} card-header`}>
-          <div className="utils__title">
-            <strong>Target allocation to goals</strong>
+        <div className="card-header" style={{padding: 0}}>
+          <div>
+            <Title 
+              style={{
+                fontSize: 20,
+                lineHeight: '27px',
+                marginLeft: '40px'
+              }}
+            >
+              {studentName}&apos;s goals
+            </Title>
           </div>
         </div>
         <div className={`${styles.cardBody} card-body`}>
           <div className={styles.feed}>
             <div className="row">
-              <div className="col-lg-8 d-flex justify-content-between">
-                <div>
+              <div className="col-lg-12 d-flex">
+                <div style={{paddingBottom: '10px'}}>
                   <Select
                     style={selectPatientStyle}
                     // size="large"
@@ -340,28 +536,42 @@ const TargetAllocation = () => {
                   </Select>
                 </div>
                 {editAble ? (
-                  <div className={styles.longtGoalBtn}>
+                  <>
+                    
                     <Button type="default" style={longGoalBtn} onClick={addLongTermGoal}>
-                      Add Long Term Goal
+                      <Icon type="plus" /> LT Goal
                     </Button>
-                  </div>
+                    
+                    {addTargetMode === 'list' ?
+                      <>
+                        
+                        <Button type="default" style={{marginLeft: '466px'}} onClick={closeSuggestedTargetArea}>
+                          X
+                        </Button>
+                        
+                      </>
+                    :
+                      ''
+                    }
+                  </>
                 ) : (
                   <></>
                 )}
-              </div>
-              <div className="col-lg-4">
+              {/* </div>
+              <div className="col-lg-4"> */}
                 {selectedShortTermGoal && editAble ? (
-                  <Select
-                    style={{ width: 200, position: 'absolute', right: 0, top: 0 }}
-                    placeholder="Allocate target mode"
-                    defaultValue="Allocate target mode"
-                    value={addTargetMode}
-                    onSelect={handleSelectTargetMode}
-                  >
-                    <Select.Option value="">Allocate target mode</Select.Option>
-                    <Select.Option value="list">Choose from list</Select.Option>
-                    <Select.Option value="manually">Add Manually</Select.Option>
-                  </Select>
+                  <>
+                    <Select
+                      style={{ width: 200, position: 'absolute', right: 0, top: 0 }}
+                      placeholder="Select Target selection"
+                      value={addTargetMode}
+                      onSelect={handleSelectTargetMode}
+                    >
+                      <Select.Option value="" hidden>Select Target selection</Select.Option>
+                      <Select.Option value="list">Choose from Library</Select.Option>
+                      <Select.Option value="manually">Add Manually</Select.Option>
+                    </Select>
+                  </>
                 ) : (
                   <></>
                 )}
@@ -381,44 +591,53 @@ const TargetAllocation = () => {
                       longTermGoals.map(ltGoal => {
                         return (
                           <div className={styles.behaviour} key={ltGoal.node.id}>
-                            {editAble ? (
-                              <div className={styles.longTermGoalEditBn}>
-                                <EditOutlined onClick={() => editLongTermGoal(ltGoal)} />
-                              </div>
-                            ) : (
-                              ''
-                            )}
                             <div className="row">
                               <div
                                 className={
                                   addTargetMode === 'list'
-                                    ? 'col-lg-10 col-md-10'
-                                    : 'col-lg-8 col-md-10'
+                                    ? 'col-lg-12 col-md-12'
+                                    : 'col-lg-8 col-md-12'
                                 }
                               >
                                 <span className={styles.behaviourHeading}>
-                                  {ltGoal.node.goalName}
+                                  <Title
+                                    style={{
+                                      fontSize: 20,
+                                      lineHeight: '27px',
+                                    }}
+                                  >
+                                    {ltGoal.node.goalName}
+                                  </Title>
                                 </span>
                                 <div className={styles.behaviourDate}>
-                                  <span>{getDate(ltGoal.node)}</span>
+                                  <Text
+                                    style={{
+                                      fontSize: 18,
+                                      lineHeight: '27px',
+                                    }}
+                                  >
+                                    {getDate(ltGoal.node)}
+                                  </Text>
+                                  {/* <span></span> */}
                                 </div>
                               </div>
                               <div
                                 className={
                                   addTargetMode === 'list'
-                                    ? 'col-lg-11 col-md-11'
-                                    : 'col-lg-3 col-md-11'
+                                    ? 'col-lg-12 col-md-12'
+                                    : 'col-lg-4 col-md-12'
                                 }
                               >
                                 {editAble ? (
                                   <div className={styles.shortGoalBtn}>
                                     <Button
-                                      type="primary"
                                       style={shortGoalBtn}
                                       onClick={() => addShortTermGoal(ltGoal)}
                                     >
-                                      Add Short Term Goal
+                                      <Icon type="plus" /> ST Goal
                                     </Button>
+                                    &nbsp;
+                                    <Button onClick={() => editLongTermGoal(ltGoal)}><EditOutlined /> LT Goal</Button>
                                   </div>
                                 ) : (
                                   ''
@@ -465,6 +684,8 @@ const TargetAllocation = () => {
 
                 {selectedShortTermGoal ? (
                   <AllocatedTarget
+                    editAble={editAble}
+                    editAllocatedTarget={editAllocatedTarget}
                     allocatedTarget={selectedShortTermGoal?.node?.targetAllocateSet?.edges}
                   />
                 ) : (

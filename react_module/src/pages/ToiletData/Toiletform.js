@@ -223,6 +223,7 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
           placeholder="Type water Intake in ml"
           style={{ width: '100%' }}
           value={waterIntake}
+          min={0}
           onChange={value => setWaterIntake(value)}
         />
       </Form.Item>
@@ -252,9 +253,9 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
                 fontSize: 18,
               }}
             >
-              Medical Reminders
+              Toilet Reminders
             </Title>
-            <Text>Remind me for medicine dosage</Text>
+            <Text>Remind me for toilet</Text>
           </div>
           <Switch
             defaultChecked
@@ -284,7 +285,7 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
             marginTop: 10,
           }}
         >
-          <Text style={{ color: '#000', fontSize: 16 }}>Add Another Remainder</Text>
+          <Text style={{ color: '#000', fontSize: 16 }}>Add Another Reminder</Text>
           <Button
             style={{
               height: 40,

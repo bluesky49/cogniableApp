@@ -1,53 +1,76 @@
 import React, { Component } from 'react'
-import { Form, Input, Button, message } from 'antd'
+import { Form, Input, Button, notification } from 'antd'
 import { Helmet } from 'react-helmet'
 import { Link, Redirect } from 'react-router-dom'
 import { MailOutlined, KeyOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import styles from './style.module.scss'
+import client from '../../../config'
 
 const API_URL = process.env.REACT_APP_API_URL
 @Form.create()
 class Forgot extends Component {
   state = {
     LoginRedirect: false,
-    emailField: true,
+    loading:false
   }
 
   handleSubmit = e => {
     e.preventDefault()
     const { form } = this.props
     form.validateFields((error, values) => {
-      console.log(values)
-      this.setState({ emailField: false })
       if (!error) {
-        fetch(`${API_URL}/administrative/forgotpass/`, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            database: 'india',
-          },
-          body: JSON.stringify(values),
+        this.setState({
+          loading:true
         })
-          .then(res => res.json())
-          .then(result => {
-            if (result.status) {
-              message.success(result.detail)
-              this.setState({
-                LoginRedirect: true,
+          const signUpQuery = `mutation {
+                forgotPassword(input:{email:"${values.email}"})
+                   {
+                       status
+                       message
+                   }
+            }`
+
+          return client
+            .request(signUpQuery)
+            .then(data => {
+
+              if(data.forgotPassword.status)
+              {
+                notification.success({
+                  message: data.forgotPassword.message,
+                  description: data.forgotPassword.message,
+                })
+                this.setState({
+                  loading:false,
+                  LoginRedirect:true
+                })
+              }
+              else {
+                notification.error({
+                  message: data.forgotPassword.message,
+                  description: data.forgotPassword.message,
+                })
+                this.setState({
+                  loading:false
+                })
+              }
+            })
+            .catch(err => {
+              notification.error({
+                message: err.response.errors[0].message,
+                description: err.response.errors[0].message,
               })
-            } else {
-              message.error(result.detail)
-            }
-          })
+              this.setState({
+                loading:false
+              })
+            })
       }
     })
   }
 
   render() {
     const { form } = this.props
-    const { LoginRedirect, emailField } = this.state
+    const { LoginRedirect, loading } = this.state
     if (LoginRedirect) {
       return <Redirect to="/user/login" />
     }
@@ -64,7 +87,6 @@ class Forgot extends Component {
                   </h4>
                   <br />
                   <Form layout="vertical" hideRequiredMark onSubmit={this.handleSubmit}>
-                    {emailField ? (
                       <Form.Item>
                         {form.getFieldDecorator('email', {
                           initialValue: '',
@@ -77,36 +99,8 @@ class Forgot extends Component {
                           />,
                         )}
                       </Form.Item>
-                    ) : (
-                      <>
-                        <Form.Item>
-                          {form.getFieldDecorator('password', {
-                            initialValue: '',
-                            rules: [{ required: true, message: 'Please password' }],
-                          })(
-                            <Input
-                              size="large"
-                              placeholder="New Password"
-                              prefix={<KeyOutlined className="site-form-item-icon" />}
-                            />,
-                          )}
-                        </Form.Item>
-                        <Form.Item>
-                          {form.getFieldDecorator('re-password', {
-                            initialValue: '',
-                            rules: [{ required: true, message: 'Please re-type your password' }],
-                          })(
-                            <Input
-                              size="large"
-                              placeholder="Retype Password"
-                              prefix={<KeyOutlined className="site-form-item-icon" />}
-                            />,
-                          )}
-                        </Form.Item>
-                      </>
-                    )}
                     <div>
-                      <Button type="primary" size="large" block htmlType="submit" loading={false}>
+                      <Button type="primary" size="large" block htmlType="submit" loading={loading}>
                         CONTINUE
                         <ArrowRightOutlined className="site-form-item-icon" />
                       </Button>

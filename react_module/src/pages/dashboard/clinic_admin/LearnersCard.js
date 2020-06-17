@@ -1,5 +1,5 @@
 import React from 'react'
-import { Select, Typography, Button } from 'antd'
+import { Select, Typography, Button, Tooltip } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
 import { useQuery } from 'react-apollo'
@@ -10,7 +10,7 @@ const { Option } = Select
 
 const LEARNERS = gql`
   query {
-    students(first: 3) {
+    students {
       edges {
         node {
           id
@@ -24,7 +24,18 @@ const LEARNERS = gql`
 `
 
 const LearnersCard = () => {
+
+  const redirectToLearnersList = () => {
+    window.location.href = '/#/partners/viewlearners'
+  }
+
+  const onSelectStudent = (id) => {
+    localStorage.setItem('studentId', JSON.stringify(id))
+    window.location.href = '/#/therapistStudent'
+  }
+
   const { data, loading, error } = useQuery(LEARNERS)
+
 
   if (loading) {
     return 'Loading...'
@@ -52,31 +63,51 @@ const LearnersCard = () => {
         >
           Learners
         </Title>
-        <Select
-          style={{
-            width: 200,
-            height: 40,
-          }}
-          size="large"
-          placeholder="Select Learner"
-        >
-          {data.students.edges.map(({ node }) => {
-            return <Option key={node.id}>{node.firstname}</Option>
-          })}
-        </Select>
+        <Tooltip placement="topRight" title="Click to select learner">
+          <Select
+            style={{
+              width: 200,
+              height: 40,
+            }}
+            size="large"
+            showSearch
+            optionFilterProp="name"
+            onSelect={onSelectStudent}
+            placeholder="Select Learner"
+          >
+            {data.students.edges.map(({ node }) => {
+              return <Option key={node.id} name={node.firstname}>{node.firstname}</Option>
+            })}
+          </Select>
+        </Tooltip>
       </div>
 
       <div>
-        {data.students.edges.map(({ node }) => {
-          return (
-            <LearnerCard
-              key={node.id}
-              name={node.firstname}
-              style={{ marginTop: 18 }}
-              leaveRequest={node.leaveRequest}
-            />
-          )
-        })}
+        {data.students.edges.length > 4 ?
+          data.students.edges.slice(0,3).map(({ node }) => {
+            return (
+              <LearnerCard
+                key={node.id}
+                name={node.firstname}
+                node={node}
+                style={{ marginTop: 18 }}
+                leaveRequest={node.leaveRequest}
+              />
+            )
+          })
+        :
+          data.students.edges.map(({ node }) => {
+            return (
+              <LearnerCard
+                key={node.id}
+                name={node.firstname}
+                node={node}
+                style={{ marginTop: 18 }}
+                leaveRequest={node.leaveRequest}
+              />
+            )
+          })
+        }
       </div>
 
       <div
@@ -93,6 +124,7 @@ const LearnersCard = () => {
             fontSize: 18,
             lineHeight: '25px',
           }}
+          onClick={redirectToLearnersList}
         >
           View All
           <ArrowRightOutlined style={{ fontSize: 18, marginLeft: 11 }} />

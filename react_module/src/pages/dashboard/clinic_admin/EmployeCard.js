@@ -6,7 +6,8 @@ const { Title } = Typography
 
 const LearnerCard = ({ style, name, designation, key, profileImg, leaveRequest }) => {
   return (
-    <div
+    <a
+      href="/#/partners/staffManagement"
       key={key}
       style={{
         background: '#FFFFFF',
@@ -46,7 +47,7 @@ const LearnerCard = ({ style, name, designation, key, profileImg, leaveRequest }
           {leaveRequest && <span style={{ color: '#FF5454' }}>Pending leave request</span>}
         </div>
       </div>
-    </div>
+    </a>
   )
 }
 

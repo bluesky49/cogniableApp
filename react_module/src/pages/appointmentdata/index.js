@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet'
 import { Row, Col, Layout, Typography } from 'antd'
 import moment from 'moment'
 import { useQuery } from 'react-apollo'
+import { useSelector } from 'react-redux'
 import AppiorMentForm from 'components/Form/AppiorMentForm'
 import gql from 'graphql-tag'
 import Calendar from 'components/Calander'
@@ -50,6 +51,8 @@ export default () => {
     setDate(moment(newDate).format('YYYY-MM-DD'))
   }
 
+  const userRole = useSelector(state => state.user.role)
+
   return (
     <div>
       <Helmet title="Dashboard Alpha" />
@@ -68,7 +71,7 @@ export default () => {
               fontSize: 25,
             }}
           >
-            Appiorments
+            Appointments
           </Title>
           <Row gutter={[46, 0]}>
             <Col span={16}>
@@ -108,26 +111,31 @@ export default () => {
                 </div>
               </div>
             </Col>
-            <Col span={8}>
-              <Title
-                style={{
-                  marginLeft: '30px',
-                  fontSize: '30px',
-                  lineHeight: '41px',
-                }}
-              >
-                Create A Appiorment
-              </Title>
-              <div
-                style={{
-                  background: '#F9F9F9',
-                  borderRadius: 10,
-                  padding: '30px',
-                }}
-              >
-                <AppiorMentForm setNewAppiormentCreated={setNewAppiormentCreated} />
-              </div>
-            </Col>
+            
+            {userRole !== 'parents' ? 
+              <Col span={8}>
+                <Title
+                  style={{
+                    marginLeft: '30px',
+                    fontSize: '30px',
+                    lineHeight: '41px',
+                  }}
+                >
+                  Create an Appointment
+                </Title>
+                <div
+                  style={{
+                    background: '#F9F9F9',
+                    borderRadius: 10,
+                    padding: '30px',
+                  }}
+                >
+                  <AppiorMentForm setNewAppiormentCreated={setNewAppiormentCreated} />
+                </div>
+              </Col>
+            :
+              ''
+            }
           </Row>
         </Content>
       </Layout>

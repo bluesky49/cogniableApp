@@ -139,7 +139,7 @@ class MenuTop extends React.Component {
 
   render() {
     const { selectedKeys } = this.state
-    const { isLightTheme } = this.props
+    const { isLightTheme, history : {goBack} } = this.props
     return (
       <div>
         <div className={styles.logo}>
@@ -161,10 +161,14 @@ class MenuTop extends React.Component {
           mode="horizontal"
         >
           {this.generateMenuItems()}
-          <Menu.Item style={{ float: 'right' }}>
+          <Menu.Item style={{float:'right'}}>
             <ProfileMenu />
           </Menu.Item>
+          <Menu.Item style={{float:'right'}} onClick={goBack}>
+            <span className={styles.title}>Go Back</span>
+          </Menu.Item>
         </Menu>
+        
       </div>
     )
   }

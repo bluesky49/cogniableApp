@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
 /* eslint-disable react/jsx-closing-tag-location */
 import React, { useEffect, useState } from 'react'
-import { Form, Input, Button, Select, notification } from 'antd'
-import { CloseOutlined } from '@ant-design/icons'
+import { Form, Input, Button, Select, notification, Modal } from 'antd'
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
 import { useQuery, useMutation } from 'react-apollo'
 import './templateform.scss'
@@ -36,6 +37,31 @@ const DANCLE_MEASURMENTS = gql`
       id
       measuringType
       unit
+    }
+  }
+`
+
+const CREATE_BEHAVIOR = gql`
+  mutation createBehaviour($studentId: ID!, $name: String!) {
+    createBehaviour(input: { student: $studentId, name: $name, definition: "Test Definition" }) {
+      details {
+        id
+        behaviorName
+      }
+    }
+  }
+`
+
+const CREATE_ENVIRONMENT = gql`
+  mutation createEnvironment($studentId: String!, $name: String!) {
+    createEnvironment(
+      input: { student: $studentId, name: $name, definition: "Test Env Definition" }
+    ) {
+      details {
+        id
+        name
+        defination
+      }
     }
   }
 `
@@ -124,6 +150,14 @@ const UPDATE_TEMP = gql`
           id
           statusName
         }
+        environment {
+          edges {
+            node {
+              id
+              name
+            }
+          }
+        }
       }
     }
   }
@@ -134,6 +168,14 @@ const BehaviourForm = ({ style, tempId, form, setUpdateTempId }) => {
   const studentId = localStorage.getItem('studentId')
   const [initialEnv, setInitialEnv] = useState()
   const [initialMeasu, setInitialMeasu] = useState()
+  const [addBehNameModal, setAddBehNameModal] = useState(false)
+  const [addEnvNameModal, setAddEnvNameModal] = useState(false)
+  const [newBehName, setNewBahName] = useState('')
+  const [behNameList, setBehNameList] = useState()
+  const [newEnvName, setNewEnvName] = useState('')
+  const [disableNewBehButton, setDisableNewBehButton] = useState(true)
+  const [disableNewEnvButton, setDisableNewEnvButton] = useState(true)
+  const [envList, setEnvList] = useState()
 
   const {
     data: getTemDetailsData,
@@ -145,11 +187,14 @@ const BehaviourForm = ({ style, tempId, form, setUpdateTempId }) => {
     variables: {
       studentId,
     },
+    fetchPolicy: 'network-only',
   })
 
   const { data: dancleStatusData, loading: dancleStatusLoading } = useQuery(DANCLE_STATUS)
 
-  const { data: dancleEnvData, loading: dancleEnvLoading } = useQuery(DANCLE_ENVS)
+  const { data: dancleEnvData, loading: dancleEnvLoading } = useQuery(DANCLE_ENVS, {
+    fetchPolicy: 'network-only',
+  })
 
   const { data: dancleMeasurementData, loading: dancleMeasurementLoading } = useQuery(
     DANCLE_MEASURMENTS,
@@ -159,6 +204,28 @@ const BehaviourForm = ({ style, tempId, form, setUpdateTempId }) => {
     updateTemp,
     { data: updateTempData, loading: updateTempLoading, error: updateTempError },
   ] = useMutation(UPDATE_TEMP)
+
+  const [
+    createNewBehName,
+    { data: createBehData, loading: createBehLoading, error: createBehError },
+  ] = useMutation(CREATE_BEHAVIOR)
+
+  const [
+    createNewEnv,
+    { data: createNewEnvData, loading: createNewEnvLoading, error: createNewEnvError },
+  ] = useMutation(CREATE_ENVIRONMENT)
+
+  useEffect(() => {
+    if (behaviorData) {
+      setBehNameList(behaviorData.getBehaviour.edges)
+    }
+  }, [behaviorData])
+
+  useEffect(() => {
+    if (dancleEnvData) {
+      setEnvList(dancleEnvData.getEnvironment)
+    }
+  }, [dancleEnvData])
 
   useEffect(() => {
     if (getTemDetailsData) {
@@ -181,6 +248,7 @@ const BehaviourForm = ({ style, tempId, form, setUpdateTempId }) => {
       notification.success({
         message: 'Update Template Sucessfully',
       })
+      setUpdateTempId('')
     }
   }, [updateTempData])
 
@@ -192,7 +260,89 @@ const BehaviourForm = ({ style, tempId, form, setUpdateTempId }) => {
     }
   }, [updateTempError])
 
-  const SubmitForm = () => {
+  useEffect(() => {
+    if (createBehData) {
+      notification.success({
+        message: 'Create New Behavior Name Successfully',
+      })
+      setBehNameList(state => {
+        return [{ node: createBehData.createBehaviour.details }, ...state]
+      })
+      setNewBahName('')
+      setAddBehNameModal(false)
+    }
+  }, [createBehData])
+
+  useEffect(() => {
+    if (createBehError) {
+      notification.error({
+        message: 'Opps their some thing wrong on create New Behavior Name',
+      })
+    }
+  }, [createBehError])
+
+  useEffect(() => {
+    if (createNewEnvData) {
+      notification.success({
+        message: 'Create New Environment Successfully',
+      })
+      setEnvList(state => {
+        return [createNewEnvData.createEnvironment.details, ...state]
+      })
+      setNewEnvName('')
+      form.resetFields()
+      setAddEnvNameModal(false)
+    }
+  }, [createNewEnvData])
+
+  useEffect(() => {
+    if (createNewEnvError) {
+      notification.error({
+        message: 'Opps their some thing wrong on create New Environment',
+      })
+    }
+  }, [createNewEnvError])
+
+  useEffect(() => {
+    if (newBehName.length < 1) {
+      setDisableNewBehButton(true)
+    } else {
+      setDisableNewBehButton(false)
+    }
+  }, [newBehName])
+
+  useEffect(() => {
+    if (newEnvName.length < 1) {
+      setDisableNewEnvButton(true)
+    } else {
+      setDisableNewEnvButton(false)
+    }
+  }, [newEnvName])
+
+  const handelCreateNewBehName = () => {
+    if (newBehName.length > 0) {
+      createNewBehName({
+        variables: {
+          name: newBehName,
+          studentId,
+        },
+      })
+    }
+  }
+
+  const handelCreateNewEnv = () => {
+    if (newEnvName.length > 0) {
+      createNewEnv({
+        variables: {
+          name: newEnvName,
+          studentId,
+        },
+      })
+    }
+  }
+
+  const SubmitForm = e => {
+    e.preventDefault()
     form.validateFields((error, value) => {
       if (!error) {
         updateTemp({
@@ -206,8 +356,6 @@ const BehaviourForm = ({ style, tempId, form, setUpdateTempId }) => {
             env: value.envs,
           },
         })
-        form.resetFields()
-        setUpdateTempId('')
       }
     })
   }
@@ -236,33 +384,61 @@ const BehaviourForm = ({ style, tempId, form, setUpdateTempId }) => {
       {getTemDetailsError && <div style={{ minHeight: '90vh' }}>Opps their something wrong</div>}
       {getTemDetailsData && (
         <div>
-          <Form.Item label="Behaviour Name">
-            {form.getFieldDecorator('name', {
-              initialValue: getTemDetailsData && getTemDetailsData.getTemplateDetails.behavior.id,
-              rules: [{ required: true, message: 'Please select the behavior name!' }],
-            })(
-              <Select
-                placeholder="Select Behavior Name"
-                size="large"
-                loading={behaviorLoading}
-                showSearch
-                optionFilterProp="name"
-              >
-                {behaviorData &&
-                  behaviorData.getBehaviour.edges.map(({ node }) => {
+          <div
+            style={{
+              position: 'relative',
+              paddingTop: 50,
+            }}
+          >
+            <Button
+              style={{
+                position: 'absolute',
+                top: 50,
+                right: 0,
+                zIndex: 10,
+              }}
+              onClick={() => setAddBehNameModal(true)}
+            >
+              <PlusOutlined style={{ fontSize: 20, marginTop: 3 }} />
+            </Button>
+            <Form.Item label="Behaviour Name">
+              {form.getFieldDecorator('name', {
+                initialValue:
+                  getTemDetailsData &&
+                  !behaviorLoading &&
+                  getTemDetailsData.getTemplateDetails.behavior.id,
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please select the behavior name!',
+                  },
+                ],
+              })(
+                <Select
+                  placeholder="Select Behavior Name"
+                  size="large"
+                  loading={behaviorLoading}
+                  showSearch
+                  optionFilterProp="name"
+                >
+                  {behNameList?.map(({ node }) => {
                     return (
                       <Option key={node.id} vlaue={node.id} name={node.behaviorName}>
                         {node.behaviorName}
                       </Option>
                     )
                   })}
-              </Select>,
-            )}
-          </Form.Item>
+                </Select>,
+              )}
+            </Form.Item>
+          </div>
 
           <Form.Item label="Status">
             {form.getFieldDecorator('status', {
-              initialValue: getTemDetailsData.getTemplateDetails.status.id,
+              initialValue:
+                !dancleStatusLoading &&
+                getTemDetailsData &&
+                getTemDetailsData.getTemplateDetails.status.id,
               rules: [{ required: true, message: 'Please select a status' }],
             })(
               <Select
@@ -295,31 +471,43 @@ const BehaviourForm = ({ style, tempId, form, setUpdateTempId }) => {
             )}
           </Form.Item>
 
-          <Form.Item label="Environments">
-            {form.getFieldDecorator('envs', {
-              initialValue: initialEnv && initialEnv,
-              rules: [{ required: true, message: 'Please select a Environments' }],
-            })(
-              <Select
-                mode="multiple"
-                style={{ width: '100%' }}
-                placeholder="Please select"
-                size="large"
-                loading={dancleEnvLoading}
-              >
-                {dancleEnvData &&
-                  dancleEnvData.getEnvironment.map(envData => (
+          <div style={{ position: 'relative' }}>
+            <Button
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                zIndex: 10,
+              }}
+              onClick={() => setAddEnvNameModal(true)}
+            >
+              <PlusOutlined style={{ fontSize: 20, marginTop: 3 }} />
+            </Button>
+            <Form.Item label="Environments">
+              {form.getFieldDecorator('envs', {
+                initialValue: !dancleEnvLoading && initialEnv && initialEnv,
+                rules: [{ required: true, message: 'Please select a Environments' }],
+              })(
+                <Select
+                  mode="multiple"
+                  style={{ width: '100%' }}
+                  placeholder="Please select"
+                  size="large"
+                  loading={dancleEnvLoading}
+                >
+                  {envList?.map(envData => (
                     <Option key={envData.id} value={envData.id}>
                       {envData.name}
                     </Option>
                   ))}
-              </Select>,
-            )}
-          </Form.Item>
+                </Select>,
+              )}
+            </Form.Item>
+          </div>
 
           <Form.Item label="Measurements">
             {form.getFieldDecorator('measurements', {
-              initialValue: initialMeasu && initialMeasu,
+              initialValue: !dancleMeasurementLoading && initialMeasu && initialMeasu,
               rules: [{ required: true, message: 'Please select a Environments' }],
             })(
               <Select
@@ -381,6 +569,70 @@ const BehaviourForm = ({ style, tempId, form, setUpdateTempId }) => {
           </Form.Item>
         </div>
       )}
+
+      <Modal
+        visible={addBehNameModal}
+        title="Add New Behavior Name"
+        onCancel={() => setAddBehNameModal(false)}
+        footer={[
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handelCreateNewBehName}
+            loading={createBehLoading}
+            disabled={disableNewBehButton}
+          >
+            Create
+          </Button>,
+        ]}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Input
+            value={newBehName}
+            onChange={e => setNewBahName(e.target.value)}
+            size="large"
+            placeholder="Type the new modal name"
+            autoFocus
+          />
+        </div>
+      </Modal>
+
+      <Modal
+        visible={addEnvNameModal}
+        title="Add New Environment"
+        onCancel={() => setAddEnvNameModal(false)}
+        footer={[
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handelCreateNewEnv}
+            loading={createNewEnvLoading}
+            disabled={disableNewEnvButton}
+          >
+            Create
+          </Button>,
+        ]}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Input
+            value={newEnvName}
+            onChange={e => setNewEnvName(e.target.value)}
+            size="large"
+            placeholder="Type the new environment name"
+            autoFocus
+          />
+        </div>
+      </Modal>
     </Form>
   )
 }

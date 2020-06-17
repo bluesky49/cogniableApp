@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Typography, Button, notification } from 'antd'
 import recordIcon from 'icons/racord.png'
@@ -24,8 +25,8 @@ const TampletCard = ({
   envsNum,
   setNewRecordDrawer,
   setSelectTamplate,
-  setTemDataUpdate,
   setUpdateTempId,
+  setDeleteTem,
   id,
 }) => {
   const [deleteTemp, { data, loading, error }] = useMutation(DELETE_TEMP)
@@ -43,9 +44,9 @@ const TampletCard = ({
       notification.success({
         message: 'Delete Template Sucessfully',
       })
-      setTemDataUpdate(true)
+      setDeleteTem(id)
     }
-  }, [data, setTemDataUpdate])
+  }, [data])
 
   useEffect(() => {
     if (error) {
@@ -59,6 +60,7 @@ const TampletCard = ({
     <div
       style={{
         padding: '13px 20px',
+        width: '99.70%',
         background: '#FFFFFF',
         border: '1px solid #E4E9F0',
         boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',

@@ -46,14 +46,16 @@ export function* GetFamilyDetail() {
   const response = yield call(getFamilyDetails)
   console.log('response==>', response)
   if (response && response.data && response.data.student) {
-    const baseResponse = response.data.student.family
-    yield put({
-      type: 'family/SET_STATE',
-      payload: {
-        familyDetailsId: baseResponse.id,
-        familyMembers: baseResponse.members.edges,
-      },
-    })
+    if(response.data.student.family){
+      const baseResponse = response.data.student.family
+      yield put({
+        type: 'family/SET_STATE',
+        payload: {
+          familyDetailsId: baseResponse.id,
+          familyMembers: baseResponse.members.edges,
+        },
+      })
+    }
   }
 
   yield put({

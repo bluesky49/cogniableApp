@@ -47,71 +47,84 @@ export default () => {
     },
   })
 
+  if (loading){
+    return 'Loading settings...'
+  }
+
   return (
     <Authorize roles={['parents']} redirect to="/dashboard/beta">
       <Helmet title="Dashboard Parent" />
-      <Layout style={{ backgroundColor: '#F2F4F8', padding: '0px' }}>
+      <Layout style={{ padding: '0px' }}>
         <Content style={{ padding: '0px 20px', maxWidth: 1300, width: '100%', margin: '0px auto' }}>
           <div>
             {data && (
-              <div
-                style={{
-                  display: 'flex',
-                }}
-              >
-                <img
-                  src={defaultProfileImg}
-                  alt=""
+              <>
+                <div
                   style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: 6,
-                    marginRight: 25,
+                    display: 'flex',
                   }}
-                />
-                <div>
-                  <Title
+                >
+                  <img
+                    src={defaultProfileImg}
+                    alt=""
                     style={{
-                      fontSize: 24,
-                      fontWeight: 600,
-                      lineHeight: '33px',
-                      margin: 0,
+                      width: 60,
+                      height: 60,
+                      borderRadius: 6,
+                      marginRight: 25,
                     }}
-                  >
-                    {`${data.student.firstname}`}
-                    {data.student.lastname && data.student.lastname}
-                  </Title>
-                  <Text
-                    style={{
-                      fontWeight: 600,
-                      fontSize: '14px',
-                      lineHeight: '19px',
-                      margin: 0,
-                    }}
-                  >
-                    {`${data.student.currentAddress}`}
-                  </Text>
+                  />
+                  <div>
+                    <Title
+                      style={{
+                        fontSize: 24,
+                        fontWeight: 600,
+                        lineHeight: '33px',
+                        margin: 0,
+                      }}
+                    >
+                      {`${data.student.firstname}`}
+                      {data.student.lastname && data.student.lastname}
+                    </Title>
+                    <Text
+                      style={{
+                        fontWeight: 600,
+                        fontSize: '14px',
+                        lineHeight: '19px',
+                        margin: 0,
+                      }}
+                    >
+                      {`${data.student.currentAddress}`}
+                    </Text>
+                  </div>
                 </div>
-              </div>
+
+                <Row
+                  gutter={[47, 0]}
+                  style={{
+                    marginTop: 41,
+                  }}
+                >
+                  <Col span={6}>
+                    <LeftSideFrom />
+                  </Col>
+                  <Col span={9}>
+                    {data.student && data.student.family ?
+                      <MiddleSection familyMembers={data.student.family.members.edges} />
+                      :
+                      ''
+                    }
+                  </Col>
+                  <Col span={9}>
+                    {data && (
+                      <RigheSection email={data.student.email} phoneNo={data.student.parentMobile} />
+                    )}
+                  </Col>
+                </Row>
+              </>
+
             )}
-            <Row
-              gutter={[47, 0]}
-              style={{
-                marginTop: 41,
-              }}
-            >
-              <Col span={6}>
-                <LeftSideFrom />
-              </Col>
-              <Col span={9}>
-                {data && <MiddleSection familyMembers={data.student.family.members.edges} />}
-              </Col>
-              <Col span={9}>
-                {data && (
-                  <RigheSection email={data.student.email} phoneNo={data.student.parentMobile} />
-                )}
-              </Col>
-            </Row>
+
           </div>
         </Content>
       </Layout>

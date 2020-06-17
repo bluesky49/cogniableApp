@@ -86,6 +86,7 @@ const TaskCard = ({ style, id, domainName, targetName, like, userLiked }) => {
           marginRight: '50px',
           fontSize: 18,
           lineHeight: '25px',
+          whiteSpace: 'break-spaces',
         }}
       >
         {targetName}

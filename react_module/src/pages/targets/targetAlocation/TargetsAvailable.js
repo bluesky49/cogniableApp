@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Checkbox, Select } from 'antd'
+import { Button, Checkbox, Select, Icon } from 'antd'
 import styles from './style.module.scss'
 import SessionCard from '../../../components/SessionCard'
 import motherSon from '../motherSon.jpg'
@@ -11,7 +11,13 @@ import {
 import { notNull } from '../../../utilities'
 
 const selectTargetStyle = {
-  width: '120px',
+  width: '150px',
+  textDecoration: 'none',
+  marginRight: '20px',
+}
+
+const selectTargetAreaStyle = {
+  width: '260px',
   textDecoration: 'none',
   marginRight: '20px',
 }
@@ -19,7 +25,7 @@ const selectTargetStyle = {
 const searchBtnStyle = {
   color: '#FFF',
   backgroundColor: '#0B35B3',
-  width: '180px',
+  width: '40px',
 }
 
 const TargetsAvailable = ({
@@ -55,8 +61,10 @@ const TargetsAvailable = ({
     suggestedTargetQuery(selectedTargetDomain, selectedTargetArea)
   }
 
+  const studentId = JSON.parse(localStorage.getItem('studentId'))
+
   const suggestedTargetQuery = async (domainId, areaId) => {
-    const suggestedTargetResp = await suggestTarget(domainId, areaId)
+    const suggestedTargetResp = await suggestTarget(domainId, areaId, studentId)
     if (notNull(suggestedTargetResp)) setSuggestedTarget(suggestedTargetResp.data.target.edges)
   }
 
@@ -67,6 +75,8 @@ const TargetsAvailable = ({
   useEffect(() => {
     getDomainByProgramAreaQuery(selectedProgram)
   }, [])
+
+  console.log(suggestedTarget)
 
   return (
     <div className="col-md-12  col-lg-5">
@@ -86,7 +96,7 @@ const TargetsAvailable = ({
               )
             })}
         </Select>
-        <Select style={selectTargetStyle} defaultValue="Target Area" onSelect={onSelectArea}>
+        <Select style={selectTargetAreaStyle} defaultValue="Target Area" onSelect={onSelectArea}>
           {area &&
             area.map(a => {
               return (
@@ -98,15 +108,15 @@ const TargetsAvailable = ({
         </Select>
 
         <Button type="primary" style={searchBtnStyle} onClick={searchDomin}>
-          Search
+          <Icon type="search" />
         </Button>
       </div>
 
-      <div className="mb-3">
+      {/* <div className="mb-3">
         <Checkbox onChange={onChangeselectAllTarget} checked={selectAllTarget}>
           Select all Target
         </Checkbox>
-      </div>
+      </div> */}
       <div className={styles.targetWrapper}>
         {suggestedTarget &&
           suggestedTarget.length > 0 &&
@@ -114,6 +124,7 @@ const TargetsAvailable = ({
             return (
               <SessionCard
                 key={sTarget.node.id}
+                allocated={sTarget.node.allocatedTar}
                 image={motherSon}
                 heading={sTarget.node.targetMain.targetName}
                 receptiveLanguage="in therapy"

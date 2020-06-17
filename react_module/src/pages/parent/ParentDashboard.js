@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable array-callback-return */
 import React, { useState } from 'react'
-import { Layout, Row, Col, Typography, Icon, Button } from 'antd'
+import { Layout, Row, Col, Typography, Icon, Button, notification } from 'antd'
 import './parentDashboard.scss'
 import doctorIcon from 'icons/doctor.png'
 import parentCildIcon from 'icons/parentChild.png'
@@ -15,7 +13,10 @@ import PerformanceSummary from './ParentDashboard/PerformenceSummary'
 import PerformenceGrap from './ParentDashboard/PerformenceGrap'
 import AppointmentsCard from './ParentDashboard/AppointmentsCard'
 import SessionCard from './ParentDashboard/SessionCard'
-import InfoCard from '../../components/dashboard/InfoCard'
+// import InfoCard from '../../components/dashboard/InfoCard'
+import ParentCommunity from '../../components/dashboard/ParentCommunity'
+import Doctors from '../../components/dashboard/VerifiedDoctors'
+import Acceptance from '../../components/dashboard/Acceptence'
 import timeBack from './ParentDashboard/utils'
 
 const { Content } = Layout
@@ -232,8 +233,8 @@ const ParentDashboard = () => {
                         </Col>
                       </>
                     ) : (
-                      ''
-                    )}
+                        ''
+                      )}
                   </>
                 ))}
               </Row>
@@ -241,17 +242,14 @@ const ParentDashboard = () => {
 
             <Row gutter={[45, 0]}>
               <Col xs={24} lg={8}>
-                <InfoCard title="Acceptance & Commitment" icon={safeGardIcon} />
+                <Acceptance />
+            
               </Col>
               <Col xs={24} lg={8}>
-                <InfoCard title="Verified Doctors" icon={doctorIcon} />
+                <Doctors />                
               </Col>
               <Col xs={24} lg={8}>
-                <InfoCard
-                  title="Parent  Community"
-                  icon={parentCildIcon}
-                  style={{ marginRight: 0 }}
-                />
+                <ParentCommunity />
               </Col>
             </Row>
           </Content>

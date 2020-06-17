@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-shadow */
 /* eslint-disable react/jsx-closing-tag-location */
 import React, { useState, useRef, useEffect } from 'react'
@@ -95,18 +96,12 @@ const UPDATE_RECORD = gql`
       details {
         id
         irt
-        intensity
         note
-        date
         duration
         template {
-          id
-          behaviorDef
-          behaviorDescription
-        }
-        environment {
-          id
-          name
+          behavior {
+            behaviorName
+          }
         }
         status {
           id
@@ -116,8 +111,6 @@ const UPDATE_RECORD = gql`
           edges {
             node {
               id
-              count
-              time
             }
           }
         }
@@ -150,6 +143,7 @@ const CreateFrom = ({
   setNewRecord,
   setSelectTamplate,
   setNewRecordDrawer,
+  setUpdateBehavior,
 }) => {
   const classes = useStyles()
   const [frequency, setFrequency] = useState(0)
@@ -172,10 +166,13 @@ const CreateFrom = ({
 
   useEffect(() => {
     if (updateRecordData) {
+      const newData = updateRecordData.updateDecel.details
+      newData.template.id = selectTamplate
       setNewRecordDrawer(false)
       setSelectTamplate(null)
+      setUpdateBehavior(newData)
     }
-  }, [setNewRecordDrawer, setSelectTamplate, updateRecordData])
+  }, [updateRecordData])
 
   useEffect(() => {
     createRecord({
@@ -195,13 +192,13 @@ const CreateFrom = ({
         },
       })
     }
-  }, [data, frequency, updateFrequency, updateRecord])
+  }, [frequency])
 
   useEffect(() => {
     if (data) {
       setNewRecord({ node: data.createDecel.details })
     }
-  }, [data, setNewRecord])
+  }, [data])
 
   useEffect(() => {
     if (updateRecordError) {
@@ -225,7 +222,8 @@ const CreateFrom = ({
     }
   }, [updateFrequencyError])
 
-  const handleSubmit = () => {
+  const handleSubmit = e => {
+    e.preventDefault()
     // eslint-disable-next-line no-shadow
     form.validateFields((error, values) => {
       if (!error) {

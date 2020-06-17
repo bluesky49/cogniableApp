@@ -7,6 +7,7 @@ import defaultProfileImg from './defaultProfileImg.jpg'
 const { Title, Text } = Typography
 
 const MamberCard = ({ style, name, relation }) => {
+
   return (
     <div
       style={{
@@ -55,6 +56,11 @@ const MamberCard = ({ style, name, relation }) => {
 }
 
 export default ({ familyMembers }) => {
+
+  const redirectToFamilyMembers = () => {
+    window.location.href = '/#/family/'
+  }
+
   return (
     <div>
       <div
@@ -79,6 +85,7 @@ export default ({ familyMembers }) => {
             width: 50,
             height: 50,
           }}
+          onClick={redirectToFamilyMembers}
         >
           <PlusOutlined style={{ fontSize: 24, margin: '5px 0 0 -2px' }} />
         </Button>

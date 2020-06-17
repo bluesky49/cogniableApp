@@ -105,7 +105,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
     if (createAppiormentsData) {
       notification.success({
         message: 'Clinic Dashboard',
-        description: 'Appiorment create Successfully',
+        description: 'Appointment created Successfully',
       })
       setNewAppiormentCreated(true)
       handelNewAppiormentDrawer()
@@ -116,7 +116,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
   useEffect(() => {
     if (createAppiormentsError) {
       notification.error({
-        message: 'Somthing want wrong',
+        message: 'Something went wrong!',
         description: createAppiormentsError,
       })
     }
@@ -180,16 +180,16 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
         </Form.Item>
 
         <Form.Item
-          label="Purpose of Assignment"
+          label="Appointment reason"
           rules={[
             {
               required: true,
-              message: 'Please type the purpose of assignment',
+              message: 'Please type the Appointment reason',
             },
           ]}
         >
           <Input
-            placeholder="Purpose of Assignment"
+            placeholder="Appointment reason"
             value={purposeAssignment}
             size="large"
             onChange={e => setPurposeAssignment(e.target.value)}
@@ -300,7 +300,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
               marginBottom: 20,
             }}
           >
-            Create Appiorment
+            Create Appointment
           </Button>
         </Form.Item>
       </Form>

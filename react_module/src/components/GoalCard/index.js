@@ -26,7 +26,7 @@ const GoalCard = ({
     <Button className={styles.card} style={selectedCardStyle} onClick={selectShortTermGoal}>
       {editAble ? (
         <div className={styles.longTermGoalEditBn}>
-          <EditOutlined onClick={onEdit} />
+          <Button onClick={onEdit}><EditOutlined /> ST Goal</Button>
         </div>
       ) : (
         <></>

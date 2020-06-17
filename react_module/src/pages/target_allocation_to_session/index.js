@@ -98,7 +98,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
     let rawString = []
     if (session === 'Morning') {
       rawString = localStorage.getItem('Morning').split('|')
-      id = MorningSessionId
+      id = MorningSession.id
     }
     if (session === 'Afternoon') {
       rawString = localStorage.getItem('Afternoon').split('|')
@@ -162,6 +162,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
         <TargetCard
           key={item.node.id}
           id={item.node.id}
+          node={item.node}
           text={item.node.targetAllcatedDetails.targetName}
         />,
       )
@@ -173,6 +174,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
           <TargetCard
             key={item.node.id}
             id={item.node.id}
+            node={item.node}
             text={item.node.targetAllcatedDetails.targetName}
           />,
         )
@@ -187,6 +189,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
             // srNo={index + 1}
             key={item.node.id}
             id={item.node.id}
+            node={item.node}
             text={item.node.targetAllcatedDetails.targetName}
           />,
         )
@@ -199,13 +202,14 @@ class ExtraAppsJiraAgileBoard extends React.Component {
           <TargetCard
             key={item.node.id}
             id={item.node.id}
+            node={item.node}
             text={item.node.targetAllcatedDetails.targetName}
           />,
         )
       })
     }
 
-    const targetSortableStyle = { height: 540, overflow: 'auto' }
+    const targetSortableStyle = { height: 640, overflow: 'auto' }
     const sessionsSortableStyle = { height: 400, overflow: 'auto', marginTop: '10px' }
 
     return (
@@ -220,7 +224,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
             <div className="col-lg-3 col-md-6">
               {/* <button onClick={this.printDetails}>Print</button> */}
 
-              <div className={style.targetListHeding}>
+              {/* <div className={style.targetListHeding}>
                 <Search
                   className={style.search}
                   placeholder="Search Targets"
@@ -228,7 +232,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                   onChange={this.handleChangeSearchText}
                   style={{ width: '100%' }}
                 />
-              </div>
+              </div> */}
 
               <div className="card bg-light">
                 {/* <h3 className="font-weight-bold text-dark font-size-18 mb-3">Targets</h3> */}

@@ -5,6 +5,7 @@
 
 import { notification } from 'antd'
 import { gql } from 'apollo-boost'
+import moment from 'moment'
 import apolloClient from '../apollo/config'
 
 export async function getClinicStaffs() {
@@ -23,6 +24,7 @@ export async function getClinicStaffs() {
                 designation
                 empType
                 salutation
+                qualification
                 dateOfJoining
                 dob
                 surname
@@ -38,6 +40,7 @@ export async function getClinicStaffs() {
                   id
                   name
                 }
+                isActive
               }
             }
           }
@@ -89,61 +92,206 @@ export async function getStaffDropdown() {
 export async function createStaff(payload) {
   return apolloClient
     .mutate({
-      mutation: gql`mutation {
+      mutation: gql`mutation CreateStaff (
+        $empId : String!,
+        $doj: Date,
+        $designation: String,
+        $role: ID!,
+        $location: ID,
+        $name: String!,
+        $lastname: String,
+        $email: String!,
+        $gender: String,
+        $mobile: String,
+        $address: String,
+        $dob: Date,
+        $qualification: String,
+        $emergencyName: String,
+        $emergencyContact: String,
+      ) {
 			createStaff(
 				input:{
 					staffData:{
-						empId:"${payload.values.staffId}",
-						dateOfJoining:"${payload.values.dateOfJoining._d.toISOString().slice(0, 10)}",
-						designation:"${payload.values.designation}",
-						role:"${payload.values.role}",
-						clinicLocation:"${payload.values.clinicLocation}"
-						firstname:"${payload.values.firstname}",
-						surname:"${payload.values.lastname}",
-						email:"${payload.values.email}",
-						gender:"${payload.values.gender}",
-						mobile:"${payload.values.contactNumber}",
-						address:"${payload.values.address}",
-						dob:"${payload.values.dob._d.toISOString().slice(0, 10)}",
-						qualification:"${payload.values.qualification}",
-						emergencyName:"${payload.values.emergencyName}",
-						emergencyContact:"${payload.values.emergencyContactNumber}",
+						empId: $empId,
+						dateOfJoining: $doj,
+						designation: $designation,
+						role: $role,
+						clinicLocation: $location,
+						firstname: $name,
+						surname: $lastname,
+						email: $email,
+						gender: $gender,
+						mobile: $mobile,
+						address: $address,
+						dob: $dob,
+						qualification: $qualification,
+						emergencyName: $emergencyName,
+						emergencyContact: $emergencyContact,
 						authLearner:[]
 					}
 				}
 			)
 			{ 
 				staff {
-					id,
-					name,
-					email,
-					gender,
-					localAddress,
-					designation,
-					empType,
-					salutation,
-					dateOfJoining,
-					dob,
-					surname,
-					contactNo,
-					emergencyContact,
-					emergencyName,
-					employeeId,
-					clinicLocation{
-						id,
-						location
-					},
-					userRole{
-						id,
-						name
-					}	
+					id
+          name
+          email
+          gender
+          localAddress
+          designation
+          empType
+          salutation
+          qualification
+          dateOfJoining
+          dob
+          surname
+          contactNo
+          emergencyContact
+          emergencyName
+          employeeId
+          clinicLocation {
+            id
+            location
+          }
+          userRole {
+            id
+            name
+          }
+          isActive
 				}
 			}
-		}`,
+    }`,
+    variables: {
+      empId : payload.values.staffId,
+      doj: payload.values.dateOfJoining ? moment(payload.values.dateOfJoining).format('YYYY-MM-DD') : null,
+      designation: payload.values.designation,
+      role: payload.values.role,
+      location: payload.values.clinicLocation,
+      name: payload.values.firstname,
+      lastname: payload.values.lastname,
+      email: payload.values.email,
+      gender: payload.values.gender,
+      mobile: payload.values.contactNumber,
+      address: payload.values.address,
+      dob: moment(payload.values.dob).format('YYYY-MM-DD'),
+      qualification: payload.values.qualification,
+      emergencyName: payload.values.emergencyName,
+      emergencyContact: payload.values.emergencyContactNumber,
+    }
+
     })
     .then(result => result)
     .catch(err => {
       err.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
+        })
+      })
+    })
+}
+
+export async function updateStaff(payload) {
+  return apolloClient
+    .mutate({
+      mutation: gql`mutation UpdateStaff (
+        $location: ID,
+        $doj: Date,
+      ) {
+        updateStaff(input:{
+          staffData:{
+            id:"${payload.id}", 
+            empId:"${payload.values.staffId}",
+            designation:"${payload.values.designation}",
+            role:"${payload.values.role}",
+            email:"${payload.values.email}",
+            firstname:"${payload.values.firstname}",
+            surname:"${payload.values.lastname}",
+            gender:"${payload.values.gender}",
+            mobile:"${payload.values.contactNumber}",
+            address:"${payload.values.address}",
+            dob:"${payload.values.dob._d.toISOString().slice(0, 10)}",
+            emergencyName:"${payload.values.emergencyName}",
+            ssnAadhar:"", 
+            qualification:"${payload.values.qualification}",
+            salutation:"", 
+            emergencyContact:"${payload.values.emergencyContactNumber}",
+            shiftStart:"", 
+            shiftEnd:"", 
+            taxId:"", 
+            npi:"", 
+            duration:"", 
+            dateOfJoining: $doj,
+            clinicLocation: $location,
+          }
+        })
+        { 
+          staff {
+            id
+            name
+            email
+            gender
+            localAddress
+            designation
+            empType
+            salutation
+            qualification
+            dateOfJoining
+            dob
+            surname
+            contactNo
+            emergencyContact
+            emergencyName
+            employeeId
+            clinicLocation {
+              id
+              location
+            }
+            userRole {
+              id
+              name
+            }
+            isActive
+          }
+        }
+      }`,
+      variables: {
+        location: payload.values.clinicLocation,
+        doj: payload.values.dateOfJoining ? moment(payload.values.dateOfJoining).format('YYYY-MM-DD') : null,
+      }
+    })
+    .then(result => result)
+    .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
+        })
+      })
+    })
+}
+
+export async function staffActiveInactive(payload) {
+  return apolloClient
+    .mutate({
+      mutation: gql`mutation {
+        updateStaff(input:{
+          staffData:{
+            id:"${payload.id}", 
+            isActive: ${payload.checked}
+          }
+        })
+        { 
+          staff {
+            id,
+            isActive                    
+          }
+        }
+      }`,
+    })
+    .then(result => result)
+    .catch(error => {
+      error.graphQLErrors.map(item => {
         return notification.error({
           message: 'Somthing want wrong',
           description: item.message,

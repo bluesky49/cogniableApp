@@ -42,7 +42,7 @@ class EditBasicInformation extends React.Component {
       email: UserProfile.email,
       gender: UserProfile.gender,
       dob: moment(UserProfile.dob),
-      dateOfDiagnosis: moment(UserProfile.dateOfDiagnosis),
+      dateOfDiagnosis: UserProfile.dateOfDiagnosis ? moment(UserProfile.dateOfDiagnosis) : null,
       clinicLocation: UserProfile.clinicLocation ? UserProfile.clinicLocation.id : null,
       firstName: UserProfile.firstname,
       lastName: UserProfile.lastname,
@@ -147,9 +147,7 @@ class EditBasicInformation extends React.Component {
           {form.getFieldDecorator('dateOfDiagnosis')(<DatePicker />)}
         </Form.Item>
         <Form.Item label="Clinic Location" style={itemStyle}>
-          {form.getFieldDecorator('clinicLocation', {
-            rules: [{ required: true, message: 'Please provide Clinic Location!' }],
-          })(
+          {form.getFieldDecorator('clinicLocation')(
             <Select placeholder="Select a Clinic location" allowClear>
               {clinicLocationList.map(item => (
                 <Option value={item.node.id}>{item.node.location}</Option>

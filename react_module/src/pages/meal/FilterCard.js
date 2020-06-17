@@ -27,7 +27,7 @@ const FilterCard = ({
         ...style,
       }}
     >
-      <Form.Item label="Type">
+      <Form.Item label="Meal Type">
         <Select
           style={{ width: '190px' }}
           defaultValue="all"

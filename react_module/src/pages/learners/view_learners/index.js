@@ -455,7 +455,7 @@ class LearnerTable extends React.Component {
     }
 
     return (
-      <Authorize roles={['school_admin']} redirect to="/dashboard/beta">
+      <Authorize roles={['school_admin', 'therapist']} redirect to="/dashboard/beta">
         <Helmet title="Partner" />
 
         <div className="row">
@@ -474,7 +474,7 @@ class LearnerTable extends React.Component {
                   <Button onClick={this.showDrawer}>
                     Add Learner <PlusOutlined />
                   </Button>
-                  <Button>
+                  {/* <Button>
                     Excel <FileExcelOutlined />
                   </Button>
                   <Button>
@@ -482,7 +482,7 @@ class LearnerTable extends React.Component {
                   </Button>
                   <Button>
                     Print <PrinterOutlined />
-                  </Button>
+                  </Button> */}
                 </p>
               </div>
             </div>
@@ -644,7 +644,7 @@ class LearnerTable extends React.Component {
             onClose={this.onClose}
             visible={this.state.visible}
           >
-            <CreateLearner />
+            <CreateLearner CloseDrawer={this.onClose}  />
           </Drawer>
         </div>
       </Authorize>

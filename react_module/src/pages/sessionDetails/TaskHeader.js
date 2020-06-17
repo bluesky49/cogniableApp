@@ -46,10 +46,10 @@ const TaskHeader = ({ duration, sessionName, targetsCount, hostList, status }) =
           <div style={{ marginRight: 34 }}>{targetsCount} Targets</div>
           <div style={{ marginRight: 34 }}>
             {hostList.map(({ node }, index) => {
-              return node.relationship.name + (index < hostList.length - 1 ? ', ' : '')
+              return node.memberName + (index < hostList.length - 1 ? ', ' : '')
             })}
           </div>
-          {status && <div className="boxText">{status}</div>}
+          {status ? <div className="boxText">{status}</div> : <div className="boxText">PENDING</div>}
         </div>
       </div>
     </div>

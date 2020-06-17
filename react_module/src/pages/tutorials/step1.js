@@ -71,7 +71,7 @@ class TutorialStep1 extends React.Component {
   getSelectedProjectContinueURL = projectId => {
     client
       .query({
-        query: gql`query {getVideoStatus(user:"", project:"${projectId}", first:1)
+        query: gql`query {getVideoStatus(project:"${projectId}", first:1)
       {
         edges {
             node {
@@ -152,8 +152,7 @@ class TutorialStep1 extends React.Component {
 
   getVideoIdFromUrl = url => {
     const res = url.substring(8)
-    const id = res.substring(0, res.indexOf('/'))
-    return id
+    return res
   }
 
   render() {
@@ -262,6 +261,7 @@ class TutorialStep1 extends React.Component {
                             to={{
                               pathname: '/tutorials/step2',
                               videoUrl: video.link,
+                              videoId: this.getVideoIdFromUrl(video.uri),
                               videoTitle: video.name,
                               videoDuration: this.secondsToHms(video.duration),
                               projectId: selectedProjectId,

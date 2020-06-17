@@ -1,7 +1,9 @@
+/* eslint-disable consistent-return */
 import React from 'react'
-import { Form, Input, Icon, Button, Select, message, InputNumber } from 'antd'
+import { Form, Input, Icon, Button, Select, message, InputNumber, notification } from 'antd'
 import { Link, Redirect } from 'react-router-dom'
 import client from '../../../../config'
+// import { GraphQLClient } from 'graphql-request'
 
 const FormItem = Form.Item
 const API_URL = process.env.REACT_APP_API_URL
@@ -12,6 +14,7 @@ class RegisterFormComponent extends React.Component {
     confirmDirty: false,
     CountryList: [],
     LoginRedirect: false,
+    loading:false
   }
 
   // componentDidMount() {
@@ -58,32 +61,55 @@ class RegisterFormComponent extends React.Component {
     const { timezone } = this.state
     form.validateFields((error, values) => {
       if (!error) {
-        values.timezone = timezone
-
-        console.log(values)
-
-        fetch(`${API_URL}/administrative/sign_up/`, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            country: values.country,
-          },
-          body: JSON.stringify(values),
+        this.setState({
+          loading:true
         })
-          .then(res => res.json())
-          .then(result => {
-            if (result.status) {
-              message.success(result.detail)
-              this.setState({
-                LoginRedirect: true,
-              })
-            } else {
-              message.error(result.detail)
+        // console.log(values)
+        values.timezone = timezone
+          const signUpQuery = `mutation SignUp($name: String!, $password: String!, $email: String!, $country: String!, $learner: Int!) {
+            signUp(input:{data:{
+              name: $name,
+              email: $email,
+              country: $country,
+              password: $password,
+              noLearner: $learner
+            }})
+            {
+              school{
+                id,
+                schoolName
+              }
             }
-          })
-      }
+          }`
+          const variables = {
+            name: values.school_name,
+            password: values.password,
+            email: values.email,
+            country: values.country,
+            learner: values.no_learner,
+          }
+
+          return client
+            .request(signUpQuery, variables)
+            .then(data => {
+              notification.success({
+                message: "You successfully Signup, Please check your mail for verification"
+              })
+              this.setState({
+                LoginRedirect:true,
+                loading:false
+              })
+            })
+            .catch(err => {
+              notification.error({
+                message: err.response.errors[0].message,
+                description: err.response.errors[0].message,
+              })
+              this.setState({
+                loading:false
+              })
+            })
+        }
     })
   }
 
@@ -115,7 +141,7 @@ class RegisterFormComponent extends React.Component {
 
   render() {
     const { form } = this.props
-    const { CountryList, LoginRedirect } = this.state
+    const { CountryList, LoginRedirect, loading } = this.state
     const inputStyle = { paddingBottom: 0 }
 
     if (LoginRedirect) {
@@ -207,6 +233,7 @@ class RegisterFormComponent extends React.Component {
           })(
             <Input
               size="large"
+              prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
               type="password"
               onBlur={this.handleConfirmBlur}
               placeholder="Confirm your password"
@@ -214,7 +241,7 @@ class RegisterFormComponent extends React.Component {
           )}
         </FormItem>
         <Form.Item>
-          <Button type="primary" htmlType="submit" size="large" block>
+          <Button type="primary" htmlType="submit" size="large" loading={loading} block>
             Sign Up
             {/* <ArrowRightOutlined className="site-form-item-icon" /> */}
           </Button>

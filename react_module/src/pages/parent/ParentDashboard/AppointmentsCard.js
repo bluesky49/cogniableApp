@@ -67,10 +67,10 @@ const AppointmentsCard = ({ appointments }) => {
             </>
           )
         })}
-        <Button type="link" className="allViewButton">
+        <a href="/#/appointmentData/" className="allViewButton">
           View All
           <Icon type="arrow-right" />
-        </Button>
+        </a>
       </div>
     </div>
   )

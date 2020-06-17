@@ -1,17 +1,19 @@
-import React, { useState } from 'react'
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-indent-props */
+import React, { useState, useEffect } from 'react'
 import { Typography, Button, Drawer } from 'antd'
 import { PlusOutlined, WhatsAppOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import gql from 'graphql-tag'
 import { useQuery } from 'react-apollo'
+import AppiorMentForm from 'components/Form/AppiorMentForm'
 import defautProfileImg from './img/profile.jpg'
-import AppiorMentForm from './AppiorMentForm'
 
 const { Title, Text } = Typography
 
 const APPIORMENTS = gql`
   query {
-    upcoming_appointment: appointments(first: 5) {
+    upcoming_appointment: appointments(last: 3) {
       edges {
         node {
           id
@@ -33,40 +35,51 @@ const APPIORMENTS = gql`
 
 const AppointmentCard = ({ therapist, title, start, end, profileImg }) => {
   return (
-    <div
-      style={{
-        padding: '19px 32px 0px',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      <img
-        src={profileImg || defautProfileImg}
-        alt=""
+    <a href="/#/appointmentData/">
+      <div
         style={{
-          width: 80,
-          height: 64,
-          borderRadius: 10,
-          marginRight: 22,
+          padding: '19px 32px 0px',
+          display: 'flex',
+          alignItems: 'center',
         }}
-      />
-      <div style={{ width: '100%' }}>
-        <div
+      >
+        <img
+          src={profileImg || defautProfileImg}
+          alt=""
           style={{
-            display: 'flex',
-            alignItems: 'center',
+            width: 80,
+            height: 64,
+            borderRadius: 10,
+            marginRight: 22,
           }}
-        >
-          <Title
+        />
+        <div style={{ width: '100%' }}>
+          <div
             style={{
-              fontSize: 18,
-              lineHeight: '25px',
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            {therapist}
-          </Title>
-          <WhatsAppOutlined style={{ fontSize: 28, marginLeft: 'auto', marginRight: 21 }} />
-          <ClockCircleOutlined style={{ fontSize: 30, marginRight: 11 }} />
+            <Title
+              style={{
+                fontSize: 18,
+                lineHeight: '25px',
+              }}
+            >
+              {therapist}
+            </Title>
+            <WhatsAppOutlined style={{ fontSize: 28, marginLeft: 'auto', marginRight: 21 }} />
+            <ClockCircleOutlined style={{ fontSize: 30, marginRight: 11 }} />
+            <Text
+              style={{
+                fontSize: 16,
+                lineHeight: '22px',
+                color: '#000',
+              }}
+            >
+              {`${moment(start).format('HH:mm a')}-${moment(end).format('HH:mm a')}`}
+            </Text>
+          </div>
           <Text
             style={{
               fontSize: 16,
@@ -74,20 +87,11 @@ const AppointmentCard = ({ therapist, title, start, end, profileImg }) => {
               color: '#000',
             }}
           >
-            {`${moment(start).format('HH:mm a')}-${moment(end).format('HH:mm a')}`}
+            {title}
           </Text>
         </div>
-        <Text
-          style={{
-            fontSize: 16,
-            lineHeight: '22px',
-            color: '#000',
-          }}
-        >
-          {title}
-        </Text>
       </div>
-    </div>
+    </a>
   )
 }
 
@@ -98,6 +102,14 @@ const AppiorMentsCard = ({ style }) => {
 
   // const {mutate, newAppiorments} = useMutation(CREATE_APPIORMENTS)
   // const user = useSelector(state => state.user)
+
+  useEffect(() => {
+    if (newAppiormentCreated) {
+      handelNewAppiormentDrawer()
+      setNewAppiormentCreated(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newAppiormentCreated])
 
   const handelNewAppiormentDrawer = () => {
     setCreateNewAppiormentDrawer(state => !state)
@@ -152,42 +164,42 @@ const AppiorMentsCard = ({ style }) => {
           boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
           borderRadius: 10,
           padding: '14px 6px',
-          minHeight: 585,
+          minHeight: 385,
         }}
       >
         {appiorments.loading ? (
           'Loading...'
         ) : (
-          <>
-            {appiorments.error && <Text type="danger">Opp&apos;s some thing wrong</Text>}
-            {appiorments.data && (
-              <div>
-                {appiorments.data.upcoming_appointment.edges.map(({ node }, index) => {
+            <>
+              {appiorments.error && <Text type="danger">Opp&apos;s some thing wrong</Text>}
+              {appiorments.data && (
+                <div>
+                  {appiorments.data.upcoming_appointment.edges.map(({ node }, index) => {
                   const { length } = appiorments.data.upcoming_appointment.edges
-                  return (
-                    <div key={node.id}>
-                      <AppointmentCard
-                        therapist={node.therapist.name}
-                        title={node.title}
-                        start={node.start}
-                        end={node.end}
-                        profileImg={node.profileImg}
-                      />
-                      {index < length - 1 && (
-                        <hr
-                          style={{
-                            margin: '34px auto 0px',
-                            width: 'calc(100% - 64px)',
-                          }}
+                    return (
+                      <div key={node.id}>
+                        <AppointmentCard
+                          therapist={node.therapist.name}
+                          title={node.title}
+                          start={node.start}
+                          end={node.end}
+                          profileImg={node.profileImg}
                         />
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </>
-        )}
+                        {index < length - 1 && (
+                          <hr
+                            style={{
+                              margin: '34px auto 0px',
+                              width: 'calc(100% - 64px)',
+                            }}
+                          />
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </>
+          )}
       </div>
       <Drawer
         handler={false}
@@ -205,10 +217,7 @@ const AppiorMentsCard = ({ style }) => {
             padding: '30px 40px',
           }}
         >
-          <AppiorMentForm
-            setNewAppiormentCreated={setNewAppiormentCreated}
-            handelNewAppiormentDrawer={handelNewAppiormentDrawer}
-          />
+          <AppiorMentForm setNewAppiormentCreated={setNewAppiormentCreated} />
         </div>
       </Drawer>
     </div>

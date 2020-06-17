@@ -26,6 +26,7 @@ class Login extends Component {
     this.state = {
       countryLoad: false,
       CountryList: [],
+      loading:false,
       // UserContryName: '',
       // timezone: null,
       signupredirect: false,
@@ -85,22 +86,25 @@ class Login extends Component {
     const { form, dispatch } = this.props
     form.validateFields((error, values) => {
       if (!error) {
+        this.setState({
+          loading:true
+        })
         // values.timezone = timezone
         dispatch({
           type: 'user/LOGIN',
           payload: values,
+        })
+        this.setState({
+          loading:false
         })
       }
     })
   }
 
   render() {
-    const {
-      form,
-      user: { loading },
-    } = this.props
+    const { form } = this.props;
 
-    const { loginredirect, signupredirect, CountryList, countryLoad, UserContryName } = this.state
+    const { loginredirect, signupredirect, CountryList, countryLoad, UserContryName, loading } = this.state
 
     if (loginredirect) {
       return <Redirect to="/master_target" />
@@ -124,10 +128,7 @@ class Login extends Component {
                     </h4>
                     <p align="center">
                       Don&apos;t have an account?
-                      <Link to="/user/signUp" className="utils__link--blue">
-                        {' '}
-                        Sign Up
-                      </Link>
+                      contact at <b>info@cogniable.tech</b>
                     </p>
                     <div align="center" className={styles.customLayout}>
                       <img
@@ -156,7 +157,7 @@ class Login extends Component {
                         {form.getFieldDecorator('password', {
                           rules: [{ required: true, message: 'Please input your password' }],
                         })(
-                          <Input
+                          <Input.Password
                             size="large"
                             type="password"
                             prefix={<KeyOutlined className="site-form-item-icon" />}
@@ -167,11 +168,11 @@ class Login extends Component {
                       <p align="center">
                         <Link to="/user/forgot" className="utils__link--blue">
                           {' '}
-                          Forgot Password
+                          Forgot Password ?
                         </Link>
                       </p>
                       <Form.Item>
-                        <Button type="primary" htmlType="submit" size="large" block>
+                        <Button type="primary" htmlType="submit" size="large" loading={loading} block>
                           SIGN IN
                           <ArrowRightOutlined className="site-form-item-icon" />
                         </Button>
@@ -207,7 +208,7 @@ class Login extends Component {
                       <p align="center">
                         Need help?
                         {/* <text className="utils__link--blue"> Contact Us support@cogniable.us  </text> */}
-                        <text> Contact Us at support@cogniable.us </text>
+                        <text> Contact Us at info@cogniable.tech </text>
                       </p>
                     </Form>
                   </div>

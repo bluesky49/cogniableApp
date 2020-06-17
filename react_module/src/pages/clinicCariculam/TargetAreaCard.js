@@ -165,7 +165,7 @@ const TargetAreaCard = ({ style, name, targetAreaId, setUpdateTarArea, handelNew
                 setEditMode(false)
               }}
             >
-              Cancle
+              Cancel
             </Button>
           </div>
         )}

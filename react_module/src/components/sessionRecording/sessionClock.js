@@ -37,7 +37,7 @@ class SessionClock extends React.Component {
     dispatch({
       type: 'sessionrecording/START_SESSION',
       payload: {
-        duration: time,
+        duration: time.toFixed(),
       },
     })
     // enable target recording block
@@ -55,7 +55,7 @@ class SessionClock extends React.Component {
     dispatch({
       type: 'sessionrecording/PAUSE_SESSION',
       payload: {
-        duration: time,
+        duration: time.toFixed(),
       },
     })
     // disable target recording block
@@ -73,7 +73,7 @@ class SessionClock extends React.Component {
     dispatch({
       type: 'sessionrecording/RESUME_SESSION',
       payload: {
-        duration: time,
+        duration: time.toFixed(),
       },
     })
     // enable target recording block
@@ -91,7 +91,7 @@ class SessionClock extends React.Component {
     dispatch({
       type: 'sessionrecording/END_SESSION',
       payload: {
-        duration: time,
+        duration: time.toFixed(),
       },
     })
     // disable target recording block
@@ -105,22 +105,22 @@ class SessionClock extends React.Component {
 
   updateTimeInReduxStore = time => {
     const { dispatch } = this.props
-
+    console.log(time ,'end: ', time.toFixed())
     dispatch({
       type: 'sessionrecording/SET_STATE',
       payload: {
-        CurrentSessionTime: time,
+        CurrentSessionTime: time.toFixed(),
       },
     })
   }
 
   updateStartTrialInReduxStore = time => {
     const { dispatch } = this.props
-
+    console.log(time, 'start: ', time.toFixed())
     dispatch({
       type: 'sessionrecording/SET_STATE',
       payload: {
-        TrialStartTime: time,
+        TrialStartTime: time.toFixed(),
       },
     })
   }

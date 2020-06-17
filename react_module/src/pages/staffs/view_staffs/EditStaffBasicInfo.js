@@ -1,77 +1,75 @@
-/* eslint-disable react/no-unused-state */
-/* eslint-disable react/destructuring-assignment */
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-unused-vars */
-/* eslint-disable no-lone-blocks */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable no-self-compare */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable object-shorthand */
 import React from 'react'
 import { Form, Input, Button, Select, DatePicker } from 'antd'
 import moment from 'moment'
-import { gql } from 'apollo-boost'
-import client from '../../../apollo/config'
+import { connect } from 'react-redux'
 
 const { TextArea } = Input
+const { Option } = Select
+const tailLayout = {
+  wrapperCol: {
+    offset: 6,
+    span: 14,
+  },
+}
 
-class EditStaffBasicInfo extends React.Component {
+@connect(({ user, staffs }) => ({ user, staffs }))
+class EditBasicInformation extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      isLoaded: true,
-      staffId: this.props.userinfo.employeeId,
-      dateOfJoining: this.props.userinfo.dateOfJoining,
-      role: this.props.userinfo.userRole.id,
-      designation: this.props.userinfo.designation,
-      clinicLocation: null,
-      firstname: this.props.userinfo.name,
-      lastname: this.props.userinfo.surname,
-      email: this.props.userinfo.email,
-      gender: this.props.userinfo.gender,
-      contactNumber: this.props.userinfo.contactNo,
-      address: this.props.userinfo.localAddress,
-      maritalStatus: null,
-      dob: this.props.userinfo.dob,
-      emergencyName: this.props.userinfo.emergencyName,
-      emergencyContactNumber: this.props.userinfo.emergencyContact,
-      emergencyRelation: '',
-      qualification: '',
-      workExprience: '',
-
-      clinicLocationList: [],
-      userRoleList: [],
-    }
+    this.state = {}
   }
 
-  handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value })
+  componentDidMount() {
+    const {
+      form,
+      staffs: { StaffProfile },
+    } = this.props;
+
+    form.setFieldsValue({
+      staffId: StaffProfile.employeeId,
+      dateOfJoining: moment(StaffProfile.dateOfJoining),
+      designation: StaffProfile.designation,
+      role: StaffProfile.userRole.id,
+      clinicLocation: StaffProfile.clinicLocation ? StaffProfile.clinicLocation.id : null,
+      firstname: StaffProfile.name,
+      lastname: StaffProfile.surname,
+      email: StaffProfile.email,
+      gender: StaffProfile.gender,
+      contactNumber: StaffProfile.contactNo,
+      address: StaffProfile.localAddress,
+      dob: moment(StaffProfile.dob),
+      qualification: StaffProfile.qualification,
+      emergencyName: StaffProfile.emergencyName,
+      emergencyContactNumber: StaffProfile.emergencyContact,
+    })
   }
 
-  setDateOfJoining = value => {
-    this.setState({ dateOfJoining: new Date(value).toISOString().slice(0, 10) })
-  }
-
-  selectRole = value => {
-    this.setState({ role: value })
-  }
-
-  selectClinicLocation = value => {
-    this.setState({ clinicLocation: value })
-  }
-
-  selectGender = value => {
-    this.setState({ gender: value })
-  }
-
-  selectMeritalStatus = value => {
-    this.setState({ maritalStatus: value })
-  }
-
-  setDob = value => {
-    this.setState({ dob: new Date(value).toISOString().slice(0, 10) })
-  }
-
-  onFinish = values => {
-    console.log(values)
+  handleSubmit = e => {
+    const {
+      form,
+      dispatch,
+      staffs: { StaffProfile },
+      } = this.props;
+    e.preventDefault()
+    form.validateFields((err, values) => {
+      if (!err) {
+        dispatch({
+          type: 'staffs/EDIT_STAFF',
+          payload: {
+            id: StaffProfile.id,
+            values: values,
+          },
+        })
+      }
+    })
   }
 
   onReset = () => {
@@ -80,145 +78,123 @@ class EditStaffBasicInfo extends React.Component {
 
   render() {
     const itemStyle = { marginBottom: '0' }
-    const { userinfo } = this.props
-    const dateFormat = 'YYYY-MM-DD'
-    const timeFormat = 'h:mm A'
-
     const {
-      staffId,
-      designation,
-      firstname,
-      lastname,
-      email,
-      contactNumber,
-      address,
-      emergencyName,
-      emergencyContactNumber,
-      emergencyRelation,
-      qualification,
-      workExprience,
-      clinicLocationList,
-      userRoleList,
-      dateOfJoining,
-      dob,
-      role,
-      clinicLocation,
-    } = this.state
-
-    console.log(clinicLocation, 1)
+      form,
+      staffs: { UserRole, clinicLocationList },
+    } = this.props
 
     return (
-      <Form
-        layout={{
-          labelCol: { span: 4 },
-          wrapperCol: { span: 14 },
-        }}
-        ref={this.formRef}
-        name="control-ref"
-        onFinish={this.onFinish}
-      >
-        <Form.Item style={itemStyle} label="Staff ID">
-          <Input name="staffId" onChange={this.handleChange} value={staffId} />
+      <Form onSubmit={e => this.handleSubmit(e)}>
+        <Form.Item label="Staff ID" style={itemStyle}>
+          {form.getFieldDecorator('staffId', {
+            rules: [{ required: true, message: 'Please provide your Staff Id!' }],
+          })(<Input />)}
         </Form.Item>
-        <Form.Item style={itemStyle} label="Date of Joining">
-          {dateOfJoining ? (
-            <DatePicker onChange={this.setDateOfJoining} defaultValue={moment(dateOfJoining)} />
-          ) : (
-            <DatePicker onChange={this.setDateOfJoining} />
+        <Form.Item label="Role" style={itemStyle}>
+          {form.getFieldDecorator('role', {
+            rules: [{ required: true, message: 'Please provide your Role' }],
+          })(
+            <Select>
+              {UserRole.map(item => (
+                <Select.Option value={item.id}>{item.name}</Select.Option>
+              ))}
+            </Select>,
           )}
         </Form.Item>
-        <Form.Item style={itemStyle} label="Role">
-          <Select onSelect={this.selectRole} defaultValue={role}>
-            {userRoleList.map(item => (
-              <Select.Option value={item.id}>{item.name}</Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        <Form.Item style={itemStyle} label="Designation">
-          <Input name="designation" onChange={this.handleChange} value={designation} />
-        </Form.Item>
-        <Form.Item style={itemStyle} label="Clinic Location">
-          <Select onSelect={this.selectClinicLocation} value={clinicLocation}>
-            {clinicLocationList.map(item => (
-              <Select.Option value={item.node.id}>{item.node.location}</Select.Option>
-            ))}
-          </Select>
+        <Form.Item label="Date of Joining" style={itemStyle}>
+          {form.getFieldDecorator('dateOfJoining', {
+            rules: [{ required: true, message: 'Please provide your Date of Joining!' }],
+          })(<DatePicker />)}
         </Form.Item>
 
-        <Form.Item style={itemStyle} label="First Name">
-          <Input name="firstname" onChange={this.handleChange} value={firstname} />
+        <Form.Item label="Designation" style={itemStyle}>
+          {form.getFieldDecorator('designation', { initialValue: '' })(<Input />)}
         </Form.Item>
-        <Form.Item style={itemStyle} label="Last Name">
-          <Input name="lastname" onChange={this.handleChange} value={lastname} />
-        </Form.Item>
-        <Form.Item style={itemStyle} label="Email">
-          <Input name="email" type="email" onChange={this.handleChange} value={email} />
-        </Form.Item>
-        <Form.Item style={itemStyle} label="Gender">
-          <Select onSelect={this.selectGender}>
-            <Select.Option value="male">Male</Select.Option>
-            <Select.Option value="female">Female</Select.Option>
-            <Select.Option value="other">Other</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item style={itemStyle} label="Contact no.">
-          <Input name="contactNumber" onChange={this.handleChange} value={contactNumber} />
-        </Form.Item>
-
-        <Form.Item style={itemStyle} label="Address">
-          <TextArea
-            placeholder="Address"
-            name="address"
-            onChange={this.handleChange}
-            value={address}
-            autoSize={{ minRows: 2, maxRows: 5 }}
-          />
-        </Form.Item>
-        <Form.Item style={itemStyle} label="Merital Status">
-          <Select onSelect={this.selectMeritalStatus}>
-            <Select.Option value="Single">Single</Select.Option>
-            <Select.Option value="Married">Married</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item style={itemStyle} label="D.O.B">
-          {dob ? (
-            <DatePicker onChange={this.setDob} defaultValue={moment(dob)} />
-          ) : (
-            <DatePicker onChange={this.setDob} />
+        <Form.Item label="Clinic Location" style={itemStyle}>
+          {form.getFieldDecorator('clinicLocation')(
+            <Select>
+              {clinicLocationList.map(item => (
+                <Select.Option value={item.node.id}>{item.node.location}</Select.Option>
+              ))}
+            </Select>,
           )}
         </Form.Item>
+        <Form.Item label="First Name" style={itemStyle}>
+          {form.getFieldDecorator('firstname', {
+            rules: [{ required: true, message: 'Please provide your name' }],
+          })(<Input />)}
+        </Form.Item>
+        <Form.Item label="Last Name" style={itemStyle}>
+          {form.getFieldDecorator('lastname', { initialValue: '' })(<Input />)}
+        </Form.Item>
+        <Form.Item label="Email" style={itemStyle}>
+          {form.getFieldDecorator('email', {
+            rules: [{ required: true, type: 'email', message: 'Please provide your email' }],
+          })(<Input />)}
+        </Form.Item>
+        <Form.Item label="Gender" style={itemStyle}>
+          {form.getFieldDecorator('gender', {
+            rules: [{ required: true, message: 'Please select gender' }],
+          })(
+            <Select>
+              <Select.Option value="male">Male</Select.Option>
+              <Select.Option value="female">Female</Select.Option>
+              <Select.Option value="other">Other</Select.Option>
+            </Select>,
+          )}
+        </Form.Item>
+        <Form.Item label="D.O.B" style={itemStyle}>
+          {form.getFieldDecorator('dob', {
+            rules: [{ required: true, message: 'Please provide Date of Birth' }],
+          })(<DatePicker />)}
+        </Form.Item>
+        <Form.Item label="Contact no." style={itemStyle}>
+          {form.getFieldDecorator('contactNumber', { initialValue: '' })(<Input />)}
+        </Form.Item>
 
-        <Form.Item style={itemStyle} label="Emergency Contact Name">
-          <Input name="emergencyName" onChange={this.handleChange} value={emergencyName} />
+        <Form.Item label="Address" style={itemStyle}>
+          {form.getFieldDecorator('address', { initialValue: '' })(
+            <TextArea placeholder="Address" autoSize={{ minRows: 3 }} />,
+          )}
         </Form.Item>
-        <Form.Item style={itemStyle} label="Emergency Contact Relation">
-          <Input name="emergencyRelation" onChange={this.handleChange} value={emergencyRelation} />
+        <Form.Item label="Merital Status" style={itemStyle}>
+          {form.getFieldDecorator('meritalStatus', { initialValue: '' })(
+            <Select>
+              <Select.Option value="Single">Single</Select.Option>
+              <Select.Option value="Married">Married</Select.Option>
+            </Select>,
+          )}
         </Form.Item>
-        <Form.Item style={itemStyle} label="Emergency contact no.">
-          <Input
-            name="emergencyContactNumber"
-            onChange={this.handleChange}
-            value={emergencyContactNumber}
-          />
+        <Form.Item label="Emergency Contact Name" style={itemStyle}>
+          {form.getFieldDecorator('emergencyName', { initialValue: '' })(<Input />)}
+        </Form.Item>
+        <Form.Item label="Emergency Contact Relation" style={itemStyle}>
+          {form.getFieldDecorator('emergencyRelation', { initialValue: '' })(<Input />)}
+        </Form.Item>
+        <Form.Item label="Emergency contact no." style={itemStyle}>
+          {form.getFieldDecorator('emergencyContactNumber', { initialValue: '' })(<Input />)}
+        </Form.Item>
+        <Form.Item label="Qualification" style={itemStyle}>
+          {form.getFieldDecorator('qualification', { initialValue: '' })(<Input />)}
+        </Form.Item>
+        <Form.Item label="Work Exprience" style={itemStyle}>
+          {form.getFieldDecorator('workExprience', { initialValue: '' })(<Input />)}
         </Form.Item>
 
-        <Form.Item style={itemStyle} label="Qualification">
-          <Input name="qualification" onChange={this.handleChange} value={qualification} />
-        </Form.Item>
-        <Form.Item style={itemStyle} label="Work Exprience">
-          <Input name="workExprience" onChange={this.handleChange} value={workExprience} />
-        </Form.Item>
-
-        <Form.Item style={itemStyle}>
+        <Form.Item {...tailLayout}>
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
-          <Button onClick={this.onReset} className="ml-4">
-            Cancel
+
+          <Button htmlType="primary" onClick={this.onReset} className="ml-4">
+            cancel
           </Button>
         </Form.Item>
       </Form>
     )
   }
 }
-export default EditStaffBasicInfo
+
+const EditBasicInformationForm = Form.create()(EditBasicInformation)
+
+export default EditBasicInformationForm

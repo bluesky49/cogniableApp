@@ -1,13 +1,14 @@
+/* eslint-disable object-shorthand */
 import { gql } from 'apollo-boost'
 import { notification } from 'antd'
 import client from '../../../apollo/config'
 
-export const getDomainByProgramArea = (programArea = 'UHJvZ3JhbUFyZWFUeXBlOjQ') => {
+export const getDomainByProgramArea = (programArea) => {
   return client
     .query({
       query: gql`
           query{
-            programDetails(id:"${programArea}="){
+            programDetails(id:"${programArea}"){
               id,
               name,
               domain{
@@ -25,7 +26,7 @@ export const getDomainByProgramArea = (programArea = 'UHJvZ3JhbUFyZWFUeXBlOjQ') 
     .then(result => result)
 }
 
-export const getPatients = (studentId = 'U3R1ZGVudFR5cGU6OTI=') => {
+export const getPatients = (studentId) => {
   return client
     .query({
       query: gql`
@@ -47,8 +48,8 @@ export const getPatients = (studentId = 'U3R1ZGVudFR5cGU6OTI=') => {
 }
 
 export const getLongTermGoals = (
-  student = 'U3R1ZGVudFR5cGU6OTM=',
-  program = 'UHJvZ3JhbUFyZWFUeXBlOjE=',
+  student,
+  program,
 ) => {
   return client
     .query({
@@ -97,16 +98,72 @@ export const getLongTermGoals = (
                         targetAllocateSet {
                           edges {
                             node {
-                              id
-                              goalName
-                              targetStatus {
-                                id
-                                statusName
-                              }
-                              targetAllcatedDetails {
-                                id
-                                targetName
-                              }
+                              id,
+                time,
+                targetInstr,
+                date,
+                objective,
+                targetStatus{
+                  id,
+                  statusName
+                }
+                masteryCriteria{
+                  id,
+                  name
+                }
+                sessionSet{
+                  edges{
+                    node{
+                      id,
+                      sessionName{
+                        id,
+                        name
+                      }
+                    }
+                  }
+                },
+                targetId{
+                  id,
+                  domain{
+                    id,
+                    domain
+                  }
+                }
+                targetAllcatedDetails{
+                  id,
+                  targetName,
+                  dateBaseline,
+                  DailyTrials,
+                  consecutiveDays,
+                  targetType{
+                    id,
+                    typeTar
+                  }
+                },
+                videos{
+                  edges{
+                    node{
+                      id,
+                      url
+                    }
+                  }
+                },
+                sd{
+                  edges{
+                    node{
+                      id,
+                      sd
+                    }
+                  }
+                },
+                steps{
+                  edges{
+                    node{
+                      id,
+                      step
+                    }
+                  }
+                },
                             }
                           }
                         }
@@ -122,7 +179,7 @@ export const getLongTermGoals = (
     .then(result => result)
 }
 
-export const getShortTermGoals = (longTermGoal = 'TG9uZ1Rlcm1UeXBlOjEy') => {
+export const getShortTermGoals = (longTermGoal) => {
   return client
     .query({
       query: gql`
@@ -164,7 +221,7 @@ export const getShortTermGoals = (longTermGoal = 'TG9uZ1Rlcm1UeXBlOjEy') => {
     .then(result => result)
 }
 
-export const getTargetAreaByDoimain = (domain = 'RG9tYWluVHlwZTo4') => {
+export const getTargetAreaByDoimain = (domain) => {
   return client
     .query({
       query: gql`
@@ -184,17 +241,20 @@ export const getTargetAreaByDoimain = (domain = 'RG9tYWluVHlwZTo4') => {
 }
 
 export const suggestTarget = (
-  domain = 'RG9tYWluVHlwZTo4',
-  targetArea = 'VGFyZ2V0QXJlYVR5cGU6Mjg3',
+  domain,
+  targetArea,
+  studentId
 ) => {
+  console.log(domain, targetArea)
   return client
     .query({
       query: gql`
           query{
-            target(domain:"${domain}", targetArea:"${targetArea}"){
+            target(domain:"${domain}", targetArea:"${targetArea}", student: "${studentId}"){
                 edges{
                     node{
                         id,
+                        allocatedTar
                         domain{
                             id,
                             domain
@@ -203,6 +263,7 @@ export const suggestTarget = (
                             id,
                             Area
                         }
+                        targetInstr
                         targetMain{
                             id,
                             targetName
@@ -265,9 +326,7 @@ export const getTargetDetailsOptions = () => {
           }
           masteryCriteria {
             id
-            responsePercentage
-            consecutiveDays
-            minTrial
+            name
           }
           domain {
             edges {
@@ -292,8 +351,10 @@ export const getSearchSd = text => {
   return client
     .query({
       query: gql`
-        {
-          targetSd(first:8, sd_Icontains:"${text}"){
+      query GetStimulus (
+        $text: String!
+      ){
+          targetSd(first:8, sd_Icontains: $text){
             edges {
               node {
                 id,
@@ -303,6 +364,7 @@ export const getSearchSd = text => {
           }
         }
       `,
+      variables: {text: text}
     })
     .then(result => result)
     .catch(error => error)
@@ -312,8 +374,10 @@ export const getSearchSteps = text => {
   return client
     .query({
       query: gql`
-        {
-          targetStep(first:8, step_Icontains:"${text}")
+      query GetSteps (
+        $text: String!
+      ){
+          targetStep(first:8, step_Icontains: $text)
             {edges {
               node {
                 id,
@@ -323,20 +387,21 @@ export const getSearchSteps = text => {
           }
         }
       `,
+      variables: {text: text}
     })
     .then(result => result)
     .catch(error => error)
 }
 
 export const alreadyAlloctedTarget = (
-  studentId = 'U3R1ZGVudFR5cGU6MTYz',
+  studentId,
   targetStatus = 'U3RhdHVzVHlwZToz',
-  targetIdDomain = 'RG9tYWluVHlwZToxMQ==',
+  targetIdDomain,
 ) => {
   return client
     .query({
       query: gql`
-          query {targetAllocates(studentId:"${studentId}", targetStatus:"${targetStatus}", targetId_Domain:"${targetIdDomain}") {
+          query {targetAllocates(studentId:"${studentId}", targetId_Domain:"${targetIdDomain}") {
             edges {
               node {
                 id,
@@ -365,6 +430,10 @@ export const alreadyAlloctedTarget = (
                     id,
                     domain
                   }
+                }
+                masteryCriteria{
+                  id,
+                  name
                 }
                 targetAllcatedDetails{
                   id,
@@ -409,6 +478,59 @@ export const alreadyAlloctedTarget = (
     .then(result => result)
 }
 
+// export async function createLongTermGoal(
+//   student,
+//   goalName,
+//   description,
+//   dateInitialted,
+//   dateEnd,
+//   responsibility,
+//   goalStatus,
+//   programArea,
+// ) {
+//   return client
+//     .mutate({
+//       mutation: gql`mutation {
+//         createLongTerm(input:{goalData:{student:"${student}", goalName:"${goalName}", description:"${description}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}", responsibility:"${responsibility}", goalStatus:"${goalStatus}", programArea:"${programArea}"}})
+//            {
+//                  details{
+//                      id,
+//                      goalName,
+//                      description,
+//                      dateInitialted,
+//                      dateEnd,
+//                      program{
+//                          id,
+//                          name
+//                      }
+//                      responsibility{
+//                          id,
+//                          name
+//                      }
+//                      goalStatus{
+//                        id,
+//                        status
+//                      },
+//                      student{
+//                          id,
+//                          firstname
+//                      }
+                     
+//                  }
+//              }
+//       }`,
+//     })
+//     .then(result => result)
+//     .catch(error => {
+//       error.graphQLErrors.map(item => {
+//         return notification.error({
+//           message: 'Somthing want wrong',
+//           description: item.message,
+//         })
+//       })
+//     })
+// }
+
 export async function createLongTermGoal(
   student,
   goalName,
@@ -419,10 +541,18 @@ export async function createLongTermGoal(
   goalStatus,
   programArea,
 ) {
-  return client
-    .mutate({
-      mutation: gql`mutation {
-        createLongTerm(input:{goalData:{student:"${student}", goalName:"${goalName}", description:"${description}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}", responsibility:"${responsibility}", goalStatus:"${goalStatus}", programArea:"${programArea}"}})
+  return client.mutate({
+      mutation: gql`mutation CreateLongTerm (
+        $student: ID!
+        $goalName: String!
+        $description: String!
+        $dateInitialted: Date!
+        $dateEnd: Date!
+        $responsibility: ID!
+        $goalStatus: ID!
+        $programArea: ID!
+      ) {
+        createLongTerm(input:{goalData:{student:$student, goalName:$goalName, description:$description, dateInitialted:$dateInitialted, dateEnd:$dateEnd, responsibility: $responsibility, goalStatus:$goalStatus, programArea:$programArea}})
            {
                  details{
                      id,
@@ -446,9 +576,20 @@ export async function createLongTermGoal(
                          id,
                          firstname
                      }
+                     
                  }
              }
       }`,
+      variables: {
+        student,
+        goalName,
+        description,
+        dateInitialted,
+        dateEnd,
+        responsibility,
+        goalStatus,
+        programArea,
+      }
     })
     .then(result => result)
     .catch(error => {
@@ -474,8 +615,29 @@ export async function updateLongTermGoal(
 ) {
   return client
     .mutate({
-      mutation: gql`mutation {
-        updateLongTerm(input:{goalData:{id:"${goalId}", goalName:"${goalName}", description:"${description}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}", responsibility:"${responsibility}", goalStatus:"${goalStatus}", programArea:"${programArea}"}})
+      mutation: gql`mutation UpdateLongTerm (
+        $goalId: ID!,
+        $goalName: String!
+        $description: String!
+        $dateInitialted: Date!
+        $dateEnd: Date!
+        $responsibility: ID!
+        $goalStatus: ID!
+        $programArea: ID!
+
+      ) {
+        updateLongTerm(input:{
+          goalData:{
+            id: $goalId, 
+            goalName: $goalName, 
+            description: $description, 
+            dateInitialted: $dateInitialted, 
+            dateEnd: $dateEnd, 
+            responsibility: $responsibility, 
+            goalStatus: $goalStatus, 
+            programArea: $programArea
+          }
+        })
            {
                 details{
                    id,
@@ -541,6 +703,16 @@ export async function updateLongTermGoal(
                 }
            }
     }`,
+    variables : {
+      goalName: goalName,
+      description: description,
+      dateInitialted: dateInitialted,
+      dateEnd: dateEnd,
+      responsibility: responsibility,
+      goalStatus: goalStatus,
+      programArea: programArea,
+      goalId: goalId,
+    }
     })
     .then(result => result)
     .catch(error => {
@@ -565,8 +737,26 @@ export async function createShortTermGoal(
 ) {
   return client
     .mutate({
-      mutation: gql`mutation {
-        createShortTerm(input:{goalData:{longTerm:"${longTerm}", goalName:"${goalName}", description:"${description}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}",  responsibility:"${responsibility}", goalStatus:"${goalStatus}"}})
+      mutation: gql`mutation CreateShortTerm (
+        $goalName: String!
+        $description: String!
+        $dateInitialted: Date!
+        $dateEnd: Date!
+        $responsibility: ID!
+        $goalStatus: ID!
+        $longTerm: ID!
+      ) {
+        createShortTerm(input:{
+          goalData:{
+            longTerm: $longTerm, 
+            goalName: $goalName, 
+            description: $description, 
+            dateInitialted: $dateInitialted, 
+            dateEnd: $dateEnd,  
+            responsibility: $responsibility, 
+            goalStatus: $goalStatus
+          }
+        })
            {
                details{
                    id,
@@ -593,6 +783,15 @@ export async function createShortTermGoal(
                }
            }
     }`,
+    variables : {
+      goalName: goalName,
+      description: description,
+      dateInitialted: dateInitialted,
+      dateEnd: dateEnd,
+      responsibility: responsibility,
+      goalStatus: goalStatus,
+      longTerm: longTerm,
+    }
     })
     .then(result => result)
     .catch(error => {
@@ -618,8 +817,28 @@ export async function updateShortTermGoal(
 ) {
   return client
     .mutate({
-      mutation: gql`mutation {
-        updateShortTerm(input:{goalData:{id:"${goalId}", longTerm:"${longTerm}", goalName:"${goalName}", description:"${description}", dateInitialted:"${dateInitialted}", dateEnd:"${dateEnd}", responsibility:"${responsibility}", goalStatus:"${goalStatus}"}})
+      mutation: gql`mutation UpdateShortTerm (
+        $goalId: ID!
+        $goalName: String!
+        $description: String!
+        $dateInitialted: Date!
+        $dateEnd: Date!
+        $responsibility: ID!
+        $goalStatus: ID!
+        $longTerm: ID!
+      ) {
+        updateShortTerm(input:{
+          goalData:{
+            id: $goalId, 
+            longTerm: $longTerm, 
+            goalName: $goalName, 
+            description: $description, 
+            dateInitialted: $dateInitialted, 
+            dateEnd: $dateEnd, 
+            responsibility: $responsibility, 
+            goalStatus: $goalStatus
+          }
+        })
            {
                details{
                    id,
@@ -642,6 +861,16 @@ export async function updateShortTermGoal(
                }
            }
     }`,
+    variables : {
+      goalName: goalName,
+      description: description,
+      dateInitialted: dateInitialted,
+      dateEnd: dateEnd,
+      responsibility: responsibility,
+      goalStatus: goalStatus,
+      longTerm: longTerm,
+      goalId: goalId,
+    }
     })
     .then(result => result)
     .catch(error => {
@@ -670,27 +899,59 @@ export async function createTargetAllocate(
   promptCodes = [],
   sd = [],
   steps = [],
+  video
 ) {
-  const mu = `mutation {
-        createTargetAllocate(input:{targetData:{shortTerm:"${shortTerm}", ${
-    targetId === '' ? '' : `targetId:"${targetId}",`
-  } studentId:"${studentId}", targetStatus:"U3RhdHVzVHlwZTox", objective:"${objective}", date:"${date}", targetInstr:"<p>${targetInstr}</p>", goodPractices:"<p></p>", precaution:"<p></p>", gernalizationCriteria:"<p></p>", masteryCriteria:"${masteryCriteria}", targetName:"${targetName}", DailyTrials:${dailyTrials}, consecutiveDays:${consecutiveDays}, targetType:"VGFyZ2V0RGV0YWlsVHlwZTox", promptCodes:[], sd:[${sd}], steps:[${steps}], videos:["https://vimeo.com/349440428"]
+  const Query1 = `mutation CreateTargetAllocate (
+    $studentId: ID!
+    $shortTerm: ID!
+    $targetId: ID!
+    $targetStatus: ID!
+    $targetInstr: String!
+    $date: Date!
+    $masteryCriteria: ID!
+    $targetName: String!
+    $dailyTrials: Int!
+    $consecutiveDays: Int!
+    $targetType: ID!
+    $sd: [String]
+    $steps: [String]
+    $video: [String]
+  ) 
+  {
+    createTargetAllocate(input:{
+      targetData:{
+        shortTerm: $shortTerm, 
+        targetId: $targetId,
+        studentId: $studentId, 
+        targetStatus: $targetStatus, 
+        objective: "", 
+        date: $date, 
+        targetInstr: $targetInstr, 
+        goodPractices: "", 
+        precaution: "", 
+        gernalizationCriteria: "", 
+        masteryCriteria: $masteryCriteria, 
+        targetName: $targetName, 
+        DailyTrials: $dailyTrials, 
+        consecutiveDays: $consecutiveDays, 
+        targetType: $targetType, 
+        promptCodes:[], 
+        sd: $sd, 
+        steps: $steps, 
+        videos: $video
         }
-
-        })
-           {
-                targetName,
-                target{
-                    id,
-                    date,
-                    targetInstr,
-                    targetStatus{
-                        id,
-                        statusName
-                    }
-                    sessionSet{
-                        edges{
-                            node{
+      })
+      {
+      
+        targetName,
+          target {
+            id, date, targetInstr, 
+            targetStatus{
+              id, statusName
+            }
+            sessionSet{
+              edges{
+                node{
                                 id
                             }
                         }
@@ -701,6 +962,10 @@ export async function createTargetAllocate(
                             id,
                             domain
                         }
+                    }
+                    masteryCriteria{
+                      id,
+                      name
                     }
                     targetAllcatedDetails{
                         id,
@@ -713,6 +978,14 @@ export async function createTargetAllocate(
                             typeTar
                         }
 
+                    },
+                    videos{
+                      edges{
+                        node{
+                          id,
+                          url
+                        }
+                      }
                     },
                     sd{
                         edges{
@@ -734,16 +1007,278 @@ export async function createTargetAllocate(
                 }
            }
     }`
-  console.log('mu create ===>', mu)
+    const Query2 = `mutation CreateTargetAllocate (
+      $studentId: ID!
+      $shortTerm: ID!
+      $targetStatus: ID!
+      $targetInstr: String!
+      $date: Date!
+      $masteryCriteria: ID!
+      $targetName: String!
+      $dailyTrials: Int!
+      $consecutiveDays: Int!
+      $targetType: ID!
+      $sd: [String]
+      $steps: [String]
+      $video: [String]
+    ) 
+    {
+      createTargetAllocate(input:{
+        targetData:{
+          shortTerm: $shortTerm, 
+          studentId: $studentId, 
+          targetStatus: $targetStatus, 
+          objective: "", 
+          date: $date, 
+          targetInstr: $targetInstr, 
+          goodPractices: "", 
+          precaution: "", 
+          gernalizationCriteria: "", 
+          masteryCriteria: $masteryCriteria, 
+          targetName: $targetName, 
+          DailyTrials: $dailyTrials, 
+          consecutiveDays: $consecutiveDays, 
+          targetType: $targetType, 
+          promptCodes:[], 
+          sd: $sd, 
+          steps: $steps, 
+          videos: $video
+          }
+        })
+        {
+          
+          targetName,
+            target {
+              id, 
+              date, 
+              targetInstr, 
+              targetStatus{
+                id, statusName
+              }
+              sessionSet{
+                edges{
+                  node{
+                                  id
+                              }
+                          }
+                      }
+                      masteryCriteria{
+                        id,
+                        name
+                      }
+                      targetId{
+                          id,
+                          domain{
+                              id,
+                              domain
+                          }
+                      }
+                      targetAllcatedDetails{
+                          id,
+                          targetName,
+                          dateBaseline,
+                          DailyTrials,
+                          consecutiveDays,
+                          targetType{
+                              id,
+                              typeTar
+                          }
+  
+                      },
+                      videos{
+                        edges{
+                          node{
+                            id,
+                            url
+                          }
+                        }
+                      },
+                      sd{
+                          edges{
+                              node{
+                                  id,
+                                  sd
+                              }
+                          }
+                      },
+                      steps{
+                          edges{
+                              node{
+                                  id,
+                                  step
+                              }
+                          }
+                      },
+  
+                  }
+             }
+      }`
+  let mu = ''
+  if (targetId === ''){
+    mu = Query2
+  }
+  else{
+    mu = Query1
+  }
   return client
     .mutate({
       mutation: gql`
         ${mu}
       `,
+      variables : {
+        studentId: studentId,
+        shortTerm: shortTerm,
+        targetId: targetId,
+        targetStatus:targetStatus,
+        targetInstr: targetInstr,
+        date: date,
+        masteryCriteria: masteryCriteria,
+        targetName: targetName,
+        dailyTrials: dailyTrials,
+        consecutiveDays: consecutiveDays,
+        targetType: targetType,
+        sd: sd,
+        steps: steps,
+        video: video
+      }
     })
     .then(result => result)
     .catch(error => {
       console.log('error==>', error)
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
+        })
+      })
+    })
+}
+
+
+export async function updateAllocatedTarget(
+  targetId,
+  targetStatus,
+  targetInstr,
+  masteryCriteria,
+  targetName,
+  dailyTrials,
+  consecutiveDays,
+  targetType,
+  sd = [],
+  steps = [],
+  video
+) {
+  return client
+    .mutate({
+      mutation: gql`mutation UpdateShortTerm (
+        $targetAllocatedId: ID!
+        $targetStatus: ID!
+        $targetInstr: String!
+        $masteryCriteria: ID!
+        $targetName: String!
+        $dailyTrials: Int!
+        $consecutiveDays: Int!
+        $targetType: ID!
+        $sd: [String]
+        $steps: [String]
+        $video: [String]
+      ) {
+        updateTargetAllocate(input:{pk: $targetAllocatedId, 
+          targetData:{
+            targetStatus: $targetStatus,   
+            targetInstr: $targetInstr,
+            goodPractices:"<p></p>", 
+            precaution:"<p></p>", 
+            gernalizationCriteria:"<p></p>", 
+            masteryCriteria: $masteryCriteria, 
+            targetName: $targetName,
+            DailyTrials: $dailyTrials, 
+            consecutiveDays: $consecutiveDays, 
+            targetType: $targetType, 
+            promptCodes:[], 
+            sd: $sd, 
+            steps: $steps,
+            videos: $video
+          }
+        })
+        {
+          
+          targetName,
+          target{
+              id,
+              date,
+              targetInstr,
+              targetStatus{
+                  id,
+                  statusName
+              }
+              targetId{
+                  id,
+                  domain{
+                      id,
+                      domain
+                  }
+              }
+              masteryCriteria{
+                  id,
+                  name
+                }
+              targetAllcatedDetails{
+                  id,
+                  targetName,
+                  dateBaseline,
+                  DailyTrials,
+                  consecutiveDays,
+                  targetType{
+                      id,
+                      typeTar
+                  }
+                  
+              },
+              videos{
+                edges{
+                  node{
+                    id,
+                    url
+                  }
+                }
+              },
+              sd{
+                  edges{
+                      node{
+                          id,
+                          sd
+                      }
+                  }
+              },
+              steps{
+                  edges{
+                      node{
+                          id,
+                          step
+                      }
+                  }
+              },
+              
+          }
+     }
+  }`,
+    variables : {
+      targetAllocatedId: targetId,
+      targetStatus:targetStatus,
+      targetInstr: targetInstr,
+      masteryCriteria: masteryCriteria,
+      targetName: targetName,
+      dailyTrials: dailyTrials,
+      consecutiveDays: consecutiveDays,
+      targetType: targetType,
+      sd: sd,
+      steps: steps,
+      video: video
+    }
+    })
+    .then(result => result)
+    .catch(error => {
       error.graphQLErrors.map(item => {
         return notification.error({
           message: 'Somthing want wrong',

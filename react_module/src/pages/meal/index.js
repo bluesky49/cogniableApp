@@ -169,7 +169,7 @@ export default () => {
                     'Loading...'
                   ) : (
                     <>
-                      {mealQuery.error && 'Opps their something wrong'}
+                      {mealQuery.error && 'Something went wrong!'}
                       {mealQuery.data &&
                         mealQuery.data.getFood.edges.map(({ node }, index) => {
                           return (
@@ -210,7 +210,7 @@ export default () => {
                 }}
               >
                 <MealForm
-                  handleNewMealDate={newDate => {
+                  handleNewMealDate={newDate => { 
                     setNewMealDate(newDate)
                   }}
                   setNewMealCreated={setNewMealCreated}

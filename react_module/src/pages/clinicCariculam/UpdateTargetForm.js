@@ -1,24 +1,22 @@
 /* eslint-disable react/jsx-closing-tag-location */
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form, Input, Button, notification } from 'antd'
 import gql from 'graphql-tag'
 import { useMutation, useQuery } from 'react-apollo'
+import CKEditor from "react-ckeditor-component";
 import './targetFrom.scss'
 
 const TARGET_QUERY = gql`
-  query target($targetAreaId: ID!, $id: ID!) {
-    target(targetArea: $targetAreaId, id: $id) {
-      edges {
-        node {
-          id
-          targetInstr
-          targetMain {
-            targetName
-          }
-        }
+query targetGet($id: ID!) {
+    targetGet(id: $id)
+    {
+        id
+      targetInstr
+      targetMain {
+        targetName
       }
     }
-  }
+}
 `
 
 const UPDATE_TARGET = gql`
@@ -75,7 +73,7 @@ const TargetForm = ({ targetId, form, targetAreaId, handleUpdateTargetDrawer, do
     if (updateTargetData) {
       notification.success({
         message: 'Clinic Cariculam',
-        description: 'Target Updated Added Successfully',
+        description: 'Target Updated Successfully',
       })
       form.resetFields()
       handleUpdateTargetDrawer(false)
@@ -92,6 +90,29 @@ const TargetForm = ({ targetId, form, targetAreaId, handleUpdateTargetDrawer, do
     }
   }, [updateTargetError])
 
+
+  const [instrvalue, setValue] = useState('');
+
+ useEffect(() => {
+   if(data)
+   {
+     try
+     {
+       setValue(JSON.parse(data.targetGet.targetInstr))
+     }
+     catch(err)
+       {
+          setValue(data.targetGet.targetInstr)
+       }
+   }
+
+   }, [data])
+
+
+  function onEditorChange(evt) {
+    setValue(evt.editor.getData())
+  }
+
   const handleSubmit = e => {
     e.preventDefault()
     // eslint-disable-next-line no-shadow
@@ -103,7 +124,7 @@ const TargetForm = ({ targetId, form, targetAreaId, handleUpdateTargetDrawer, do
             domainId,
             targetAreaId,
             targetName: value.targetname,
-            targetInstr: value.targetInstr,
+            targetInstr: instrvalue,
           },
         })
       }
@@ -116,26 +137,27 @@ const TargetForm = ({ targetId, form, targetAreaId, handleUpdateTargetDrawer, do
         'Loading...'
       ) : (
         <div>
-          {error && 'opps their something wrong'}
+          {error && 'Something went wrong!'}
           {data && (
             <Form name="targetForm" onSubmit={handleSubmit}>
               <Form.Item label="Target Name">
                 {form.getFieldDecorator('targetname', {
-                  initialValue: data.target.edges[0].node.targetMain.targetName,
+                  initialValue: data.targetGet.targetMain.targetName,
                   rules: [{ required: true, message: 'Please enter Target Name' }],
                 })(<Input placeholder="Target Name" size="large" />)}
               </Form.Item>
 
-              <Form.Item label="Target Instration">
-                {form.getFieldDecorator('targetInstr', {
-                  initialValue: data.target.edges[0].node.targetInstr,
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please enter Target Instration!',
-                    },
-                  ],
-                })(<Input placeholder="Target Instration" size="large" />)}
+              <Form.Item label="Target Instructions">
+              <CKEditor
+                    activeClass="p10"
+                    content={instrvalue}
+                    events={{
+                        "change":onEditorChange
+                      }}
+                    config={{
+                        height:450
+                      }}
+                   />
               </Form.Item>
 
               <Button

@@ -335,7 +335,7 @@ const MealForm = ({
           style={{}}
           placeholder="Select Meal Type"
           name="mealType"
-          onChange={value => setMealType(value)}
+          onChange={value => setMealType(value)}   
           value={mealType}
           allowclear
           size="large"
@@ -343,6 +343,7 @@ const MealForm = ({
         >
           <Option value="Breakfast">Breakfast</Option>
           <Option value="Lunch">Lunch</Option>
+          <Option value="Snack">Snack</Option>
           <Option value="Dinner">Dinner</Option>
         </Select>
       </Form.Item>
@@ -370,7 +371,7 @@ const MealForm = ({
         </Select>
       </Form.Item>
 
-      <Form.Item label="Water">
+      <Form.Item label="Water Intake (ml)">
         <Input
           placeholder="Enter water taken"
           name="waterIntake"

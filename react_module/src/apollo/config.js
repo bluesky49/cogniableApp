@@ -7,10 +7,27 @@ import { ApolloClient } from 'apollo-client'
 import { createHttpLink } from 'apollo-link-http'
 import { setContext } from 'apollo-link-context'
 import { InMemoryCache } from 'apollo-cache-inmemory'
+import { onError } from "apollo-link-error";
+import { notification } from 'antd'
 
 const httpLink = createHttpLink({
-  uri: 'https://development.cogniable.us/apis/graphql',
+  uri: 'https://application.cogniable.us/apis/graphql',
 })
+
+const errorLink = onError(({ graphQLErrors, networkError,response, operation, forward }) => {
+   if(graphQLErrors)
+   {
+
+    // graphQLErrors.forEach(({ message, locations, path }) =>
+    //   notification.success({
+    //     message: message,
+    //     description: message,
+    //   })
+    // );
+   }
+});
+
+const httperrorLink = errorLink.concat(httpLink);
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
@@ -30,7 +47,9 @@ const authLink = setContext((_, { headers }) => {
   }
 })
 
+const authhttperrorLink = authLink.concat(httperrorLink);
+
 export default new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  link: authhttperrorLink,
+  cache: new InMemoryCache()
 })

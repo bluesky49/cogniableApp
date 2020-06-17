@@ -6,7 +6,7 @@ import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import { useQuery, useMutation } from 'react-apollo'
 import gql from 'graphql-tag'
-import Calendar from './Calander'
+import Calendar from 'components/Calander'
 
 import './index.scss'
 
@@ -86,6 +86,7 @@ export default () => {
   })
 
   const { data, loading, error, refetch } = useQuery(MAND_DATA, {
+    fetchPolicy: 'network-only',
     variables: {
       studentId,
       date,
@@ -96,7 +97,10 @@ export default () => {
     RECORD_MAND_DATA,
   )
 
-  const [createNewMand, { data: newMandRes, error: newMandError }] = useMutation(CREATE_NEW_MAND, {
+  const [
+    createNewMand,
+    { data: newMandRes, error: newMandError, loading: newMandLoading },
+  ] = useMutation(CREATE_NEW_MAND, {
     variables: {
       studentId,
       mandTitle,
@@ -302,7 +306,7 @@ export default () => {
                 }}
               >
                 <Form onSubmit={e => SubmitForm(e)} name="control-ref" style={{ marginLeft: 0 }}>
-                  <Form.Item label="Meal Name">
+                  <Form.Item label="Mand Name">
                     <Input
                       value={mandTitle}
                       onChange={e => setMandTitle(e.target.value)}
@@ -323,6 +327,7 @@ export default () => {
                         fontSize: 16,
                         background: '#0B35B3',
                       }}
+                      loading={newMandLoading}
                     >
                       Save Mand
                     </Button>

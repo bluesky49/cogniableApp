@@ -294,7 +294,7 @@ class DataRecording extends React.Component {
                   <Button style={{ marginTop: '15px' }} onClick={this.showTargetDrawer}>
                     Target Instruction
                   </Button>
-                  <p
+                  {/* <p
                     style={{
                       display: 'inline-block',
                       width: '30%',
@@ -302,8 +302,8 @@ class DataRecording extends React.Component {
                       color: '#0B35B3',
                     }}
                   >
-                    {MasterSession.targets.edges[TargetActiveIndex].node.targetId.domain.domain}
-                  </p>
+                    {MasterSession.targets.edges[TargetActiveIndex].node?.targetId?.domain?.domain}
+                  </p> */}
                   <Button style={{ float: 'right', marginTop: '15px' }} onClick={this.showDrawer}>
                     BR
                   </Button>

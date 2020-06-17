@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Typography, Button, Drawer } from 'antd'
+import { Typography, Button, Drawer, Tooltip } from 'antd'
 import { PlusOutlined, WhatsAppOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import gql from 'graphql-tag'
@@ -11,7 +11,7 @@ const { Title, Text } = Typography
 
 const APPIORMENTS = gql`
   query {
-    upcoming_appointment: appointments(first: 5) {
+    upcoming_appointment: appointments(last: 3) {
       edges {
         node {
           start
@@ -30,40 +30,55 @@ const timeFormat = 'HH:mm a'
 
 const AppointmentCard = ({ therapist, title, start, end, profileImg }) => {
   return (
-    <div
-      style={{
-        padding: '19px 32px 0px',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      <img
-        src={profileImg || defautProfileImg}
-        alt=""
+    <a href="/#/appointmentData/">
+      <div
         style={{
-          width: 80,
-          height: 64,
-          borderRadius: 10,
-          marginRight: 22,
+          padding: '19px 32px 0px',
+          display: 'flex',
+          alignItems: 'center',
         }}
-      />
-      <div style={{ width: '100%' }}>
-        <div
+      >
+        <img
+          src={profileImg || defautProfileImg}
+          alt=""
           style={{
-            display: 'flex',
-            alignItems: 'center',
+            width: 80,
+            height: 64,
+            borderRadius: 10,
+            marginRight: 22,
           }}
-        >
-          <Title
+        />
+        <div style={{ width: '100%' }}>
+          <div
             style={{
-              fontSize: 18,
-              lineHeight: '25px',
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            {therapist}
-          </Title>
-          <WhatsAppOutlined style={{ fontSize: 28, marginLeft: 'auto', marginRight: 21 }} />
-          <ClockCircleOutlined style={{ fontSize: 30, marginRight: 11 }} />
+            <Title
+              style={{
+                fontSize: 18,
+                lineHeight: '25px',
+              }}
+            >
+              {therapist}
+            </Title>
+            <Tooltip placement="topRight" title="Contact">
+              <WhatsAppOutlined style={{ fontSize: 28, marginLeft: 'auto', marginRight: 21 }} />
+            </Tooltip>
+            <Tooltip placement="topRight" title="Time">
+              <ClockCircleOutlined style={{ fontSize: 30, marginRight: 11 }} />
+            </Tooltip>
+            <Text
+              style={{
+                fontSize: 16,
+                lineHeight: '22px',
+                color: '#000',
+              }}
+            >
+              {`${moment(start).format(timeFormat)}-${moment(end).format(timeFormat)}`}
+            </Text>
+          </div>
           <Text
             style={{
               fontSize: 16,
@@ -71,20 +86,11 @@ const AppointmentCard = ({ therapist, title, start, end, profileImg }) => {
               color: '#000',
             }}
           >
-            {`${moment(start).format(timeFormat)}-${moment(end).format(timeFormat)}`}
+            {title}
           </Text>
         </div>
-        <Text
-          style={{
-            fontSize: 16,
-            lineHeight: '22px',
-            color: '#000',
-          }}
-        >
-          {title}
-        </Text>
       </div>
-    </div>
+    </a>
   )
 }
 
@@ -130,23 +136,25 @@ const AppiorMentsCard = ({ style }) => {
         >
           Upcoming Appointments
         </Title>
-        <Button
-          type="primary"
-          style={{
-            background: '#F9F9F9',
-            border: '1px solid #E4E9F0',
-            boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
-            borderRadius: 6,
-            width: 50,
-            height: 50,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          onClick={handelNewAppiormentDrawer}
-        >
-          <PlusOutlined style={{ fontSize: 24, marginTop: 5, marginLeft: 2, color: '#000' }} />
-        </Button>
+        <Tooltip placement="topRight" title="Add Appointment">
+          <Button
+            type="primary"
+            style={{
+              background: '#F9F9F9',
+              border: '1px solid #E4E9F0',
+              boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
+              borderRadius: 6,
+              width: 50,
+              height: 50,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onClick={handelNewAppiormentDrawer}
+          >
+            <PlusOutlined style={{ fontSize: 24, marginTop: 5, marginLeft: 2, color: '#000' }} />
+          </Button>
+        </Tooltip>
       </div>
       <div
         style={{
@@ -193,7 +201,7 @@ const AppiorMentsCard = ({ style }) => {
         visible={newAppiormentDrawer}
         placement="right"
         onClose={handelNewAppiormentDrawer}
-        title="New Appiorment"
+        title="New Appointment"
       >
         <div
           style={{

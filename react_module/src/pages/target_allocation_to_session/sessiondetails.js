@@ -17,6 +17,7 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-undef */
 /* eslint-disable no-plusplus */
+/* eslint-disable no-nested-ternary */
 
 import React from 'react'
 import { Form, Input, Select, Button, Icon } from 'antd'
@@ -60,6 +61,11 @@ class SessionDetailsForm extends React.Component {
       sessionObject.instruction.edges.map(item => instructionList.push(item.node.instruction))
     }
 
+    const therapistHost = []
+    if (sessionObject.therapistHost.edges.length > 0) {
+      sessionObject.therapistHost.edges.map(item => therapistHost.push(item.node.id))
+    }
+
     id = instructionList.length
 
     form.setFieldsValue({
@@ -67,13 +73,8 @@ class SessionDetailsForm extends React.Component {
       hosts: hostList,
       // keys: [0,1,2,3],
       names: instructionList,
+      therapist: therapistHost,
       duration: sessionObject.duration,
-      //     goalDescription: ShortTermObject.description,
-      //     dataInitiated : moment(ShortTermObject.dateInitialted),
-      //     endDate: moment(ShortTermObject.dateEnd),
-      //     responsibility: res,
-      //     status : stat,
-      //     assessment: ass
     })
   }
 
@@ -116,11 +117,11 @@ class SessionDetailsForm extends React.Component {
     form.validateFields((err, values) => {
       if (!err) {
         const { keys, names } = values
-        console.log('Received values of form: ', values)
-        console.log(
-          'Merged values:',
-          keys.map(key => names[key]),
-        )
+        // console.log('Received values of form: ', values)
+        // console.log(
+        //   'Merged values:',
+        //   keys.map(key => names[key]),
+        // )
 
         dispatch({
           type: 'sessiontargetallocation/UPDATE_SESSION_DETAILS',
@@ -138,12 +139,22 @@ class SessionDetailsForm extends React.Component {
       form,
       sessiontargetallocation: {
         FamilyMemberList,
+        AuthStaffList,
         MorningSession,
         AfternoonSession,
         EveningSession,
         CurrentSession,
       },
     } = this.props
+
+    // console.log(FamilyMemberList)
+
+    let familyList = []
+    if (FamilyMemberList && FamilyMemberList.members.edges.length > 0){
+      familyList = FamilyMemberList.members.edges
+    }
+
+    // console.log(familyList)
 
     const { getFieldDecorator, getFieldValue } = form
 
@@ -200,28 +211,44 @@ class SessionDetailsForm extends React.Component {
       <>
         <Form onSubmit={this.handleSubmit}>
           <Form.Item label="Host" style={itemStyle}>
-            {form.getFieldDecorator('hosts', {
-              rules: [{ required: true, message: 'Please select atleast one member!' }],
-            })(
+            {form.getFieldDecorator('hosts')(
               <Select mode="multiple" placeholder="Select family members" allowClear>
-                {FamilyMemberList.map(item => (
-                  <Option value={item.node.id}>{item.node.memberName}</Option>
+                {/* {familyList.map(item => (
+                  <Option value={item.node.id}>
+                    <span>{item.node.memberName}</span> (
+                    {item.node.timeSpent.edges.map(timeItem => <span> {timeItem.node.sessionName.name === 'Morning' ? 'M' : timeItem.node.sessionName.name === 'Afternoon' ? 'A' : 'E'}: {timeItem.node.duration}&nbsp;</span>)}
+                    )
+                  </Option>
+                ))} */}
+                {familyList.map(item => (
+                  <Option value={item.node.id}>
+                    <span>{item.node.memberName}</span> available for&nbsp; 
+                    {item.node.timeSpent.edges.map(timeItem => 
+                      <>
+                      {timeItem.node.sessionName.name === CurrentSession ? 
+                        <span>{timeItem.node.duration}</span>
+                          : 
+                          ''
+                      }
+                      </>
+                    )} 
+                  </Option>
                 ))}
               </Select>,
             )}
           </Form.Item>
           <Form.Item label="Therapist" style={itemStyle}>
             {form.getFieldDecorator('therapist')(
-              <Select mode="multiple" placeholder="Select therapist" allowClear>
-                <Option value="1">1</Option>
-                <Option value="2">2</Option>
-                <Option value="3">3</Option>
+              <Select mode="multiple" placeholder="Select Therapist" allowClear>
+                {AuthStaffList.edges.map(item => (
+                  <Option value={item.node.id}>{item.node.name}</Option>
+                ))}
               </Select>,
             )}
           </Form.Item>
-          <Form.Item label="Preffered Items" style={itemStyle}>
+          <Form.Item label="Preferred Items" style={itemStyle}>
             {form.getFieldDecorator('items', {
-              rules: [{ required: true, message: 'Please provide preffered items!' }],
+              rules: [{ required: true, message: 'Please provide preferred items!' }],
             })(<Input />)}
           </Form.Item>
           <Form.Item label="Session Duration" style={itemStyle}>

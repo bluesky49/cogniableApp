@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 import React, { useState, useEffect } from 'react'
-import { Button, Card, Typography, Input, Modal, notification, AutoComplete } from 'antd'
+import { Button, Card, Typography, Input, Modal, notification, AutoComplete, Tooltip } from 'antd'
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import Scrollbars from 'react-custom-scrollbars'
 import gql from 'graphql-tag'
@@ -61,6 +61,8 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
   const [newDomainName, setNewDomainName] = useState('')
   const [key, setKey] = useState('mand1')
 
+  const [updateDomain, setUpdateDomain] = useState()
+
   const [filterDomain, { data: filterDomainData, loading: filterDomainLoading }] = useLazyQuery(
     FILTER_DOMAIN,
     {
@@ -114,6 +116,21 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
   }
 
   useEffect(() => {
+    if (updateDomain) {
+      setLiveDomains(state => {
+        const newState = []
+        state.map(domain => {
+          if (domain.node.id === updateDomain.id) {
+            domain.node.name = updateDomain.name
+          }
+          newState.push(domain)
+        })
+        return newState
+      })
+    }
+  }, [updateDomain])
+
+  useEffect(() => {
     if (filterDomainData) {
       setLiveDomains(filterDomainData.domain.edges)
     } else {
@@ -130,7 +147,7 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
   useEffect(() => {
     if (createDomainData) {
       notification.success({
-        message: 'Clinic Cariculam',
+        message: 'Clinic Curriculam',
         description: 'Create Domain Successfully',
       })
       setNewDomainName('')
@@ -145,7 +162,7 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
   useEffect(() => {
     if (createDomainError) {
       notification.error({
-        message: 'Somthing want wrong',
+        message: 'Something went wrong',
         description: createDomainError.message,
       })
     }
@@ -168,9 +185,11 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
         }}
       >
         <Title style={{ fontSize: 24, fontWeight: 'bold', lineHeight: '33px' }}>Domain</Title>
-        <Button type="link" onClick={handelCreateDomainModel}>
-          <PlusOutlined style={{ fontSize: 24 }} />
-        </Button>
+        <Tooltip placement="topRight" title="Click here to add domain">
+          <Button type="link" onClick={handelCreateDomainModel}>
+            <PlusOutlined style={{ fontSize: 24 }} />
+          </Button>
+        </Tooltip>
       </div>
       <Input
         style={{ height: 40 }}
@@ -184,8 +203,11 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
         {liveDomains.map(({ node }, index) => {
           return (
             <DoaminCard
+              id={node.id}
               selected={selectDomain && selectDomain.id === node.id ? true : null}
               title={node.domain}
+              setUpdateDomain={setUpdateDomain}
+              targetAreas={node.targetAreas}
               handleSelectDomain={handleSelectDomain(node)}
               key={node.id}
               style={{
@@ -227,7 +249,7 @@ const DomainBox = ({ domains, selectDomain, handleSelectDomain, programArea }) =
             style={{
               width: '100%',
             }}
-            placeholder="Plase type the domain name"
+            placeholder="Please type the domain name"
           >
             {resutl.map(({ node }) => {
               return (
