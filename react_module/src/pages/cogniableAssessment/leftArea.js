@@ -27,11 +27,13 @@ import {
     Typography,
 } from 'antd'
 import { connect } from 'react-redux'
+import Questions from './Questions'
+import Result from './Result'
 
 
 const { Title, Text } = Typography
 
-@connect(({ user }) => ({ user }))
+@connect(({ user, cogniableassessment }) => ({ user, cogniableassessment }))
 class LeftArea extends React.Component {
     constructor(props) {
         super(props)
@@ -47,7 +49,7 @@ render() {
         lineHeight: '19px',
     }
     
-
+    const { cogniableassessment: { Question, AssessmentObject, AssessmentStatus, AssessmentLoading } } = this.props
     return (
         <>
             <div
@@ -64,9 +66,26 @@ render() {
                     overflow: 'auto'
                 }}
             >
-                
-                
-                <p>left side</p>
+                {AssessmentLoading ?
+
+                    <p>Loading...</p>
+                :
+                <>
+                {AssessmentObject ? 
+                    <>
+                        {AssessmentStatus === 'QUESTIONSCOMPLETED' || AssessmentStatus === 'COMPLETED' ? 
+                            <>
+                                <Result />
+                            </>
+                        :
+                            <Questions />
+                        }                        
+                    </>
+                :
+                    'Please Select Assessment'
+                }
+                </>
+                }
                 
             </div>
         </>

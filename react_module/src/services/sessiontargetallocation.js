@@ -11,9 +11,7 @@ import apolloClient from '../apollo/config'
 
 export async function getAllocatedTargets(payload) {
     return apolloClient
-        .query({
-            query: gql`
-        query {
+        .query({query: gql`query {
             targetAllocates(studentId:"${payload.studentId}") {
                 edges {
                     node {
@@ -30,6 +28,10 @@ export async function getAllocatedTargets(payload) {
                     }
                 }
             },
+            targetStatus {
+                id
+                statusName
+            }
             student(id:"${payload.studentId}") {
                 authStaff {
                     edges {
@@ -77,6 +79,7 @@ export async function getAllocatedTargets(payload) {
                             id
                             name
                         }
+                        parentView
                         instruction{
                             edges{
                                 node{
@@ -144,6 +147,42 @@ export async function getAllocatedTargets(payload) {
         .catch(error => {
             error.graphQLErrors.map(item => {
                 return notification.error({
+                    message: 'Somthing went wrong',
+                    description: item.message,
+                })
+            })
+        })
+}
+
+
+export async function filterAllocatedTargets(payload) {
+    return apolloClient
+        .query({
+            query: gql`
+        query {
+            targetAllocates(studentId:"${payload.studentId}" targetStatus:"${payload.statusId}") {
+                edges {
+                    node {
+                        id,
+                        targetInstr,
+                        targetStatus {
+                            id,
+                            statusName
+                        }
+                        targetAllcatedDetails{
+                            id,
+                            targetName,
+                        }
+                    }
+                }
+            },
+            
+        }`,
+        })
+        .then(result => result)
+        .catch(error => {
+            error.graphQLErrors.map(item => {
+                return notification.error({
                     message: 'Somthing want wrong',
                     description: item.message,
                 })
@@ -169,6 +208,7 @@ export async function updateSessionTargets(payload) {
                         id
                         name
                     }
+                    parentView
                     instruction{
                         edges{
                             node{
@@ -274,7 +314,8 @@ export async function updateSessionDetails(objects) {
           $items: String!,
           $instruction: [String],
           $sessionHost: [ID],
-          $therapistHost: [ID]
+          $therapistHost: [ID],
+          $parentView: Boolean
 
       ) {
             updateMasterSession(input:{
@@ -283,7 +324,8 @@ export async function updateSessionDetails(objects) {
                 itemRequired: $items,
                 instruction: $instruction,
                 sessionHost: $sessionHost,
-                therapistHost: $therapistHost
+                therapistHost: $therapistHost,
+                parentView: $parentView
             })
             {
                 details {
@@ -294,6 +336,7 @@ export async function updateSessionDetails(objects) {
                         id
                         name
                     }
+                    parentView
                     instruction{
                         edges{
                             node{
@@ -361,7 +404,8 @@ export async function updateSessionDetails(objects) {
                 items: payload.values.items,
                 instruction: payload.values.names,
                 sessionHost: payload.values.hosts,
-                therapistHost: payload.values.therapist
+                therapistHost: payload.values.therapist,
+                parentView: payload.values.isParentView
             }
         })
         .then(result => result)

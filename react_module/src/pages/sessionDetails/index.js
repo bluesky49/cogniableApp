@@ -17,13 +17,17 @@ const { Content } = Layout
 
 const QUERY = gql`
   query parentDashboard($studentId: ID!, $date: Date!) {
-    sessions: GetStudentSession(studentId: $studentId, date: $date) {
-      edges {
-        node {
+      getDateSessions(student: $studentId, date: $date){
           id
-          sessionName {
-            id
-            name
+          createdAt
+          itemRequired
+          student{
+              id
+              firstname
+          }
+          sessionName{
+              id
+              name
           }
           duration
           sessionHost {
@@ -65,17 +69,17 @@ const QUERY = gql`
               }
             }
           }
-          childsessionSet(last: 1) {
-            edges {
-              node {
-                id
-                status
+          childsessionSet (sessionDate: $date) {
+              edges{
+                  node{
+                      id
+                      sessionDate
+                      createdAt
+                      status
+                  }
               }
-            }
           }
-        }
       }
-    }
   }
 `
 
@@ -85,7 +89,7 @@ export default () => {
   const [visible, setVisible] = useState(false)
   const dispatch = useDispatch()
   const { data, loading, error } = useQuery(QUERY, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'no-cache',
     variables: {
       studentId,
       date,
@@ -107,11 +111,14 @@ export default () => {
       type: 'sessionrecording/SET_STATE',
       payload: {
         SessionId: node.id,
+        SessionDate: date
       },
     })
     setSelectedSession(node)
     setVisible(true)
   }
+
+  console.log("error : ",error)
 
   return (
     <div>
@@ -136,8 +143,8 @@ export default () => {
             {error && 'Opps their something wrong'}
           </div>
 
-          {!loading && data &&
-            data.sessions.edges.map(({ node }) => (
+          {!loading && data && data.getDateSessions &&
+            data.getDateSessions.map(( node ) => (
               <>
                 {node.targets.edgeCount > 0 ? (
                   <>
@@ -205,7 +212,28 @@ export default () => {
                           </Button>
                         </div>
                       :
-                        ''
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            marginTop: 10,
+                          }}
+                        >
+                          <Button
+                            type="primary"
+                            style={{
+                              color: '#fff',
+                              width: 300,
+                              background: '#0B35B3',
+                              height: 40,
+                              fontSize: 14,
+                              lineHeight: '22px',
+                            }}
+                            onClick={() => startDataRecording(node)}
+                          >
+                            See Session
+                          </Button>
+                        </div>
                       }
                     </div>
                     

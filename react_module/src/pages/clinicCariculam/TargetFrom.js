@@ -1,3 +1,16 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-closing-bracket-location */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable prefer-const */
+/* eslint-disable object-shorthand */
+
+
 import React, { useEffect, useState } from 'react'
 import { Form, Input, Button, notification } from 'antd'
 import gql from 'graphql-tag'
@@ -11,6 +24,7 @@ const CREATE_TARGET = gql`
     $targetAreaId: ID!
     $targetname: String!
     $targetInstr: String!
+    $video: String
   ) {
     masterTarget(
       input: {
@@ -18,6 +32,7 @@ const CREATE_TARGET = gql`
         targetAreaId: $targetAreaId
         targetName: $targetname
         targetInstr: $targetInstr
+        video: $video
       }
     ) {
       target {
@@ -26,6 +41,7 @@ const CREATE_TARGET = gql`
         targetMain {
           targetName
         }
+        video
       }
     }
   }
@@ -39,6 +55,7 @@ const TargetForm = ({
   handelNewTargetDrawer,
   name,
   instr,
+  video = ''
 }) => {
   const [createTarget, { data, loading, error }] = useMutation(CREATE_TARGET)
 
@@ -59,7 +76,7 @@ const TargetForm = ({
     if (error) {
       notification.error({
         message: 'Something went wrong!',
-        description: error.message,
+        description: 'creating target ',
       })
     }
   }, [error])
@@ -96,6 +113,7 @@ const TargetForm = ({
             targetAreaId,
             targetname: value.targetname,
             targetInstr: JSON.stringify(instrvalue),
+            video: value.videolink
           },
         })
       }
@@ -124,6 +142,11 @@ const TargetForm = ({
               height:450
             }}
            />
+      </Form.Item>
+      <Form.Item label="Target Video Link">
+        {form.getFieldDecorator('videolink', {
+          initialValue: video,
+        })(<Input placeholder="Target Video Link" size="large" />)}
       </Form.Item>
       <Button
         type="primary"

@@ -8,7 +8,12 @@
 /* eslint-disable react/no-unused-state */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable prefer-const */
+/* eslint-disable eqeqeq */
 /* eslint-disable object-shorthand */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable react/jsx-boolean-value */
+/* eslint-disable no-shadow */
 import React from 'react'
 import { Helmet } from 'react-helmet'
 import Highlighter from 'react-highlight-words'
@@ -25,6 +30,7 @@ import {
   Icon,
   Drawer,
   Switch,
+  Popconfirm
 } from 'antd'
 import Authorize from 'components/LayoutComponents/Authorize'
 import { Scrollbars } from 'react-custom-scrollbars'
@@ -37,6 +43,8 @@ import {
   FileExcelOutlined,
   FilePdfOutlined,
   PrinterOutlined,
+  CheckCircleOutlined,
+  FormOutlined
 } from '@ant-design/icons'
 import { connect } from 'react-redux'
 import { gql } from 'apollo-boost'
@@ -46,6 +54,7 @@ import client from '../../../apollo/config'
 
 const { Meta } = Card
 const { RangePicker } = DatePicker
+
 
 @connect(({ user, tasks }) => ({ user, tasks }))
 class TaskTable extends React.Component {
@@ -79,6 +88,8 @@ class TaskTable extends React.Component {
   }
 
   info = e => {
+    console.clear()
+    console.log(e)
     const { dispatch } = this.props
 
     dispatch({
@@ -92,6 +103,26 @@ class TaskTable extends React.Component {
       divShow: true,
     })
 
+  }
+
+
+  selectActiveStatus = val => {
+    const { dispatch } = this.props
+    if(val == 'All'){
+      dispatch({
+        type: 'tasks/GET_TASKS',
+      })
+    } 
+    if(val == 'Open'){
+      dispatch({
+        type: 'tasks/GET_TASKS',
+      })
+    } 
+    if(val == 'Close'){
+      dispatch({
+        type: 'tasks/GET_CLOSED_TASKS',
+      })
+    }
   }
 
   showDrawer = () => {
@@ -173,6 +204,22 @@ class TaskTable extends React.Component {
     this.setState({ searchText: '' })
   }
 
+  closeTask = (e, status) => {
+
+    console.log('close task ===> ',e , status)
+    const {dispatch} = this.props
+    dispatch({
+      type: 'tasks/UPDATE_TASK_STATUS',
+      payload: {
+        id: e.id,
+        status: 'VGFza1N0YXR1c1R5cGU6Mg=='
+      }
+    })
+    // this.setState({
+    //   divShow: false,
+    // })
+  }
+
   filterToggle(toggle) {
     if (toggle) {
       this.setState({
@@ -184,6 +231,7 @@ class TaskTable extends React.Component {
       })
     }
   }
+
 
   render() {
     let { filteredInfo } = this.state
@@ -202,9 +250,22 @@ class TaskTable extends React.Component {
         title: 'Task Name',
         dataIndex: 'taskName',
         key: 'taskName',
-        width: 350,
+        width: 250,
         fixed: 'left',
         ...this.getColumnSearchProps('taskName'),
+        render:(val) => (
+          <div style={{color:"blue"}}>{val}</div>
+        )
+      },
+      {
+        title: 'Description',
+        dataIndex: 'description',
+        key: 'description',
+        fixed: 'left',
+        width: 250,
+        render:(val) => (
+          <div style={{color:"blue"}}>{val}</div>
+        )
       },
       {
         title: 'Status',
@@ -227,12 +288,6 @@ class TaskTable extends React.Component {
         width: 150,
       },
       {
-        title: 'Description',
-        dataIndex: 'description',
-        key: 'description',
-        width: 250,
-      },
-      {
         title: 'StartDate',
         dataIndex: 'startDate',
         key: 'startDate',
@@ -244,6 +299,23 @@ class TaskTable extends React.Component {
         dataIndex: 'dueDate',
         key: 'dueDate',
         width: 150,
+      },
+      {
+        title: 'Complete',
+        width: 150,
+        dataIndex: 'status',
+        key: 'statusChange',
+        render: (status, e) => (
+          <span onClick={(e) => { e.stopPropagation(); }}>
+            <Popconfirm title="Sure to close this task?" onConfirm={() => this.closeTask(e, status)}>
+              <Button><CheckCircleOutlined style={{color:"green"}} /></Button>
+            </Popconfirm>
+            &nbsp;&nbsp;
+            {/*
+              <Button><FormOutlined /></Button>
+            */}
+          </span>
+        ),
       },
     ]
 
@@ -267,7 +339,8 @@ class TaskTable extends React.Component {
       borderRadius: '3px',
       padding: '1px 5px',
     }
-
+    // console.clear();
+    // console.log(TaskList);
     return (
       <Authorize roles={['school_admin', 'therapist', 'parents']} redirect to="/dashboard/beta">
         <Helmet title="Partner" />
@@ -292,12 +365,12 @@ class TaskTable extends React.Component {
                 <Form.Item label="" style={filterOptionStyle}>
                   <Select
                     style={{ width: '120px' }}
-                    defaultValue="all"
-                    onSelect={this.selectActiveStatus}
+                    defaultValue="Open"
+                    onSelect={val => this.selectActiveStatus(val)}
                   >
-                    <Select.Option value="all">Status (All)</Select.Option>
-                    <Select.Option value="active">Active</Select.Option>
-                    <Select.Option value="in-active">In-active</Select.Option>
+                    <Select.Option value="All">All Tasks</Select.Option>
+                    <Select.Option value="Open">Open Tasks</Select.Option>
+                    <Select.Option value="Close">Close Tasks</Select.Option>
                   </Select>
                 </Form.Item>
                 <Form.Item label="" style={filterOptionStyle}>
@@ -329,40 +402,25 @@ class TaskTable extends React.Component {
             </div>
           </div>
 
-          <div className="col-sm-4" style={detailsDiv}>
-            {SelectedTask ? (
-              <Scrollbars key={SelectedTask.id} style={{ height: 650 }}>
-                <div className="card" style={{ minHeight: '600px', border: '1px solid #f4f6f8' }}>
-                  <div className="card-body">
-                    <div className="table-operations" style={{ marginBottom: '16px' }}>
-                      <Button
-                        style={{
-                          marginRight: '-12px',
-                          float: 'right',
-                          border: 'none',
-                          padding: 'none',
-                        }}
-                        onClick={() => this.setState({ divShow: false })}
-                      >
-                        X
-                      </Button>
-                    </div>
-                    <div>
-                      <EditTaskInformation key={SelectedTask.id} />
-                    </div>
-                  </div>
-                </div>
-              </Scrollbars>
-            ) : (
-              ''
-            )}
-            {/* <p>hello</p> */}
-          </div>
+          
+          
+          <Drawer
+            title="UPDATE TASK"
+            width="500px"
+            placement="right"
+            closable={true}
+            onClose={() => this.setState({ divShow: false })}
+            visible={divShow}
+          >
+            <EditTaskInformation key={divShow ? SelectedTask.id : null} />
+          </Drawer>
+          
+
           <Drawer
             title="CREATE TASK"
             width="700px"
             placement="right"
-            closable={false}
+            closable={true}
             onClose={this.onClose}
             visible={this.state.visible}
           >

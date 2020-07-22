@@ -12,10 +12,11 @@ const { Text, Paragraph } = Typography
 const Doctors = ({ title, icon, style }) => {
 
     const doctorsRedirect = () => {
-        notification.warning({
-            message: 'Verifyed Doctors',
-            description: 'Under Development',
-        })
+        // notification.warning({
+        //     message: 'Verifyed Doctors',
+        //     description: 'Under Development',
+        // })
+        window.location.href = '/#/doctor'
     }
 
     return (
@@ -37,7 +38,7 @@ const Doctors = ({ title, icon, style }) => {
 
                 <Row type="flex" justify="space-between" style={{ color: '#000' }}>
                     <Col span={20}>
-                        <Text style={{ fontSize: '20px', lineHeight: '27px', color: '#000' }}>Verifyed Doctors</Text>
+                        <Text style={{ fontSize: '20px', lineHeight: '27px', color: '#000' }}>Verified Doctors</Text>
                     </Col>
                     <Col span={4}>
                         <img style={{ width: 60, height: 60 }} src={doctorIcon} alt="" />

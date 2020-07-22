@@ -1,22 +1,57 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable array-callback-return */
+/* eslint-disable no-unused-expressions */
 import React, { Component } from 'react'
 import { Button, Progress, Drawer, Card, Layout, Row, Col, Typography, Switch, Icon, notification } from 'antd'
 import { Helmet } from 'react-helmet'
 import Authorize from 'components/LayoutComponents/Authorize'
 import { connect } from 'react-redux'
-import { HeartOutlined, CloseOutlined } from '@ant-design/icons'
 import { gql } from 'apollo-boost'
 import apolloClient from '../../apollo/config'
-import styles from './style.module.scss'
-import student from '../../images/student.jpg'
-import childMother from '../../images/childMother.jpg'
 import SessionInstruction from './SessionInstructions'
-import LearnerCard from './LearnerCard'
-import SessionCard from '../parent/ParentDashboard/SessionCard'
+import LearnerCard from './LearnerProgramCard'
+// import SessionCard from '../parent/ParentDashboard/SessionCard'
+import SessionCardForProgram from '../parent/ParentDashboard/SessionCardForProgram'
 
 const { Content } = Layout
 const { Title, Text } = Typography
+
+const assessmentCardStyle = {
+  background: '#FFFFFF',
+  border: '1px solid #E4E9F0',
+  boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
+  borderRadius: 10,
+  width: '300px',
+  marginRight: '20px',
+  padding: '12px 12px',
+  alignItems: 'center',
+  display: 'inline-block',
+  marginTop: '20px'
+}
+
+const assessmentCardSelectedStyle = {
+  background: '#FFFFFF',
+  border: '1px solid #E4E9F0',
+  boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
+  borderRadius: 10,
+  width: '100%',
+  marginRight: '20px',
+  padding: '12px 12px',
+  alignItems: 'center',
+  display: 'inline-block',
+  marginTop: '20px'
+}
+
+const customDivStyle = {
+  marginLeft: '20px',
+  background: '#F9F9F9',
+  borderRadius: 10,
+  minHeight: '700px',
+  padding: '28px 27px 20px',
+}
 
 @connect(({ user, sessionrecording }) => ({ user, sessionrecording }))
 class StudentDrawer extends Component {
@@ -29,6 +64,10 @@ class StudentDrawer extends Component {
       sessionName: '',
       programAreaStatus: [],
       isSelected: false,
+
+      // vb-mapp-isActive,
+      isVBMAPPActive: false,
+      studentDetails: null
     }
     this.onClose = this.onClose.bind(this)
   }
@@ -37,9 +76,8 @@ class StudentDrawer extends Component {
     // const propData = this.props
     const { areas } = this.props
     const std = JSON.parse(localStorage.getItem('studentId'))
-    apolloClient
-      .query({
-        query: gql`{
+    apolloClient.query({
+      query: gql`{
       GetStudentSession(studentId: "${std}") {
         edges {
           node {
@@ -99,17 +137,48 @@ class StudentDrawer extends Component {
           }
         }
       }
+      student(id: "${std}"){
+        id
+        firstname
+        isCogActive
+        isPeakActive
+      }
     }`,
-      })
+    })
       .then(result => {
         this.setState({
           sessions: result.data.GetStudentSession.edges,
           programAreaStatus: areas,
+          studentDetails: result.data.student,
         })
       })
       .catch(error => {
         console.log(error)
       })
+
+    apolloClient
+      .mutate({
+        mutation: gql`
+          mutation{
+            vbmappIsActive(input:{
+              student: "${std}"
+            }){
+              status
+              msg
+            }
+          }
+        `,
+      })
+      .then(result => {
+        this.setState({
+          isVBMAPPActive: result.data.vbmappIsActive.status
+        })
+        // console.log("vb-mapp ====> ", result)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+
   }
 
   close = () => {
@@ -134,25 +203,23 @@ class StudentDrawer extends Component {
           <div
             role="presentation"
             tabIndex={`-${i}`}
-            className={
+            style={
               propData.selectedArea.toUpperCase() ===
                 stateData.programAreaStatus[i].node.name.toUpperCase() && !stateData.isSelected
-                ? styles.drawerCardItemSelected
-                : styles.drawerCardItem
+                ? assessmentCardSelectedStyle
+                : assessmentCardStyle
             }
             onClick={() => {
               this.handleClick()
             }}
             key={i}
           >
-            <Card>
-              <div className={styles.drawercardHeading}>
-                <p>{stateData.programAreaStatus[i].node.name}</p>
-              </div>
-              {/* <div className={styles.drawerProgress}> */}
+
+            <div>
+              <Title style={{ fontSize: '18px' }}>{stateData.programAreaStatus[i].node.name}</Title>
+
               <Progress percent={stateData.programAreaStatus[i].node.percentageLong ? stateData.programAreaStatus[i].node.percentageLong : 0} strokeColor="#0059b3" />
-              {/* </div> */}
-            </Card>
+            </div>
           </div>,
         )
       }
@@ -167,7 +234,7 @@ class StudentDrawer extends Component {
       for (let i = 0; i < stateData.sessions.length; i += 1) {
         if (stateData.sessions[i].node.targets.edges.length > 0) {
           array.push(
-            <SessionCard
+            <SessionCardForProgram
               id={stateData.sessions[i].node.id}
               sessionName={stateData.sessions[i].node.sessionName.name}
               duration={stateData.sessions[i].node.duration}
@@ -222,16 +289,120 @@ class StudentDrawer extends Component {
     })
   }
 
+  redirectToAssessment = (text) => {
+    if (text === 'VB-MAPP') {
+      window.location.href = '/#/therapy/vbmapps/list'
+    }
+    if (text === 'CogniAble') {
+      window.location.href = '/#/cogniableAssessment'
+    }
+    if (text === 'PEAK') {
+      window.location.href = '/#/peak'
+    }
+  }
+
+  activeInactiveVbMapp = isActive => {
+    const std = JSON.parse(localStorage.getItem('studentId'))
+    if (isActive) {
+      apolloClient
+        .mutate({
+          mutation: gql`
+          mutation{
+            vbmappActivateStudent(input:{
+                student: "${std}"
+            }){
+                status
+                msg
+            }
+          }
+          `,
+        })
+        .then(result => {
+          this.setState({
+            isVBMAPPActive: true
+          })
+          console.log("vb-mapp ====> ", result)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    }
+  }
+
+  activeInactivePEAK = isActive => {
+    const std = JSON.parse(localStorage.getItem('studentId'))
+    apolloClient
+      .mutate({
+        mutation: gql`mutation {
+          updateStudent(input:{
+            studentData:{
+              id:"${std}", 
+              isPeakActive: ${isActive}
+            }
+          })
+          { 
+            student {
+              id,
+              firstname
+              isPeakActive
+              isCogActive 
+            }
+          }
+        }`,
+      })
+      .then(result => {
+        this.setState({
+          studentDetails: result.data.updateStudent.student
+        })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
+  activeInactiveCogniAble = isActive => {
+    const std = JSON.parse(localStorage.getItem('studentId'))
+    apolloClient
+      .mutate({
+        mutation: gql`
+        mutation {
+          updateStudent(input:{
+            studentData:{
+              id:"${std}", 
+              isCogActive: ${isActive}
+            }
+          })
+          { 
+            student {
+              id,
+              firstname
+              isPeakActive
+              isCogActive 
+            }
+          }
+        }`,
+      })
+      .then(result => {
+        this.setState({
+          studentDetails: result.data.updateStudent.student
+        })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
   render() {
     const propData = this.props
-    console.log('areas: ', propData.areas)
+    // console.log('areas: ', propData.areas)
     const stateData = this.state
+    const { isVBMAPPActive, programAreaStatus, studentDetails } = this.state
     const filteredArray = this.getFilteredArray()
-    const checked = false
+
     return (
       <>
         <Authorize roles={['therapist', 'school_admin']} redirect to="/dashboard/beta">
-          <Helmet title="Dashboard Alpha" />
+          <Helmet title="Program" />
           <Layout style={{ padding: '0px' }}>
             <Content
               style={{
@@ -241,203 +412,153 @@ class StudentDrawer extends Component {
                 margin: '0px auto',
               }}
             >
-              <Row style={{ width: '100%', margin: 0 }} gutter={[41, 0]}>
-                <Drawer
-                  placement="right"
-                  closable={false}
-                  maskStyle={{ display: 'flex' }}
-                  visible={stateData.visible}
-                  width={500}
-                >
-                  <SessionInstruction
-                    session={filteredArray}
-                    closeModal={() => {
-                      this.onClose()
-                    }}
-                  />
-                </Drawer>
-                <Col span={8}>
+              <Row style={customDivStyle} gutter={[41, 0]}>
+                <Col span={16}>
+                  <Row>
+                    <Col span={24}>
+                      <LearnerCard
+                        key={propData.student.id}
+                        node={propData.student}
+                        name={propData.student.firstname}
+                        style={{ backgroundColor: 'white' }}
+                        leaveRequest={propData.student.leaveRequest}
+                        selectedProgramArea={propData.selectedArea}
+                      />
+                    </Col>
+
+                    {/* <Col span={24}>
+                      <Title style={{ fontSize: 20, lineHeight: '27px', marginTop: '20px' }}>
+                        Active Program Areas
+                      </Title>
+                      <div
+                        style={{
+                          overflowX: 'scroll',
+                          overflowY: 'hidden',
+                          whiteSpace: 'nowrap',
+                          flexWrap: 'nowrap',
+
+                        }}
+                      >
+                        {this.renderProgramArea()}
+                      </div>
+                    </Col> */}
+
+
+
+
+                  </Row>
+                </Col>
+
+                {/* <Col span={8}>
+                  <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
+                    <a href="/#/target/allocation">
+                      <Title style={{ fontSize: '18px' }}>Build {propData.student.firstname}&apos;s Goals</Title>
+                      <p style={{ display: 'block', marginTop: '5px', marginBottom: '0px' }}><i>Click here to build LTG & STG </i></p>
+                    </a>
+                  </Card>
+                </Col> */}
+
+                <Col span={24}>
+                  <Title style={{ fontSize: 20, lineHeight: '27px', marginTop: '20px' }}>
+                    Assessments
+                  </Title>
                   <div
                     style={{
-                      marginLeft: '20px',
-                      background: '#F9F9F9',
-                      borderRadius: 10,
-                      padding: '28px 27px 20px',
+                      overflowX: 'scroll',
+                      overflowY: 'hidden',
+                      whiteSpace: 'nowrap',
+                      flexWrap: 'nowrap',
+
                     }}
                   >
-                    <LearnerCard
-                      key={propData.student.id}
-                      node={propData.student}
-                      name={propData.student.firstname}
-                      style={{ backgroundColor: 'white' }}
-                      leaveRequest={propData.student.leaveRequest}
-                    />
-                    <div style={{ height: '620px', overflow: 'auto' }}>
-                      <div className={styles.drawerShell}>
-                        <div className={styles.drawerCard}>{this.renderProgramArea()}</div>
+                    <div role="presentation" style={assessmentCardStyle}>
+                      <div>
+                        <Title style={{ fontSize: '18px' }}>PEAK</Title>
+                        <div>
+                          <Switch
+                            checkedChildren={<Icon type="check" />}
+                            checked={studentDetails?.isPeakActive}
+                            unCheckedChildren={<Icon type="close" />}
+                            onChange={(event) => {
+                              this.activeInactivePEAK(event)
+                            }}
+                          />
+                        </div>
+                        <Button type="link" onClick={studentDetails?.isPeakActive ? () => { this.redirectToAssessment('PEAK') } : () => { this.generateNotification('PEAK assessment is not activated') }}><p style={{ display: 'block', marginTop: '5px', marginBottom: '-5px' }}><i>Click here start PEAK Assessment </i></p></Button>
                       </div>
                     </div>
+
+                    <div role="presentation" style={assessmentCardStyle}>
+                      <div>
+                        <Title style={{ fontSize: '18px' }}>VB-MAPP</Title>
+                        <div>
+                          <Switch
+                            checkedChildren={<Icon type="check" />}
+                            unCheckedChildren={<Icon type="close" />}
+                            checked={isVBMAPPActive}
+                            onChange={(event) => {
+                              this.activeInactiveVbMapp(event)
+                            }}
+                          />
+                        </div>
+                        <Button type="link" onClick={isVBMAPPActive ? () => { this.redirectToAssessment('VB-MAPP') } : () => { this.generateNotification('VB-MAPP assessment is not activated') }}><p style={{ display: 'block', marginTop: '5px', marginBottom: '-5px' }}><i>Click here start VB-Mapp Assessment </i></p></Button>
+                      </div>
+                    </div>
+
+                    <div role="presentation" style={assessmentCardStyle}>
+                      <div>
+                        <Title style={{ fontSize: '18px' }}>CogniAble</Title>
+                        <div>
+                          <Switch
+                            checkedChildren={<Icon type="check" />}
+                            checked={studentDetails?.isCogActive}
+                            unCheckedChildren={<Icon type="close" />}
+                            onChange={(event) => {
+                              this.activeInactiveCogniAble(event)
+                            }}
+                          />
+                        </div>
+                        <Button type="link" onClick={studentDetails?.isCogActive ? () => { this.redirectToAssessment('CogniAble') } : () => { this.generateNotification('CogniAble assessment is not activated') }}><p style={{ display: 'block', marginTop: '5px', marginBottom: '-5px' }}><i>Click here start CogniAble Assessment </i></p></Button>
+                      </div>
+                    </div>
+
                   </div>
                 </Col>
-                <Col span={8}>
+
+                <Col span={24}>
+                  <Title style={{ fontSize: 20, lineHeight: '27px', marginTop: '20px' }}>
+                    Sessions Status
+                      </Title>
                   <div
                     style={{
-                      background: '#F9F9F9',
-                      borderRadius: 10,
-                      padding: '28px 27px 28px 27px',
+                      overflowX: 'scroll',
+                      overflowY: 'hidden',
+                      whiteSpace: 'nowrap',
+                      flexWrap: 'nowrap',
+
                     }}
                   >
-                    <Title style={{ fontSize: 20, lineHeight: '27px' }}>Goals</Title>
-
-                    <Card style={{ borderRadius: '10px', cursor: 'pointer' }}>
-                      <a href="/#/target/allocation">
-                        <Title style={{ fontSize: '18px' }}>Long Term Goal</Title>
-                        <Progress
-                          percent={40}
-                          showInfo={false}
-                          strokeColor="#0059b3"
-                          strokeWidth={10}
-                        />
-                      </a>
-                    </Card>
-
-                    <Card style={{ borderRadius: '10px', cursor: 'pointer', marginTop: '10px' }}>
-                      <a href="/#/target/allocation">
-                        <Title style={{ fontSize: '18px' }}>Short Term Goal</Title>
-                        <Progress
-                          percent={40}
-                          showInfo={false}
-                          strokeColor="#0059b3"
-                          strokeWidth={10}
-                        />
-                      </a>
-                    </Card>
-
-                    <Title style={{ fontSize: 20, lineHeight: '27px', marginTop: '20px' }}>
-                      Assessments
-                    </Title>
-
-                    <div
-                      style={{
-                        overflowX: 'scroll',
-                        overflowY: 'hidden',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-
-                      <Card
-                        style={{
-                          display: 'inline-block',
-                          borderRadius: '10px',
-                          marginRight: '10px',
-                          cursor: 'pointer'
-                        }}
-                        bodyStyle={{
-                          minHeight: '80px',
-                          minWidth: '250px'
-                        }}
-                        role="presentation"
-                        onClick={
-                          checked
-                            ? () => {
-                              this.generateNotification('PEAK assessment is activated')
-                            }
-                            : () => {
-                              this.generateNotification('PEAK assessment is not activated')
-                            }
-                        }
-                      >
-                        <Title style={{ fontSize: '18px' }}>PEAK</Title>
-                        <Switch
-                          checkedChildren={<Icon type="check" />}
-                          unCheckedChildren={<Icon type="close" />}
-                          onClick={(e) => console.log(e)}
-
-                        />
-                      </Card>
-
-                      <Card
-                        style={{
-                          display: 'inline-block',
-                          borderRadius: '10px',
-                          marginRight: '10px',
-                          cursor: 'pointer'
-                        }}
-                        bodyStyle={{
-                          minHeight: '80px',
-                          minWidth: '250px'
-                        }}
-                        role="presentation"
-                        onClick={
-                          checked
-                            ? () => {
-                              this.generateNotification('VB-MAPP assessment is activated')
-                            }
-                            : () => {
-                              this.generateNotification('VB-MAPP assessment is not activated')
-                            }
-                        }
-                      >
-                        <Title style={{ fontSize: '18px' }}>VB-MAPP</Title>
-                        <Switch
-                          checkedChildren={<Icon type="check" />}
-                          unCheckedChildren={<Icon type="close" />}
-
-                        />
-                      </Card>
-                      <Card
-                        style={{
-                          display: 'inline-block',
-                          borderRadius: '10px',
-                          marginRight: '10px',
-                          cursor: 'pointer'
-                        }}
-                        bodyStyle={{
-                          minHeight: '80px',
-                          minWidth: '250px'
-                        }}
-                        role="presentation"
-                        onClick={
-                          checked
-                            ? () => {
-                              this.generateNotification('CogniAble assessment is activated')
-                            }
-                            : () => {
-                              this.generateNotification('CogniAble assessment is not activated')
-                            }
-                        }
-                      >
-                        <Title style={{ fontSize: '18px' }}>CogniAble</Title>
-                        <Switch
-                          checkedChildren={<Icon type="check" />}
-                          unCheckedChildren={<Icon type="close" />}
-
-                        />
-                      </Card>
-
-
-                    </div>
-                  </div>
-                </Col>
-                <Col span={8}>
-                  <div
-                    role="presentation"
-                    onClick={() => {
-                      this.close()
-                    }}
-                    style={{ float: 'right' }}
-                  >
-                    <CloseOutlined
-                      style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }}
-                    />
-                  </div>
-                  <Title style={{ fontSize: 20, lineHeight: '27px' }}>Sessions</Title>
-                  <div style={{ height: '650px', overflow: 'auto' }}>
                     {this.renderSessionCards()}
                   </div>
                 </Col>
+
+
               </Row>
             </Content>
+            <Drawer
+              placement="right"
+              closable={false}
+              maskStyle={{ display: 'flex' }}
+              visible={stateData.visible}
+              width={500}
+            >
+              <SessionInstruction
+                session={filteredArray}
+                closeModal={() => {
+                  this.onClose()
+                }}
+              />
+            </Drawer>
           </Layout>
         </Authorize>
       </>

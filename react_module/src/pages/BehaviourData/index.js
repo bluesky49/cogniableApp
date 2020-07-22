@@ -11,7 +11,7 @@ import gql from 'graphql-tag'
 import Calendar from 'components/Calander'
 import Scrollbars from 'react-custom-scrollbars'
 import Search from 'antd/lib/input/Search'
-import BehaviourCard from './BehaviourCard'
+import BehaviourCard from 'components/Behaviour/BehaviourCard'
 import TemplateForm from './Templateform'
 import TamplateCard from './TamplateCard'
 import CreateDehavrioDrawer from './CreateDehavrioDrawer'
@@ -102,18 +102,19 @@ export default () => {
   const [tamplateList, setTamplateList] = useState()
   const [filterTemText, setFilterTemText] = useState('')
   const [updateBehavior, setUpdateBehavior] = useState()
-
-  const { data: studnetInfo } = useQuery(STUDNET_INFO, {
-    variables: {
-      studentId,
-    },
-  })
+  const [deleteBehaviour, setDeleteBehaviour] = useState()
 
   const { data, loading, error } = useQuery(BEHAVIOUR_RECORD_DATA, {
     fetchPolicy: 'no-cache',
     variables: {
       studentId,
       date,
+    },
+  })
+
+  const { data: studnetInfo } = useQuery(STUDNET_INFO, {
+    variables: {
+      studentId,
     },
   })
 
@@ -126,6 +127,15 @@ export default () => {
       studentId,
     },
   })
+
+  useEffect(() => {
+    if (deleteBehaviour) {
+      setViewBehaviorRecordData(state => {
+        return state.filter(beh => beh.node.id !== deleteBehaviour)
+      })
+      setDeleteBehaviour(null)
+    }
+  }, [deleteBehaviour])
 
   useEffect(() => {
     if (filterTemText.length > 0) {
@@ -176,7 +186,7 @@ export default () => {
   useEffect(() => {
     if (newRecord) {
       if (newRecord.node.date === date) {
-        setViewBehaviorRecordData(state => {  
+        setViewBehaviorRecordData(state => {
           return [newRecord, ...state]
         })
       }
@@ -249,12 +259,14 @@ export default () => {
                           return (
                             <BehaviourCard
                               key={node.id}
+                              id={node.id}
                               behaviorName={node.template.behavior.behaviorName}
                               time={node.duration}
                               note={node.note}
                               irt={node.irt}
                               frequently={node.frequency.edges.length}
                               style={{ marginTop: index === 0 ? 0 : 20 }}
+                              setDeleteBehaviour={setDeleteBehaviour}
                             />
                           )
                         })}
@@ -271,7 +283,7 @@ export default () => {
                   lineHeight: '41px',
                 }}
               >
-                {newTampletFromOpen ? 'New Behavior Templates' : 'Behavior Templates'}
+                {newTampletFromOpen ? 'New Behaviour Templates' : 'Behaviour Templates'}
               </Title>
               <div
                 style={{
@@ -312,7 +324,7 @@ export default () => {
                             {dancleTemplateError && 'Opps their is something wrong'}
 
                             <Search
-                              placeholder="search by template name"
+                              placeholder="search by tarmplet name"
                               size="large"
                               style={{
                                 width: '99.70%',
@@ -340,8 +352,8 @@ export default () => {
                                     textAlign: 'center',
                                   }}
                                 >
-                                  There is no Behavior Tamplate <br />
-                                  Please create One.
+                                  Their is no Behavior Tamplate <br />
+                                  Please create One
                                 </Text>
                               </div>
                             )}

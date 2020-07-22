@@ -3,11 +3,12 @@
 /* eslint-disable react/jsx-closing-tag-location */
 import React, { useState, useRef, useEffect } from 'react'
 import { createUseStyles } from 'react-jss'
-import { Typography, Button, Select, Form, notification } from 'antd'
+import { Typography, Button, Select, Form, notification, DatePicker, TimePicker } from 'antd'
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
 import { useMutation } from 'react-apollo'
 import Timer from 'react-compound-timer/build'
+import moment from 'moment'
 
 const { Text } = Typography
 const { Option } = Select
@@ -277,6 +278,18 @@ const CreateFrom = ({
             <Text className={classes.text}>Status</Text>
             <Text className={classes.text}>
               {data.createDecel.details.template.status.statusName}
+            </Text>
+          </div>
+          <div className={classes.horizontalView}>
+            <Text className={classes.text}>Date</Text>
+            <Text className={classes.text} style={{ maxWidth: '60%', lineBreak: 'anywhere' }}>
+              {moment().format('YYYY-MM-DD')}
+            </Text>
+          </div>
+          <div className={classes.horizontalView}>
+            <Text className={classes.text}>Time</Text>
+            <Text className={classes.text} style={{ maxWidth: '60%', lineBreak: 'anywhere' }}>
+              {moment().format('HH:mm a')}
             </Text>
           </div>
           <div className={classes.horizontalView}>

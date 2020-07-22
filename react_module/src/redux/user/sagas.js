@@ -92,7 +92,7 @@ export function* LOAD_CURRENT_ACCOUNT() {
 
   const response = yield call(RefreshToken)
 
-  if (response) {
+  if (response && response.refreshToken) {
     console.log(response)
     const result = yield call(GetUserDetailsByUsername, response.refreshToken.payload.username)
 
@@ -141,6 +141,7 @@ export function* LOAD_CURRENT_ACCOUNT() {
 
     }
   } else {
+    localStorage.clear()
     LOGOUT()
   }
 
@@ -169,10 +170,6 @@ export function* LOGOUT() {
     },
   })
   yield call(logout)
-
-  // localStorage.setItem('database', '')
-  // localStorage.setItem('token', '')
-  // localStorage.setItem('role', '')
   localStorage.clear()
 }
 

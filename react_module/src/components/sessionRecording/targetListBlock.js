@@ -25,263 +25,241 @@ const { Element, Link } = Scroll
 
 @connect(({ sessionrecording }) => ({ sessionrecording }))
 class Target extends Component {
-  componentDidMount() {
-    const {
-      dispatch,
-      sessionrecording: { loading, Disabled, TargetActiveId, TargetActiveIndex },
-    } = this.props
-    if (!loading) {
-      document.getElementById(TargetActiveId).click()
-      document.getElementsByClassName('targetElements')[TargetActiveIndex].style.border =
-        '2px solid #bae7ff'
-    }
+	componentDidMount() {
+		const {
+			dispatch,
+			sessionrecording: { loading, Disabled, TargetActiveId, TargetActiveIndex },
+		} = this.props
+		if (!loading) {
+			document.getElementById(TargetActiveId).click()
+			document.getElementsByClassName('targetElements')[TargetActiveIndex].style.border =
+				'2px solid #bae7ff'
+		}
   }
+  
+  getVideoUrl(index){
+    const {dispatch, sessionrecording: {MasterSession, TargetActiveIndex}} = this.props
+    dispatch({
+      type: 'sessionrecording/SET_STATE',
+      payload: {
+        VideoUrl: '',
+        VideoLoading: true
+      }
+    })
+    if (MasterSession.targets.edges[index].node.videos.edges.length > 0) {
+      const videoNode = MasterSession.targets.edges[index].node.videos.edges[0];
+      const targetVideoUrl = videoNode.node.url;
+      console.log(targetVideoUrl)
+      // const isVideoAvailable = true;
+      // let res = targetVideoUrl.substring(18);
+	  //   const videoId = targetVideoUrl.substring(targetVideoUrl.lastIndexOf('/') + 1);
+	  const videoId = targetVideoUrl.split('/')[3];
+      // return videoId
+      console.log(videoId)
 
-  resetCorrectIncorrectButtonStyle = () => {
-    var element = document.getElementById('correctResponseButton')
-
-    // If it isn't "undefined" and it isn't "null", then it exists.
-    if (typeof element != 'undefined' && element != null) {
-      document.getElementById('correctResponseButton').style.color = 'gray'
-      document.getElementById('correctResponseButton').style.borderColor = '#e4e9f0'
-      document.getElementById('incorrectResponseButton').style.color = 'gray'
-      document.getElementById('incorrectResponseButton').style.borderColor = '#e4e9f0'
-    } else {
-      console.log('Buttons does not not exits')
-    }
-  }
-
-  updateSessionClockTime = () => {
-    // updatig current clock time to store
-    document.getElementById('updateSessionCurrentTimeInStore').click()
-  }
-
-  updateStartTrialClockTime = () => {
-    // updatig trial start time to store
-    document.getElementById('updateStartTrialTimeInStore').click()
-  }
-
-  changeTarget = index => {
-    const {
-      dispatch,
-      sessionrecording: { Disabled, TargetActiveId, MasterSession, TargetActiveIndex },
-    } = this.props
-    if (Disabled) {
-      alert('Please Start Session Clock first')
-    } else {
-      // scrolling target to top
-      document.getElementById(TargetActiveId).click()
-      document.getElementsByClassName('targetElements')[index].style.border = '2px solid #bae7ff'
-      document.getElementsByClassName('targetElements')[TargetActiveIndex].style.border = 'none'
-      // updating start trial time
-      this.updateStartTrialClockTime()
-      // updatig current clock time to store
-      this.updateSessionClockTime()
-      // reseting response button color
-      this.resetCorrectIncorrectButtonStyle()
-      // updating previous target end time
-      dispatch({
-        type: 'sessionrecording/TARGET_UPDATE',
-        payload: {
-          targetId: TargetActiveId,
-        },
-      })
-
-      // Updating target index and target id to store
       dispatch({
         type: 'sessionrecording/SET_STATE',
         payload: {
-          TargetActiveIndex: index,
-          TargetActiveId: MasterSession.targets.edges[index].node.id,
-        },
+          VideoUrl: `https://player.vimeo.com/video/${videoId}/`,
+          VideoAvailable: true,
+          VideoLoading: false
+        }
       })
-
-      // checking new target recording if not exist creating new target skills model instance
+    } else {
       dispatch({
-        type: 'sessionrecording/CREATE_NEW_TARGET_INSTANCE',
+        type: 'sessionrecording/SET_STATE',
         payload: {
-          targetId: MasterSession.targets.edges[index].node.id,
-          targetIndex: index,
-        },
+          VideoAvailable: false,
+          VideoLoading: false
+        }
       })
     }
   }
 
-  render() {
-    const { Meta } = Card
-    const {
-      sessionrecording: { loading, MasterSession },
-    } = this.props
+	resetCorrectIncorrectButtonStyle = () => {
+		var element = document.getElementById('correctResponseButton')
 
-    const trialsDivStyle = { marginTop: '25px' }
+		// If it isn't "undefined" and it isn't "null", then it exists.
+		if (typeof element != 'undefined' && element != null) {
+			document.getElementById('correctResponseButton').style.color = 'gray'
+			document.getElementById('correctResponseButton').style.borderColor = '#e4e9f0'
+			document.getElementById('incorrectResponseButton').style.color = 'gray'
+			document.getElementById('incorrectResponseButton').style.borderColor = '#e4e9f0'
+		} else {
+			console.log('Buttons does not not exits')
+		}
+	}
 
-    if (loading) {
-      return 'Loading Targets...'
+	updateSessionClockTime = () => {
+		// updatig current clock time to store
+		document.getElementById('updateSessionCurrentTimeInStore').click()
+	}
+
+	updateStartTrialClockTime = () => {
+		// updatig trial start time to store
+		document.getElementById('updateStartTrialTimeInStore').click()
+	}
+
+	changeTarget = index => {
+		const {
+			dispatch,
+			sessionrecording: { Disabled, TargetActiveId, MasterSession, TargetActiveIndex },
+		} = this.props
+		if (Disabled) {
+			alert('Please Start Session Clock first')
+		} else {
+			// scrolling target to top
+			document.getElementById(TargetActiveId).click()
+			document.getElementsByClassName('targetElements')[index].style.border = '2px solid #bae7ff'
+			document.getElementsByClassName('targetElements')[TargetActiveIndex].style.border = 'none'
+			// updating start trial time
+			this.updateStartTrialClockTime()
+			// updatig current clock time to store
+			this.updateSessionClockTime()
+			// reseting response button color
+			this.resetCorrectIncorrectButtonStyle()
+			// updating previous target end time
+			dispatch({
+				type: 'sessionrecording/TARGET_UPDATE',
+				payload: {
+					targetId: TargetActiveId,
+				},
+			})
+
+			// Updating target index and target id to store
+			dispatch({
+				type: 'sessionrecording/SET_STATE',
+				payload: {
+					TargetActiveIndex: index,
+					TargetActiveId: MasterSession.targets.edges[index].node.id,
+				},
+			})
+
+			// checking new target recording if not exist creating new target skills model instance
+			dispatch({
+				type: 'sessionrecording/CREATE_NEW_TARGET_INSTANCE',
+				payload: {
+					targetId: MasterSession.targets.edges[index].node.id,
+					targetIndex: index,
+				},
+			})
     }
+    
+    // load video
+    this.getVideoUrl(index)
+	}
 
-    return (
-      <>
-        <Element
-          name="test7"
-          className="element"
-          id="containerElement"
-          style={{
-            position: 'relative',
-            height: '500px',
-            overflow: 'scroll',
-            // marginBottom: '100px'
-          }}
-        >
-          {MasterSession ? (
-            MasterSession.targets.edges.map((item, index) => (
-              <>
-                <Element
-                  className="targetElements"
-                  style={{ padding: '4px', borderRadius: '8px' }}
-                  name={item.node.id}
-                >
-                  <a onClick={() => this.changeTarget(index)}>
-                    <>
-                      <Card hoverable style={{ width: '100%', maxHeight: '350px' }}>
-                        <Meta title={item.node.targetAllcatedDetails.targetName} />
-                        <div style={trialsDivStyle}>
-                          {item.node.sd.edges.length > 0 ? (
-                            <>
-                              {item.node.sd.edges.map(item2 => (
-                                <>
-                                  <span>Stimulus : {item2.node.sd} </span>
-                                  <br />
-                                  <TrialsList
-                                    key={item.node.id}
-                                    id={item.node.id}
-                                    sdKey={item2.node.id}
-                                    stepKey=""
-                                    dailyTrails={item.node.targetAllcatedDetails.DailyTrials}
-                                    boxWidth="20px"
-                                  />
-                                  <br />
-                                </>
-                              ))}
-                            </>
-                          ) : item.node.steps.edges.length > 0 ? (
-                            <>
-                              {item.node.steps.edges.map(item3 => (
-                                <>
-                                  <span>Step : {item3.node.step} </span>
-                                  <br />
-                                  <TrialsList
-                                    key={item.node.id}
-                                    id={item.node.id}
-                                    sdKey=""
-                                    stepKey={item3.node.id}
-                                    dailyTrails={item.node.targetAllcatedDetails.DailyTrials}
-                                    boxWidth="20px"
-                                  />
-                                  <br />
-                                </>
-                              ))}
-                            </>
-                          ) : (
-                            <TrialsList
-                              key={item.node.id}
-                              id={item.node.id}
-                              sdKey=""
-                              stepKey=""
-                              dailyTrails={item.node.targetAllcatedDetails.DailyTrials}
-                              boxWidth="20px"
-                            />
-                          )}
-                        </div>
-                      </Card>
-                    </>
-                  </a>
-                </Element>
-                <Link
-                  activeClass="active"
-                  id={item.node.id}
-                  to={item.node.id}
-                  spy={true}
-                  smooth={true}
-                  duration={250}
-                  style={{ display: 'hidden' }}
-                  containerId="containerElement"
-                >
-                  &nbsp;
+	render() {
+		const { Meta } = Card
+		const {
+			sessionrecording: { loading, MasterSession },
+		} = this.props
+
+		const trialsDivStyle = { marginTop: '25px' }
+
+		if (loading) {
+			return 'Loading Targets...'
+		}
+
+		return (
+			<>
+				<Element
+					name="test7"
+					className="element"
+					id="containerElement"
+					style={{
+						position: 'relative',
+						height: '500px',
+						overflow: 'scroll',
+						// marginBottom: '100px'
+					}}
+				>
+					{MasterSession ? (
+						MasterSession.targets.edges.map((item, index) => (
+							<>
+								<Element
+									className="targetElements"
+									style={{ padding: '4px', borderRadius: '8px' }}
+									name={item.node.id}
+								>
+									<a onClick={() => this.changeTarget(index)}>
+										<>
+											<Card hoverable style={{ width: '100%', maxHeight: '350px' }}>
+												<Meta title={item.node.targetAllcatedDetails.targetName} />
+												<div style={trialsDivStyle}>
+													{item.node.sd.edges.length > 0 ? (
+														<>
+															{item.node.sd.edges.map(item2 => (
+																<>
+																	<span>Stimulus : {item2.node.sd} </span>
+																	<br />
+																	<TrialsList
+																		key={item.node.id}
+																		id={item.node.id}
+																		sdKey={item2.node.id}
+																		stepKey=""
+																		dailyTrails={item.node.targetAllcatedDetails.DailyTrials}
+																		boxWidth="20px"
+																	/>
+																	<br />
+																</>
+															))}
+														</>
+													) : item.node.steps.edges.length > 0 ? (
+														<>
+															{item.node.steps.edges.map(item3 => (
+																<>
+																	<span>Step : {item3.node.step} </span>
+																	<br />
+																	<TrialsList
+																		key={item.node.id}
+																		id={item.node.id}
+																		sdKey=""
+																		stepKey={item3.node.id}
+																		dailyTrails={item.node.targetAllcatedDetails.DailyTrials}
+																		boxWidth="20px"
+																	/>
+																	<br />
+																</>
+															))}
+														</>
+													) : (
+																<TrialsList
+																	key={item.node.id}
+																	id={item.node.id}
+																	sdKey=""
+																	stepKey=""
+																	dailyTrails={item.node.targetAllcatedDetails.DailyTrials}
+																	boxWidth="20px"
+																/>
+															)}
+												</div>
+											</Card>
+										</>
+									</a>
+								</Element>
+								<Link
+									activeClass="active"
+									id={item.node.id}
+									to={item.node.id}
+									spy={true}
+									smooth={true}
+									duration={250}
+									style={{ display: 'hidden' }}
+									containerId="containerElement"
+								>
+									&nbsp;
                 </Link>
-              </>
-            ))
-          ) : (
-            <p>Loading Targets...</p>
-          )}
-        </Element>
+							</>
+						))
+					) : (
+							<p>Loading Targets...</p>
+						)}
+				</Element>
 
-        {/* {MasterSession
-          ? MasterSession.targets.edges.map((item, index) => (
-            <>
-              <Card
-                hoverable
-                style={{ width: '100%', maxHeight: '350px', marginBottom: '20px' }}
-              >
-                <Meta title={item.node.targetAllcatedDetails.targetName} />
-                <div style={trialsDivStyle}>
-                  {item.node.sd.edges.length > 0 ?
 
-                    <>
-                      {item.node.sd.edges.map(item2 =>
-                        <>
-                          <span>Stimulus : {item2.node.sd} </span>
-                          <br />
-                          <TrialsList
-                            key={item.node.id}
-                            id={item.node.id}
-                            sdKey={item2.node.id}
-                            stepKey=''
-                            dailyTrails={item.node.targetAllcatedDetails.DailyTrials}
-                            boxWidth='20px'
-                          />
-                          <br />
-                        </>
-                      )}
-                    </>
-
-                    :
-                    item.node.steps.edges.length > 0 ?
-                      <>
-                        {item.node.steps.edges.map(item3 =>
-                          <>
-                            <span>Step : {item3.node.step} </span>
-                            <br />
-                            <TrialsList
-                              key={item.node.id}
-                              id={item.node.id}
-                              sdKey=''
-                              stepKey={item3.node.id}
-                              dailyTrails={item.node.targetAllcatedDetails.DailyTrials}
-                              boxWidth='20px'
-                            />
-                            <br />
-                          </>
-                        )}
-                      </>
-                      :
-                      <TrialsList
-                        key={item.node.id}
-                        id={item.node.id}
-                        sdKey=''
-                        stepKey=''
-                        dailyTrails={item.node.targetAllcatedDetails.DailyTrials}
-                        boxWidth='20px'
-                      />
-                  }
-                </div>
-              </Card>
-
-            </>
-          ))
-          : ''
-        } */}
-      </>
-    )
-  }
+			</>
+		)
+	}
 }
 export default Target

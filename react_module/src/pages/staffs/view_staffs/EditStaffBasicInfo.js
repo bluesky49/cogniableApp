@@ -72,9 +72,10 @@ class EditBasicInformation extends React.Component {
     })
   }
 
-  onReset = () => {
-    this.formRef.current.resetFields()
-  }
+  // onReset = () => {
+  //   const { form, CloseDrawer } = this.props
+  //   form.resetFields()
+  // }
 
   render() {
     const itemStyle = { marginBottom: '0' }
@@ -181,14 +182,14 @@ class EditBasicInformation extends React.Component {
           {form.getFieldDecorator('workExprience', { initialValue: '' })(<Input />)}
         </Form.Item>
 
-        <Form.Item {...tailLayout}>
-          <Button type="primary" htmlType="submit">
-            Submit
+        <Form.Item>
+          <Button style={{width: '100%'}} type="primary" htmlType="submit">
+            Save
           </Button>
 
-          <Button htmlType="primary" onClick={this.onReset} className="ml-4">
+          {/* <Button htmlType="primary" onClick={this.onReset} className="ml-4">
             cancel
-          </Button>
+          </Button> */}
         </Form.Item>
       </Form>
     )

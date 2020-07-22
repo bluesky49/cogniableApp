@@ -105,7 +105,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
     if (createAppiormentsData) {
       notification.success({
         message: 'Clinic Dashboard',
-        description: 'Appiontment created Successfully',
+        description: 'Appointment create Successfully',
       })
       setNewAppiormentCreated(true)
       handelNewAppiormentDrawer()
@@ -116,7 +116,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
   useEffect(() => {
     if (createAppiormentsError) {
       notification.error({
-        message: 'Something went wrong!',
+        message: 'Somthing went wrong',
         description: createAppiormentsError,
       })
     }
@@ -157,14 +157,14 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
         </Form.Item>
 
         <Form.Item
-          label="Select Student"
-          rules={[{ required: true, message: 'Please select a student!' }]}
+          label="Select Learner"
+          rules={[{ required: true, message: 'Please select a learner!' }]}
         >
           <Select
             onChange={value => {
               setStudent(value)
             }}
-            placeholder="Select Student"
+            placeholder="Select Learner"
             size="large"
             loading={allSudentLoading}
             showSearch
@@ -180,16 +180,16 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
         </Form.Item>
 
         <Form.Item
-          label="Appointment Reason"
+          label="Purpose of Assignment"
           rules={[
             {
               required: true,
-              message: 'Please type the Appointment Reason',
+              message: 'Please type the purpose of assignment',
             },
           ]}
         >
           <Input
-            placeholder="Appointment Reason"
+            placeholder="Purpose of Assignment"
             value={purposeAssignment}
             size="large"
             onChange={e => setPurposeAssignment(e.target.value)}
@@ -221,7 +221,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
 
         <Form.Item
           label="Start Time"
-          rules={[{ required: true, message: 'Please select start time!' }]}
+          rules={[{ required: true, message: 'Please select a start time!' }]}
         >
           <DatePicker
             style={{
@@ -240,7 +240,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
 
         <Form.Item
           label="End Time"
-          rules={[{ required: true, message: 'Please select end time!' }]}
+          rules={[{ required: true, message: 'Please select a end time!' }]}
         >
           <DatePicker
             style={{
@@ -300,7 +300,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
               marginBottom: 20,
             }}
           >
-            Create Appiontment
+            Create Appointment
           </Button>
         </Form.Item>
       </Form>

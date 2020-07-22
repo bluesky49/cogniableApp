@@ -34,7 +34,19 @@ export async function getTargets(payload) {
                                 id
                                 targetName
                                 DailyTrials
+                                targetType{
+                                    id,
+                                    typeTar
+                                }
                             }
+                            videos{
+                                edges{
+                                    node{
+                                        id,
+                                        url
+                                    }
+                                }
+                            },
                             sd{
                                 edges{
                                     node{
@@ -59,7 +71,7 @@ export async function getTargets(payload) {
                 id,
                 promptName 
             }
-            getChildSession(sessions:"${payload.masterSessionId}") { 
+            getChildSession(sessions:"${payload.masterSessionId}", date: "${payload.date}") { 
                 edges{
                     node{
                         id,
@@ -86,6 +98,7 @@ export async function getTargets(payload) {
                 }
             }
         }`,
+        fetchPolicy: 'no-cache',
     })
     .then(result => result)
     .catch(error => {
@@ -102,7 +115,7 @@ export async function getChildSessionData(payload) {
   return apolloClient
     .query({
       query: gql`{
-            getSessionRecordings(ChildSession:"${payload.id}") {
+            getSessionRecordings(ChildSession:"${payload.id}", sessiondate: "${payload.date}") {
                 edges {
                     node {
                         id,
@@ -154,6 +167,7 @@ export async function getChildSessionData(payload) {
                 }
             }
         }`,
+        fetchPolicy: 'no-cache',
     })
     .then(result => result)
     .catch(error => {

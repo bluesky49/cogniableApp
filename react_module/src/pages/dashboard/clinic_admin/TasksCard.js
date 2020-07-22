@@ -8,7 +8,7 @@ const { Title, Text } = Typography
 
 const TASKS = gql`
   query {
-    tasks: tasks(last: 3) {
+    tasks: tasks(first: 3) {
       edges {
         node {
           id

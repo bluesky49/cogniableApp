@@ -160,9 +160,6 @@ class EditTaskInformation extends React.Component {
           <Button type="submit" loading={createTaskLoading} htmlType="submit">
             Submit
           </Button>
-          <Button htmlType="primary" onClick={this.onReset} className="ml-4">
-            cancel
-          </Button>
         </Form.Item>
       </Form>
     )

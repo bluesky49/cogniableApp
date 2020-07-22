@@ -174,8 +174,8 @@ const BehaviourForm = ({ style, setNewTamplate, setNewTampletFromOpen, form }) =
   useEffect(() => {
     if (newTempleteData) {
       notification.success({
-        message: 'Behavior Data',
-        description: 'New Behavior Templete Added Successfully',
+        message: 'Behaviour Data',
+        description: 'New Behaviour Templete Added Successfully',
       })
       setNewTamplate({ node: newTempleteData.createTemplate.details })
     }
@@ -185,7 +185,7 @@ const BehaviourForm = ({ style, setNewTamplate, setNewTampletFromOpen, form }) =
   useEffect(() => {
     if (newTempletError) {
       notification.error({
-        message: 'Somthing went wrong',
+        message: 'Somthing want wrong',
         description: newTempletError.message,
       })
     }
@@ -338,7 +338,7 @@ const BehaviourForm = ({ style, setNewTamplate, setNewTampletFromOpen, form }) =
         >
           <PlusOutlined style={{ fontSize: 20, marginTop: 3 }} />
         </Button>
-        <Form.Item label="Behavior Name">
+        <Form.Item label="Behaviour Name">
           {form.getFieldDecorator('name', {
             rules: [{ required: true, message: 'Please select the behavior name!' }],
           })(
@@ -368,7 +368,7 @@ const BehaviourForm = ({ style, setNewTamplate, setNewTampletFromOpen, form }) =
         {form.getFieldDecorator('status', {
           rules: [{ required: true, message: 'Please select a status' }],
         })(
-          <Select placeholder="Select Behavior Status" size="large" loading={dancleStatusLoading}>
+          <Select placeholder="Select Behaviour Status" size="large" loading={dancleStatusLoading}>
             {dancleStatusData &&
               dancleStatusData.getDecelStatus.map(dancleStatus => (
                 <Option value={dancleStatus.id} key={dancleStatus.id}>
@@ -379,10 +379,10 @@ const BehaviourForm = ({ style, setNewTamplate, setNewTampletFromOpen, form }) =
         )}
       </Form.Item>
 
-      <Form.Item label="Behavior Description">
+      <Form.Item label="Behaviour Description">
         {form.getFieldDecorator('description', { initialValue: '' })(
           <TextArea
-            placeholder="Describe the behavior"
+            placeholder="Describe the behaviour"
             style={{
               height: 174,
               resize: 'none',
@@ -466,7 +466,7 @@ const BehaviourForm = ({ style, setNewTamplate, setNewTampletFromOpen, form }) =
           }}
           loading={newTempleteLoading}
         >
-          New Template
+          Save Template
         </Button>
       </Form.Item>
 

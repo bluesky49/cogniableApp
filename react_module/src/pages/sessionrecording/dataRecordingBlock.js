@@ -123,42 +123,46 @@ class DataRecordingBlock extends React.Component {
   addCount = val => {
     const {
       dispatch,
-      sessionrecording: { TargetResponse, TargetActiveId, Count, IncorrectCount, CorrectCount },
+      sessionrecording: { TargetResponse, TargetActiveId, Count, IncorrectCount, CorrectCount, EditAfterSessionCompleted },
     } = this.props
 
-    if (TargetResponse[TargetActiveId].target[Count - 1]) {
-      const trialObject = TargetResponse[TargetActiveId].target[Count - 1]
-      this.addCorrectTrailButtonStyle()
-      dispatch({
-        type: 'sessionrecording/UPDATE_TARGET_TRIAL',
-        payload: {
-          object: trialObject,
-          response: 'Correct',
-          promptId: '',
-        },
-      })
+    if (EditAfterSessionCompleted) {
 
-      if (!(trialObject.trial === 'CORRECT')) {
-        console.log('entred')
+      if (TargetResponse[TargetActiveId].target[Count - 1]) {
+        const trialObject = TargetResponse[TargetActiveId].target[Count - 1]
+        this.addCorrectTrailButtonStyle()
         dispatch({
-          type: 'sessionrecording/SET_STATE',
+          type: 'sessionrecording/UPDATE_TARGET_TRIAL',
           payload: {
-            IncorrectCount: IncorrectCount - 1,
-            CorrectCount: CorrectCount + 1,
+            object: trialObject,
+            response: 'Correct',
+            promptId: '',
+          },
+        })
+
+        if (!(trialObject.trial === 'CORRECT')) {
+          console.log('entred')
+          dispatch({
+            type: 'sessionrecording/SET_STATE',
+            payload: {
+              IncorrectCount: IncorrectCount - 1,
+              CorrectCount: CorrectCount + 1,
+            },
+          })
+        }
+      } else {
+        this.addCorrectTrail(val)
+        this.updateSessionClockTime()
+
+        dispatch({
+          type: 'sessionrecording/TARGET_CORRECT',
+          payload: {
+            response: 'Correct',
+            promptId: '',
           },
         })
       }
-    } else {
-      this.addCorrectTrail(val)
-      this.updateSessionClockTime()
 
-      dispatch({
-        type: 'sessionrecording/TARGET_CORRECT',
-        payload: {
-          response: 'Correct',
-          promptId: '',
-        },
-      })
     }
   }
 
@@ -166,41 +170,45 @@ class DataRecordingBlock extends React.Component {
     this.closePromptOptions()
     const {
       dispatch,
-      sessionrecording: { TargetActiveId, TargetResponse, Count, IncorrectCount, CorrectCount },
+      sessionrecording: { TargetActiveId, TargetResponse, Count, IncorrectCount, CorrectCount, EditAfterSessionCompleted },
     } = this.props
 
-    if (TargetResponse[TargetActiveId].target[Count - 1]) {
-      const trialObject = TargetResponse[TargetActiveId].target[Count - 1]
-      this.addPromptTrailButtonStyle()
-      dispatch({
-        type: 'sessionrecording/UPDATE_TARGET_TRIAL',
-        payload: {
-          object: trialObject,
-          response: 'Prompt',
-          promptId: promptObject.id,
-        },
-      })
+    if (EditAfterSessionCompleted) {
 
-      if (trialObject.trial === 'CORRECT') {
+      if (TargetResponse[TargetActiveId].target[Count - 1]) {
+        const trialObject = TargetResponse[TargetActiveId].target[Count - 1]
+        this.addPromptTrailButtonStyle()
         dispatch({
-          type: 'sessionrecording/SET_STATE',
+          type: 'sessionrecording/UPDATE_TARGET_TRIAL',
           payload: {
-            IncorrectCount: IncorrectCount + 1,
-            CorrectCount: CorrectCount - 1,
+            object: trialObject,
+            response: 'Prompt',
+            promptId: promptObject.id,
+          },
+        })
+
+        if (trialObject.trial === 'CORRECT') {
+          dispatch({
+            type: 'sessionrecording/SET_STATE',
+            payload: {
+              IncorrectCount: IncorrectCount + 1,
+              CorrectCount: CorrectCount - 1,
+            },
+          })
+        }
+      } else {
+        this.addPromptTrail(val)
+        this.updateSessionClockTime()
+
+        dispatch({
+          type: 'sessionrecording/TARGET_CORRECT',
+          payload: {
+            response: 'Prompt',
+            promptId: promptObject.id,
           },
         })
       }
-    } else {
-      this.addPromptTrail(val)
-      this.updateSessionClockTime()
 
-      dispatch({
-        type: 'sessionrecording/TARGET_CORRECT',
-        payload: {
-          response: 'Prompt',
-          promptId: promptObject.id,
-        },
-      })
     }
   }
 
@@ -208,40 +216,44 @@ class DataRecordingBlock extends React.Component {
     this.closePromptOptions()
     const {
       dispatch,
-      sessionrecording: { TargetActiveId, TargetResponse, Count, IncorrectCount, CorrectCount },
+      sessionrecording: { TargetActiveId, TargetResponse, Count, IncorrectCount, CorrectCount, EditAfterSessionCompleted },
     } = this.props
 
-    if (TargetResponse[TargetActiveId].target[Count - 1]) {
-      const trialObject = TargetResponse[TargetActiveId].target[Count - 1]
-      this.addInCorrectTrailButtonStyle()
-      dispatch({
-        type: 'sessionrecording/UPDATE_TARGET_TRIAL',
-        payload: {
-          object: trialObject,
-          response: 'Error',
-          promptId: '',
-        },
-      })
-      if (trialObject.trial === 'CORRECT') {
+    if (EditAfterSessionCompleted) {
+
+      if (TargetResponse[TargetActiveId].target[Count - 1]) {
+        const trialObject = TargetResponse[TargetActiveId].target[Count - 1]
+        this.addInCorrectTrailButtonStyle()
         dispatch({
-          type: 'sessionrecording/SET_STATE',
+          type: 'sessionrecording/UPDATE_TARGET_TRIAL',
           payload: {
-            IncorrectCount: IncorrectCount + 1,
-            CorrectCount: CorrectCount - 1,
+            object: trialObject,
+            response: 'Error',
+            promptId: '',
+          },
+        })
+        if (trialObject.trial === 'CORRECT') {
+          dispatch({
+            type: 'sessionrecording/SET_STATE',
+            payload: {
+              IncorrectCount: IncorrectCount + 1,
+              CorrectCount: CorrectCount - 1,
+            },
+          })
+        }
+      } else {
+        this.addInCorrectTrail(val)
+        this.updateSessionClockTime()
+
+        dispatch({
+          type: 'sessionrecording/TARGET_CORRECT',
+          payload: {
+            response: 'Error',
+            promptId: '',
           },
         })
       }
-    } else {
-      this.addInCorrectTrail(val)
-      this.updateSessionClockTime()
 
-      dispatch({
-        type: 'sessionrecording/TARGET_CORRECT',
-        payload: {
-          response: 'Error',
-          promptId: '',
-        },
-      })
     }
   }
 
@@ -470,43 +482,47 @@ class DataRecordingBlock extends React.Component {
         IncorrectCount,
         CorrectCount,
         StimulusActiveId,
+        EditAfterSessionCompleted
       },
     } = this.props
 
-    if (TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]) {
-      const trialObject = TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]
-      this.addCorrectTrailButtonStyle()
-      dispatch({
-        type: 'sessionrecording/UPDATE_TARGET_SD_TRIAL',
-        payload: {
-          object: trialObject,
-          response: 'Correct',
-          promptId: '',
-        },
-      })
+    if (EditAfterSessionCompleted) {
 
-      if (!(trialObject.trial === 'CORRECT')) {
-        console.log('entred')
+      if (TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]) {
+        const trialObject = TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]
+        this.addCorrectTrailButtonStyle()
         dispatch({
-          type: 'sessionrecording/SET_STATE',
+          type: 'sessionrecording/UPDATE_TARGET_SD_TRIAL',
           payload: {
-            IncorrectCount: IncorrectCount - 1,
-            CorrectCount: CorrectCount + 1,
+            object: trialObject,
+            response: 'Correct',
+            promptId: '',
+          },
+        })
+
+        if (!(trialObject.trial === 'CORRECT')) {
+          console.log('entred')
+          dispatch({
+            type: 'sessionrecording/SET_STATE',
+            payload: {
+              IncorrectCount: IncorrectCount - 1,
+              CorrectCount: CorrectCount + 1,
+            },
+          })
+        }
+      } else {
+        this.addCorrectTrail(val)
+        this.updateSessionClockTime()
+
+        dispatch({
+          type: 'sessionrecording/TARGET_SD_CORRECT',
+          payload: {
+            response: 'Correct',
+            promptId: '',
+            sdId: StimulusActiveId,
           },
         })
       }
-    } else {
-      this.addCorrectTrail(val)
-      this.updateSessionClockTime()
-
-      dispatch({
-        type: 'sessionrecording/TARGET_SD_CORRECT',
-        payload: {
-          response: 'Correct',
-          promptId: '',
-          sdId: StimulusActiveId,
-        },
-      })
     }
   }
 
@@ -521,42 +537,47 @@ class DataRecordingBlock extends React.Component {
         IncorrectCount,
         CorrectCount,
         StimulusActiveId,
+        EditAfterSessionCompleted,
       },
     } = this.props
 
-    if (TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]) {
-      const trialObject = TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]
-      this.addPromptTrailButtonStyle()
-      dispatch({
-        type: 'sessionrecording/UPDATE_TARGET_SD_TRIAL',
-        payload: {
-          object: trialObject,
-          response: 'Prompt',
-          promptId: promptObject.id,
-        },
-      })
+    if (EditAfterSessionCompleted) {
 
-      if (trialObject.trial === 'CORRECT') {
+      if (TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]) {
+        const trialObject = TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]
+        this.addPromptTrailButtonStyle()
         dispatch({
-          type: 'sessionrecording/SET_STATE',
+          type: 'sessionrecording/UPDATE_TARGET_SD_TRIAL',
           payload: {
-            IncorrectCount: IncorrectCount + 1,
-            CorrectCount: CorrectCount - 1,
+            object: trialObject,
+            response: 'Prompt',
+            promptId: promptObject.id,
+          },
+        })
+
+        if (trialObject.trial === 'CORRECT') {
+          dispatch({
+            type: 'sessionrecording/SET_STATE',
+            payload: {
+              IncorrectCount: IncorrectCount + 1,
+              CorrectCount: CorrectCount - 1,
+            },
+          })
+        }
+      } else {
+        this.addPromptTrail(val)
+        this.updateSessionClockTime()
+
+        dispatch({
+          type: 'sessionrecording/TARGET_SD_CORRECT',
+          payload: {
+            response: 'Prompt',
+            promptId: promptObject.id,
+            sdId: StimulusActiveId,
           },
         })
       }
-    } else {
-      this.addPromptTrail(val)
-      this.updateSessionClockTime()
 
-      dispatch({
-        type: 'sessionrecording/TARGET_SD_CORRECT',
-        payload: {
-          response: 'Prompt',
-          promptId: promptObject.id,
-          sdId: StimulusActiveId,
-        },
-      })
     }
   }
 
@@ -571,41 +592,46 @@ class DataRecordingBlock extends React.Component {
         IncorrectCount,
         CorrectCount,
         StimulusActiveId,
+        EditAfterSessionCompleted,
       },
     } = this.props
 
-    if (TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]) {
-      const trialObject = TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]
-      this.addInCorrectTrailButtonStyle()
-      dispatch({
-        type: 'sessionrecording/UPDATE_TARGET_SD_TRIAL',
-        payload: {
-          object: trialObject,
-          response: 'Error',
-          promptId: '',
-        },
-      })
-      if (trialObject.trial === 'CORRECT') {
+    if (EditAfterSessionCompleted) {
+
+      if (TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]) {
+        const trialObject = TargetResponse[TargetActiveId].sd[StimulusActiveId][Count - 1]
+        this.addInCorrectTrailButtonStyle()
         dispatch({
-          type: 'sessionrecording/SET_STATE',
+          type: 'sessionrecording/UPDATE_TARGET_SD_TRIAL',
           payload: {
-            IncorrectCount: IncorrectCount + 1,
-            CorrectCount: CorrectCount - 1,
+            object: trialObject,
+            response: 'Error',
+            promptId: '',
+          },
+        })
+        if (trialObject.trial === 'CORRECT') {
+          dispatch({
+            type: 'sessionrecording/SET_STATE',
+            payload: {
+              IncorrectCount: IncorrectCount + 1,
+              CorrectCount: CorrectCount - 1,
+            },
+          })
+        }
+      } else {
+        this.addInCorrectTrail(val)
+        this.updateSessionClockTime()
+
+        dispatch({
+          type: 'sessionrecording/TARGET_SD_CORRECT',
+          payload: {
+            response: 'Error',
+            promptId: '',
+            sdId: StimulusActiveId,
           },
         })
       }
-    } else {
-      this.addInCorrectTrail(val)
-      this.updateSessionClockTime()
 
-      dispatch({
-        type: 'sessionrecording/TARGET_SD_CORRECT',
-        payload: {
-          response: 'Error',
-          promptId: '',
-          sdId: StimulusActiveId,
-        },
-      })
     }
   }
 
@@ -753,43 +779,48 @@ class DataRecordingBlock extends React.Component {
         IncorrectCount,
         CorrectCount,
         StepActiveId,
+        EditAfterSessionCompleted,
       },
     } = this.props
 
-    if (TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]) {
-      const trialObject = TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]
-      this.addCorrectTrailButtonStyle()
-      dispatch({
-        type: 'sessionrecording/UPDATE_TARGET_STEP_TRIAL',
-        payload: {
-          object: trialObject,
-          response: 'Correct',
-          promptId: '',
-        },
-      })
+    if (EditAfterSessionCompleted) {
 
-      if (!(trialObject.trial === 'CORRECT')) {
-        console.log('entred')
+      if (TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]) {
+        const trialObject = TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]
+        this.addCorrectTrailButtonStyle()
         dispatch({
-          type: 'sessionrecording/SET_STATE',
+          type: 'sessionrecording/UPDATE_TARGET_STEP_TRIAL',
           payload: {
-            IncorrectCount: IncorrectCount - 1,
-            CorrectCount: CorrectCount + 1,
+            object: trialObject,
+            response: 'Correct',
+            promptId: '',
+          },
+        })
+
+        if (!(trialObject.trial === 'CORRECT')) {
+          console.log('entred')
+          dispatch({
+            type: 'sessionrecording/SET_STATE',
+            payload: {
+              IncorrectCount: IncorrectCount - 1,
+              CorrectCount: CorrectCount + 1,
+            },
+          })
+        }
+      } else {
+        this.addCorrectTrail(val)
+        this.updateSessionClockTime()
+
+        dispatch({
+          type: 'sessionrecording/TARGET_STEP_CORRECT',
+          payload: {
+            response: 'Correct',
+            promptId: '',
+            stepId: StepActiveId,
           },
         })
       }
-    } else {
-      this.addCorrectTrail(val)
-      this.updateSessionClockTime()
 
-      dispatch({
-        type: 'sessionrecording/TARGET_STEP_CORRECT',
-        payload: {
-          response: 'Correct',
-          promptId: '',
-          stepId: StepActiveId,
-        },
-      })
     }
   }
 
@@ -804,42 +835,47 @@ class DataRecordingBlock extends React.Component {
         IncorrectCount,
         CorrectCount,
         StepActiveId,
+        EditAfterSessionCompleted
       },
     } = this.props
 
-    if (TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]) {
-      const trialObject = TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]
-      this.addPromptTrailButtonStyle()
-      dispatch({
-        type: 'sessionrecording/UPDATE_TARGET_STEP_TRIAL',
-        payload: {
-          object: trialObject,
-          response: 'Prompt',
-          promptId: promptObject.id,
-        },
-      })
+    if (EditAfterSessionCompleted) {
 
-      if (trialObject.trial === 'CORRECT') {
+      if (TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]) {
+        const trialObject = TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]
+        this.addPromptTrailButtonStyle()
         dispatch({
-          type: 'sessionrecording/SET_STATE',
+          type: 'sessionrecording/UPDATE_TARGET_STEP_TRIAL',
           payload: {
-            IncorrectCount: IncorrectCount + 1,
-            CorrectCount: CorrectCount - 1,
+            object: trialObject,
+            response: 'Prompt',
+            promptId: promptObject.id,
+          },
+        })
+
+        if (trialObject.trial === 'CORRECT') {
+          dispatch({
+            type: 'sessionrecording/SET_STATE',
+            payload: {
+              IncorrectCount: IncorrectCount + 1,
+              CorrectCount: CorrectCount - 1,
+            },
+          })
+        }
+      } else {
+        this.addPromptTrail(val)
+        this.updateSessionClockTime()
+
+        dispatch({
+          type: 'sessionrecording/TARGET_STEP_CORRECT',
+          payload: {
+            response: 'Prompt',
+            promptId: promptObject.id,
+            stepId: StepActiveId,
           },
         })
       }
-    } else {
-      this.addPromptTrail(val)
-      this.updateSessionClockTime()
 
-      dispatch({
-        type: 'sessionrecording/TARGET_STEP_CORRECT',
-        payload: {
-          response: 'Prompt',
-          promptId: promptObject.id,
-          stepId: StepActiveId,
-        },
-      })
     }
   }
 
@@ -854,41 +890,46 @@ class DataRecordingBlock extends React.Component {
         IncorrectCount,
         CorrectCount,
         StepActiveId,
+        EditAfterSessionCompleted
       },
     } = this.props
 
-    if (TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]) {
-      const trialObject = TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]
-      this.addInCorrectTrailButtonStyle()
-      dispatch({
-        type: 'sessionrecording/UPDATE_TARGET_STEP_TRIAL',
-        payload: {
-          object: trialObject,
-          response: 'Error',
-          promptId: '',
-        },
-      })
-      if (trialObject.trial === 'CORRECT') {
+    if (EditAfterSessionCompleted) {
+
+      if (TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]) {
+        const trialObject = TargetResponse[TargetActiveId].step[StepActiveId][Count - 1]
+        this.addInCorrectTrailButtonStyle()
         dispatch({
-          type: 'sessionrecording/SET_STATE',
+          type: 'sessionrecording/UPDATE_TARGET_STEP_TRIAL',
           payload: {
-            IncorrectCount: IncorrectCount + 1,
-            CorrectCount: CorrectCount - 1,
+            object: trialObject,
+            response: 'Error',
+            promptId: '',
+          },
+        })
+        if (trialObject.trial === 'CORRECT') {
+          dispatch({
+            type: 'sessionrecording/SET_STATE',
+            payload: {
+              IncorrectCount: IncorrectCount + 1,
+              CorrectCount: CorrectCount - 1,
+            },
+          })
+        }
+      } else {
+        this.addInCorrectTrail(val)
+        this.updateSessionClockTime()
+
+        dispatch({
+          type: 'sessionrecording/TARGET_STEP_CORRECT',
+          payload: {
+            response: 'Error',
+            promptId: '',
+            stepId: StepActiveId,
           },
         })
       }
-    } else {
-      this.addInCorrectTrail(val)
-      this.updateSessionClockTime()
 
-      dispatch({
-        type: 'sessionrecording/TARGET_STEP_CORRECT',
-        payload: {
-          response: 'Error',
-          promptId: '',
-          stepId: StepActiveId,
-        },
-      })
     }
   }
 
@@ -953,14 +994,14 @@ class DataRecordingBlock extends React.Component {
                         <Icon type="left" />
                       </Button>
                     ) : (
-                      <Button
-                        style={trialsLeftButtonStyle}
-                        onClick={this.moveToPrevStimulus}
-                        type="link"
-                      >
-                        <Icon type="left" />
-                      </Button>
-                    )}
+                        <Button
+                          style={trialsLeftButtonStyle}
+                          onClick={this.moveToPrevStimulus}
+                          type="link"
+                        >
+                          <Icon type="left" />
+                        </Button>
+                      )}
                   </span>
                 </p>
               </Col>
@@ -988,14 +1029,14 @@ class DataRecordingBlock extends React.Component {
                         <Icon type="left" />
                       </Button>
                     ) : (
-                      <Button
-                        style={trialsLeftButtonStyle}
-                        onClick={this.moveToPrevSDTrail}
-                        type="link"
-                      >
-                        <Icon type="left" />
-                      </Button>
-                    )}
+                        <Button
+                          style={trialsLeftButtonStyle}
+                          onClick={this.moveToPrevSDTrail}
+                          type="link"
+                        >
+                          <Icon type="left" />
+                        </Button>
+                      )}
                   </span>
                   <span style={{ padding: '0px 15px' }}>
                     Trial {Count} /{' '}
@@ -1006,20 +1047,20 @@ class DataRecordingBlock extends React.Component {
                   </span>
                   <span>
                     {Count ===
-                    MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails
-                      .DailyTrials ? (
-                      <Button style={trialsRightButtonStyle} disabled type="link">
-                        <Icon type="right" />
-                      </Button>
-                    ) : (
-                      <Button
-                        style={trialsRightButtonStyle}
-                        onClick={this.moveToNextSDTrail}
-                        type="link"
-                      >
-                        <Icon type="right" />
-                      </Button>
-                    )}
+                      MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails
+                        .DailyTrials ? (
+                        <Button style={trialsRightButtonStyle} disabled type="link">
+                          <Icon type="right" />
+                        </Button>
+                      ) : (
+                        <Button
+                          style={trialsRightButtonStyle}
+                          onClick={this.moveToNextSDTrail}
+                          type="link"
+                        >
+                          <Icon type="right" />
+                        </Button>
+                      )}
                   </span>
                 </p>
                 {/* End of Trials count section */}
@@ -1051,29 +1092,29 @@ class DataRecordingBlock extends React.Component {
                       <br />
                     </>
                   ) : (
-                    <>
-                      <Button
-                        id="correctResponseButton"
-                        style={{ padding: '20px auto', width: '300px', height: '50px' }}
-                        onClick={() => this.addSDCount(Count)}
-                      >
-                        <CheckOutlined /> Correct ({CorrectCount})
+                      <>
+                        <Button
+                          id="correctResponseButton"
+                          style={{ padding: '20px auto', width: '300px', height: '50px' }}
+                          onClick={() => this.addSDCount(Count)}
+                        >
+                          <CheckOutlined /> Correct ({CorrectCount})
                       </Button>
-                      <Button
-                        id="incorrectResponseButton"
-                        style={{
-                          padding: '8px auto',
-                          width: '300px',
-                          height: '50px',
-                          marginTop: '10px',
-                        }}
-                        onClick={() => this.showPrompt()}
-                      >
-                        <CloseOutlined /> Incorrect ({IncorrectCount})
+                        <Button
+                          id="incorrectResponseButton"
+                          style={{
+                            padding: '8px auto',
+                            width: '300px',
+                            height: '50px',
+                            marginTop: '10px',
+                          }}
+                          onClick={() => this.showPrompt()}
+                        >
+                          <CloseOutlined /> Incorrect ({IncorrectCount})
                       </Button>{' '}
-                      <br />
-                    </>
-                  )}
+                        <br />
+                      </>
+                    )}
                 </p>
                 <p style={promptOptionsDiv}>
                   {PromptCodesList.map(item => (
@@ -1097,19 +1138,19 @@ class DataRecordingBlock extends React.Component {
                 <p style={{ textAlign: 'center', marginTop: '160px', marginLeft: '-30px' }}>
                   <span>
                     {StimulusActiveIndex ===
-                    MasterSession.targets.edges[TargetActiveIndex].node.sd.edges.length - 1 ? (
-                      <Button style={trialsRightButtonStyle} disabled type="link">
-                        <Icon type="right" />
-                      </Button>
-                    ) : (
-                      <Button
-                        style={trialsRightButtonStyle}
-                        onClick={this.moveToNextStimulus}
-                        type="link"
-                      >
-                        <Icon type="right" />
-                      </Button>
-                    )}
+                      MasterSession.targets.edges[TargetActiveIndex].node.sd.edges.length - 1 ? (
+                        <Button style={trialsRightButtonStyle} disabled type="link">
+                          <Icon type="right" />
+                        </Button>
+                      ) : (
+                        <Button
+                          style={trialsRightButtonStyle}
+                          onClick={this.moveToNextStimulus}
+                          type="link"
+                        >
+                          <Icon type="right" />
+                        </Button>
+                      )}
                   </span>
                 </p>
               </Col>
@@ -1131,14 +1172,14 @@ class DataRecordingBlock extends React.Component {
                         <Icon type="left" />
                       </Button>
                     ) : (
-                      <Button
-                        style={trialsLeftButtonStyle}
-                        onClick={this.moveToPrevStep}
-                        type="link"
-                      >
-                        <Icon type="left" />
-                      </Button>
-                    )}
+                        <Button
+                          style={trialsLeftButtonStyle}
+                          onClick={this.moveToPrevStep}
+                          type="link"
+                        >
+                          <Icon type="left" />
+                        </Button>
+                      )}
                   </span>
                 </p>
               </Col>
@@ -1164,14 +1205,14 @@ class DataRecordingBlock extends React.Component {
                         <Icon type="left" />
                       </Button>
                     ) : (
-                      <Button
-                        style={trialsLeftButtonStyle}
-                        onClick={this.moveToPrevSTEPTrail}
-                        type="link"
-                      >
-                        <Icon type="left" />
-                      </Button>
-                    )}
+                        <Button
+                          style={trialsLeftButtonStyle}
+                          onClick={this.moveToPrevSTEPTrail}
+                          type="link"
+                        >
+                          <Icon type="left" />
+                        </Button>
+                      )}
                   </span>
                   <span style={{ padding: '0px 15px' }}>
                     Trial {Count} /{' '}
@@ -1182,20 +1223,20 @@ class DataRecordingBlock extends React.Component {
                   </span>
                   <span>
                     {Count ===
-                    MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails
-                      .DailyTrials ? (
-                      <Button style={trialsRightButtonStyle} disabled type="link">
-                        <Icon type="right" />
-                      </Button>
-                    ) : (
-                      <Button
-                        style={trialsRightButtonStyle}
-                        onClick={this.moveToNextSTEPTrail}
-                        type="link"
-                      >
-                        <Icon type="right" />
-                      </Button>
-                    )}
+                      MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails
+                        .DailyTrials ? (
+                        <Button style={trialsRightButtonStyle} disabled type="link">
+                          <Icon type="right" />
+                        </Button>
+                      ) : (
+                        <Button
+                          style={trialsRightButtonStyle}
+                          onClick={this.moveToNextSTEPTrail}
+                          type="link"
+                        >
+                          <Icon type="right" />
+                        </Button>
+                      )}
                   </span>
                 </p>
                 {/* End of Trials count section */}
@@ -1227,29 +1268,29 @@ class DataRecordingBlock extends React.Component {
                       <br />
                     </>
                   ) : (
-                    <>
-                      <Button
-                        id="correctResponseButton"
-                        style={{ padding: '20px auto', width: '300px', height: '50px' }}
-                        onClick={() => this.addSTEPCount(Count)}
-                      >
-                        <CheckOutlined /> Correct ({CorrectCount})
+                      <>
+                        <Button
+                          id="correctResponseButton"
+                          style={{ padding: '20px auto', width: '300px', height: '50px' }}
+                          onClick={() => this.addSTEPCount(Count)}
+                        >
+                          <CheckOutlined /> Correct ({CorrectCount})
                       </Button>
-                      <Button
-                        id="incorrectResponseButton"
-                        style={{
-                          padding: '8px auto',
-                          width: '300px',
-                          height: '50px',
-                          marginTop: '10px',
-                        }}
-                        onClick={() => this.showPrompt()}
-                      >
-                        <CloseOutlined /> Incorrect ({IncorrectCount})
+                        <Button
+                          id="incorrectResponseButton"
+                          style={{
+                            padding: '8px auto',
+                            width: '300px',
+                            height: '50px',
+                            marginTop: '10px',
+                          }}
+                          onClick={() => this.showPrompt()}
+                        >
+                          <CloseOutlined /> Incorrect ({IncorrectCount})
                       </Button>{' '}
-                      <br />
-                    </>
-                  )}
+                        <br />
+                      </>
+                    )}
                 </p>
                 <p style={promptOptionsDiv}>
                   {PromptCodesList.map(item => (
@@ -1274,134 +1315,134 @@ class DataRecordingBlock extends React.Component {
                 <p style={{ textAlign: 'center', marginTop: '160px', marginLeft: '-30px' }}>
                   <span>
                     {StepActiveIndex ===
-                    MasterSession.targets.edges[TargetActiveIndex].node.sd.edges.length - 1 ? (
-                      <Button style={trialsRightButtonStyle} disabled type="link">
-                        <Icon type="right" />
-                      </Button>
-                    ) : (
-                      <Button
-                        style={trialsRightButtonStyle}
-                        onClick={this.moveToNextStep}
-                        type="link"
-                      >
-                        <Icon type="right" />
-                      </Button>
-                    )}
+                      MasterSession.targets.edges[TargetActiveIndex].node.sd.edges.length - 1 ? (
+                        <Button style={trialsRightButtonStyle} disabled type="link">
+                          <Icon type="right" />
+                        </Button>
+                      ) : (
+                        <Button
+                          style={trialsRightButtonStyle}
+                          onClick={this.moveToNextStep}
+                          type="link"
+                        >
+                          <Icon type="right" />
+                        </Button>
+                      )}
                   </span>
                 </p>
               </Col>
             </Row>
           </>
         ) : (
-          <>
-            {/* Start of Target data recording */}
-            {/* Trials count section */}
-            <p style={{ textAlign: 'center', marginTop: '30px' }}>
-              <span>
-                {Count === 1 ? (
-                  <Button style={trialsLeftButtonStyle} disabled type="link">
-                    <Icon type="left" />
+              <>
+                {/* Start of Target data recording */}
+                {/* Trials count section */}
+                <p style={{ textAlign: 'center', marginTop: '30px' }}>
+                  <span>
+                    {Count === 1 ? (
+                      <Button style={trialsLeftButtonStyle} disabled type="link">
+                        <Icon type="left" />
+                      </Button>
+                    ) : (
+                        <Button style={trialsLeftButtonStyle} onClick={this.moveToPrevTrail} type="link">
+                          <Icon type="left" />
+                        </Button>
+                      )}
+                  </span>
+                  <span style={{ padding: '0px 15px' }}>
+                    Trial {Count} /{' '}
+                    {
+                      MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails
+                        .DailyTrials
+                    }
+                  </span>
+                  <span>
+                    {Count ===
+                      MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails
+                        .DailyTrials ? (
+                        <Button style={trialsRightButtonStyle} disabled type="link">
+                          <Icon type="right" />
+                        </Button>
+                      ) : (
+                        <Button style={trialsRightButtonStyle} onClick={this.moveToNextTrail} type="link">
+                          <Icon type="right" />
+                        </Button>
+                      )}
+                  </span>
+                </p>
+                {/* End of Trials count section */}
+                {/* Correct Incorrect Buttons */}
+                <p style={correctIncorrectDiv}>
+                  {Count > 10 ? (
+                    <>
+                      <Button
+                        id="correctResponseButton"
+                        disabled
+                        style={{ padding: '20px auto', width: '300px', height: '50px' }}
+                        onClick={() => this.addCount(Count)}
+                      >
+                        <CheckOutlined /> Correct ({CorrectCount})
                   </Button>
-                ) : (
-                  <Button style={trialsLeftButtonStyle} onClick={this.moveToPrevTrail} type="link">
-                    <Icon type="left" />
-                  </Button>
-                )}
-              </span>
-              <span style={{ padding: '0px 15px' }}>
-                Trial {Count} /{' '}
-                {
-                  MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails
-                    .DailyTrials
-                }
-              </span>
-              <span>
-                {Count ===
-                MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails
-                  .DailyTrials ? (
-                  <Button style={trialsRightButtonStyle} disabled type="link">
-                    <Icon type="right" />
-                  </Button>
-                ) : (
-                  <Button style={trialsRightButtonStyle} onClick={this.moveToNextTrail} type="link">
-                    <Icon type="right" />
-                  </Button>
-                )}
-              </span>
-            </p>
-            {/* End of Trials count section */}
-            {/* Correct Incorrect Buttons */}
-            <p style={correctIncorrectDiv}>
-              {Count > 10 ? (
-                <>
-                  <Button
-                    id="correctResponseButton"
-                    disabled
-                    style={{ padding: '20px auto', width: '300px', height: '50px' }}
-                    onClick={() => this.addCount(Count)}
-                  >
-                    <CheckOutlined /> Correct ({CorrectCount})
-                  </Button>
-                  <Button
-                    id="incorrectResponseButton"
-                    disabled
-                    style={{
-                      padding: '8px auto',
-                      width: '300px',
-                      height: '50px',
-                      marginTop: '10px',
-                    }}
-                    onClick={() => this.showPrompt()}
-                  >
-                    <CloseOutlined /> Incorrect ({IncorrectCount})
+                      <Button
+                        id="incorrectResponseButton"
+                        disabled
+                        style={{
+                          padding: '8px auto',
+                          width: '300px',
+                          height: '50px',
+                          marginTop: '10px',
+                        }}
+                        onClick={() => this.showPrompt()}
+                      >
+                        <CloseOutlined /> Incorrect ({IncorrectCount})
                   </Button>{' '}
-                  <br />
-                </>
-              ) : (
-                <>
-                  <Button
-                    id="correctResponseButton"
-                    style={{ padding: '20px auto', width: '300px', height: '50px' }}
-                    onClick={() => this.addCount(Count)}
-                  >
-                    <CheckOutlined /> Correct ({CorrectCount})
+                      <br />
+                    </>
+                  ) : (
+                      <>
+                        <Button
+                          id="correctResponseButton"
+                          style={{ padding: '20px auto', width: '300px', height: '50px' }}
+                          onClick={() => this.addCount(Count)}
+                        >
+                          <CheckOutlined /> Correct ({CorrectCount})
                   </Button>
-                  <Button
-                    id="incorrectResponseButton"
-                    style={{
-                      padding: '8px auto',
-                      width: '300px',
-                      height: '50px',
-                      marginTop: '10px',
-                    }}
-                    onClick={() => this.showPrompt()}
-                  >
-                    <CloseOutlined /> Incorrect ({IncorrectCount})
+                        <Button
+                          id="incorrectResponseButton"
+                          style={{
+                            padding: '8px auto',
+                            width: '300px',
+                            height: '50px',
+                            marginTop: '10px',
+                          }}
+                          onClick={() => this.showPrompt()}
+                        >
+                          <CloseOutlined /> Incorrect ({IncorrectCount})
                   </Button>{' '}
-                  <br />
-                </>
-              )}
-            </p>
-            <p style={promptOptionsDiv}>
-              {PromptCodesList.map(item => (
-                <>
-                  <Button
-                    style={promptCodeButtonStyle}
-                    onClick={() => this.promptCount(Count, item)}
-                  >
-                    {item.promptName}
-                  </Button>
-                  <br />
-                </>
-              ))}
-              <Button style={promptCodeButtonStyle} onClick={() => this.removeCount(Count)}>
-                No Response
+                        <br />
+                      </>
+                    )}
+                </p>
+                <p style={promptOptionsDiv}>
+                  {PromptCodesList.map(item => (
+                    <>
+                      <Button
+                        style={promptCodeButtonStyle}
+                        onClick={() => this.promptCount(Count, item)}
+                      >
+                        {item.promptName}
+                      </Button>
+                      <br />
+                    </>
+                  ))}
+                  <Button style={promptCodeButtonStyle} onClick={() => this.removeCount(Count)}>
+                    No Response
               </Button>
-            </p>
-            {/* End of Correct Incorrect Buttons */}
-            {/* End of Target data recording */}
-          </>
-        )}
+                </p>
+                {/* End of Correct Incorrect Buttons */}
+                {/* End of Target data recording */}
+              </>
+            )}
       </>
     )
   }

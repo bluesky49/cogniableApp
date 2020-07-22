@@ -56,7 +56,7 @@ export default () => {
 
   useEffect(() => {
     if (data) {
-      setNewCurrency(data.schoolDetail.currency.id)
+      setNewCurrency(data.schoolDetail.currency?.id)
     }
   }, [data])
 
@@ -107,7 +107,8 @@ export default () => {
           {currencyData?.currency.map(({ id, currency, symbol }) => {
             return (
               <Option key={id} value={id}>
-                {symbol} {currency}
+                {symbol}
+                {currency}
               </Option>
             )
           })}
@@ -135,7 +136,7 @@ export default () => {
             {error && <pre>{JSON.stringify(error, null, 2)}</pre>}
             {data && (
               <div style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 18 }}>Active Currency: </Text>
+                <Text style={{ fontSize: 18 }}>Active Currency:</Text>
                 <Tag
                   style={{
                     height: 56,
@@ -150,7 +151,8 @@ export default () => {
                     marginTop: 7,
                   }}
                 >
-                  {data.schoolDetail.currency.symbol} {data.schoolDetail.currency.currency}
+                  {data.schoolDetail.currency?.symbol}
+                  {data.schoolDetail.currency?.currency}
                 </Tag>
               </div>
             )}

@@ -10,7 +10,6 @@ import {
   Switch,
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { useSelector } from 'react-redux'
 import gql from 'graphql-tag'
 import { useMutation } from 'react-apollo'
 import moment from 'moment'
@@ -30,11 +29,12 @@ const CREATE_TOILET_DATA = gql`
     $bowel: Boolean!
     $prompted: Boolean!
     $remainders: [RemaindersInput]
+    $student: ID!
   ) {
     recordToiletdata(
       input: {
         toiletData: {
-          student: "U3R1ZGVudFR5cGU6MTYz"
+          student: $student
           date: $date
           time: $time
           lastWater: $waterIntake
@@ -97,15 +97,15 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
   const [prompted, setPrompted] = useState(true)
   const [reminder, setReminder] = useState(true)
   const [remainderCount, setRemainderCount] = useState(1)
+  const studentId = localStorage.getItem('studentId')
 
   const [remainderState, remainderDispatch] = useReducer(remainderReducer, [
     { time: moment(), frequency: 'Daily' },
   ])
 
-  const user = useSelector(state => state.user)
   const [mutate, { data, error }] = useMutation(CREATE_TOILET_DATA, {
     variables: {
-      studentId: user.id,
+      student: studentId,
       date: selectDate,
       time: moment().format(TimeFormat),
       waterIntake: waterIntake && `${waterIntake} ml`,
@@ -223,7 +223,6 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
           placeholder="Type water Intake in ml"
           style={{ width: '100%' }}
           value={waterIntake}
-          min={0}
           onChange={value => setWaterIntake(value)}
         />
       </Form.Item>
@@ -253,9 +252,9 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
                 fontSize: 18,
               }}
             >
-              Toilet Reminders
+              Medical Reminders
             </Title>
-            <Text>Remind me for toilet</Text>
+            <Text>Remind me for medicine dosage</Text>
           </div>
           <Switch
             defaultChecked
@@ -285,7 +284,7 @@ const ToiletForm = ({ style, handleNewToiletDate, setNewToiletCreated, selectDat
             marginTop: 10,
           }}
         >
-          <Text style={{ color: '#000', fontSize: 16 }}>Add Another Reminder</Text>
+          <Text style={{ color: '#000', fontSize: 16 }}>Add Another Remainder</Text>
           <Button
             style={{
               height: 40,

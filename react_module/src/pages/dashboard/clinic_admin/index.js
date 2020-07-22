@@ -13,6 +13,7 @@ import LearnersCard from './LearnersCard'
 import TargetStatusCard from './TargetStatusCard'
 import AppiorMentsCard from './AppiorMentsCard'
 import TasksCard from './TasksCard'
+
 import EmployesCard from './EmployesCard'
 import './index.scss'
 

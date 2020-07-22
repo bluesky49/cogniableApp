@@ -10,7 +10,8 @@ import moment from 'moment'
 import gql from 'graphql-tag'
 import { PlusOutlined } from '@ant-design/icons'
 import styles from './clinicalProfile.module.scss'
-import MasteryCriteriaForm from './MasteryCriteriaForm'
+import MasteryCriteriaForm from './Mastery/CreateChildForm'
+import UpdateMasterChildForm from './Mastery/UpdateMasterChildForm'
 
 const MASTER_TARGET = gql`
   query {
@@ -72,11 +73,45 @@ const CREATE_MASTERY = gql`
   }
 `
 
+const UPDATE_MASTERY = gql`
+  mutation($id: ID!, $name: String!) {
+    masteryCriteria(input: { id: $id, name: $name }) {
+      masteryCriteria {
+        id
+        name
+        createdAt
+        isDefault
+        statuscriteriaSet {
+          edges {
+            node {
+              id
+              responsePercentage
+              consecutiveDays
+              minTrial
+              fromStatus {
+                id
+                statusName
+              }
+              toStatus {
+                id
+                statusName
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 const MasteryCriteria = () => {
   const [visible, setVisible] = useState(false)
   const [newMasterDrawer, setNewMasterDrawer] = useState(false)
   const [criteriaid, setCriteria] = useState('')
   const [tableData, setTableData] = useState()
+  const [updateMaster, setUpdateMaster] = useState()
+  const [updateChildFormDrawer, setUpdateChildFormDrawer] = useState(false)
+  const [updateChildId, setUpdatechildId] = useState()
 
   const { loading, error, data } = useQuery(MASTER_TARGET, { suspend: true })
 
@@ -123,9 +158,13 @@ const MasteryCriteria = () => {
       key: 'operation',
       render: obj => (
         <span>
-          {/* <Tag>
+          <Tag
+            onClick={() => {
+              setUpdateMaster(obj)
+            }}
+          >
             <a>Edit</a>
-          </Tag> */}
+          </Tag>
           <Tag>
             <a onClick={e => showDrawer(e, obj.id)}>Add Criteria</a>
           </Tag>
@@ -157,6 +196,22 @@ const MasteryCriteria = () => {
         key: 'consecutiveDays',
       },
       { title: 'Mininum Trials', dataIndex: 'node.minTrial', key: 'minTrial' },
+      {
+        title: 'Actions',
+        render(obj) {
+          return (
+            <Tag
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                setUpdatechildId(obj.node.id)
+                setUpdateChildFormDrawer(true)
+              }}
+            >
+              Edit
+            </Tag>
+          )
+        },
+      },
     ]
     return (
       <Table columns={columns} dataSource={record.statuscriteriaSet.edges} pagination={false} />
@@ -200,10 +255,14 @@ const MasteryCriteria = () => {
         onClose={onClose}
         visible={visible}
       >
-        <MasteryCriteriaForm criteriaid={criteriaid} setOpen={setVisible} />
+        <MasteryCriteriaForm
+          criteriaid={criteriaid}
+          setOpen={setVisible}
+          MASTER_TARGET={MASTER_TARGET}
+        />
       </Drawer>
       <Drawer
-        title="Create Mastery Criteria"
+        title="Create Mastery Criteria Target"
         placement="right"
         width={400}
         closable={false}
@@ -218,6 +277,42 @@ const MasteryCriteria = () => {
           }}
         >
           <NewMasteryForm setOpen={setNewMasterDrawer} />
+        </div>
+      </Drawer>
+      <Drawer
+        title="Update Mastery Criteria Target"
+        placement="right"
+        width={550}
+        closable={false}
+        onClose={() => setUpdateChildFormDrawer(false)}
+        visible={updateChildFormDrawer}
+      >
+        <div
+          style={{
+            padding: '5px 30px',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <UpdateMasterChildForm setOpen={setUpdateChildFormDrawer} id={updateChildId} />
+        </div>
+      </Drawer>
+      <Drawer
+        title="Update Mastery Criteria"
+        placement="right"
+        width={400}
+        closable={false}
+        onClose={() => setUpdateMaster(null)}
+        visible={updateMaster}
+      >
+        <div
+          style={{
+            padding: '5px 30px',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <UpdateMasteryForm setOpen={setUpdateMaster} master={updateMaster} />
         </div>
       </Drawer>
     </div>
@@ -255,7 +350,7 @@ const NewMasteryFormBasic = ({ form, setOpen }) => {
       notification.success({
         message: 'New master criteria created sucessfully',
       })
-      setOpen(false)
+      setOpen(null)
       form.resetFields()
     }
   }, [createMasteryData, createMasteryError])
@@ -286,12 +381,69 @@ const NewMasteryFormBasic = ({ form, setOpen }) => {
         style={{ marginTop: 0, fontSize: 16, width: '100%', height: 40 }}
         loading={createMasteryLoading}
       >
-        Create Target
+        Create Criteria
       </Button>
     </Form>
   )
 }
 
 const NewMasteryForm = Form.create()(NewMasteryFormBasic)
+
+const UpdateMasteryFormBasic = ({ form, setOpen, master }) => {
+  const [
+    updateMastery,
+    { data: updateMasteryData, error: updateMasteryError, loading: updateMasteryLoading },
+  ] = useMutation(UPDATE_MASTERY)
+
+  useEffect(() => {
+    if (updateMasteryError) {
+      notification.error({
+        message: 'Opps their something is wrong',
+      })
+    }
+    if (updateMasteryData) {
+      notification.success({
+        message: 'New master criteria created sucessfully',
+      })
+      setOpen(false)
+      form.resetFields()
+    }
+  }, [updateMasteryData, updateMasteryError])
+
+  const handleSubmit = e => {
+    e.preventDefault()
+    form.validateFields((error, values) => {
+      if (!error) {
+        updateMastery({
+          variables: {
+            id: master.id,
+            name: values.name,
+          },
+        })
+      }
+    })
+  }
+
+  return (
+    <Form name="targetForm" onSubmit={handleSubmit}>
+      <Form.Item label="Criteria Name" style={{ display: 'inline-block', width: '100%' }}>
+        {form.getFieldDecorator('name', {
+          initialValue: master?.name,
+          rules: [{ required: true, message: 'Please enter From Status' }],
+        })(<Input placeholder="Give the master criteria name" size="large" />)}
+      </Form.Item>
+      <Button
+        type="primary"
+        htmlType="submit"
+        style={{ marginTop: 0, fontSize: 16, width: '100%', height: 40 }}
+        loading={updateMasteryLoading}
+      >
+        Update Criteria
+      </Button>
+    </Form>
+  )
+}
+
+const UpdateMasteryForm = Form.create()(UpdateMasteryFormBasic)
 
 export default MasteryCriteria

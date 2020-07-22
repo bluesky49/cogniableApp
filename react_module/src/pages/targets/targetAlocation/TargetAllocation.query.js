@@ -50,12 +50,17 @@ export const getPatients = (studentId) => {
 export const getLongTermGoals = (
   student,
   program,
+  status
 ) => {
   return client
     .query({
       query: gql`
-          query {
-            longTerm(student: "${student}", program: "${program}") {
+          query GetLongTermGoals (
+            $student: ID!,
+            $program: ID!,
+            $status: ID
+          ) {
+            longTerm(student: $student, program: $program, goalStatus: $status) {
               edges {
                 node {
                   id
@@ -75,7 +80,7 @@ export const getLongTermGoals = (
                     id
                     status
                   }
-                  shorttermgoalSet {
+                  shorttermgoalSet (goalStatus: $status) {
                     edges {
                       node {
                         id
@@ -175,6 +180,11 @@ export const getLongTermGoals = (
             }
           }
         `,
+        variables: {
+          student: student,
+          program: program,
+          status: status
+        }
     })
     .then(result => result)
 }
@@ -245,7 +255,7 @@ export const suggestTarget = (
   targetArea,
   studentId
 ) => {
-  console.log(domain, targetArea)
+  // console.log(domain, targetArea)
   return client
     .query({
       query: gql`
@@ -264,6 +274,7 @@ export const suggestTarget = (
                             Area
                         }
                         targetInstr
+                        video
                         targetMain{
                             id,
                             targetName
@@ -393,6 +404,45 @@ export const getSearchSteps = text => {
     .catch(error => error)
 }
 
+
+export const getSearchTargets = text => {
+  return client
+    .query({
+      query: gql`
+      query GetTargets (
+        $text: String!,
+        $studentId: ID!
+      ){
+        target(first:8, student: $studentId, targetMain_TargetName_Icontains: $text){
+          edges{
+            node{
+              id,
+              allocatedTar
+              domain{
+                id,
+                domain
+              },
+              targetArea{
+                id,
+                Area
+              }
+              video
+              targetInstr
+              targetMain{
+                id,
+                targetName
+              }
+            }
+          }
+        }
+      }`,
+      variables: {text: text, studentId: localStorage.getItem('studentId')}
+    })
+    .then(result => result)
+    .catch(error => error)
+}
+
+
 export const alreadyAlloctedTarget = (
   studentId,
   targetStatus = 'U3RhdHVzVHlwZToz',
@@ -478,6 +528,55 @@ export const alreadyAlloctedTarget = (
     .then(result => result)
 }
 
+
+export const getStudentSettings = (
+  studentId = localStorage.getItem('studentId'),
+) => {
+  return client
+    .query({
+      query: gql`query ($studentId: ID!)  {
+        getAllocateTargetSettings(student: $studentId){
+          edges {
+            node {
+              id
+              dailyTrials
+              consecutiveDays
+              student{
+                id
+                firstname
+              }
+              targetType{
+                id
+                typeTar
+              }
+              masteryCriteria{
+                id
+                name
+              }
+              status{
+                id
+                statusName
+              }
+            }
+          }
+        }
+      }`,
+      fetchPolicy: 'network-only',
+      variables: {
+        studentId: studentId
+      }
+    })
+    .then(result => result)
+    .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing went wrong',
+          description: item.message,
+        })
+      })
+    })
+}
+
 // export async function createLongTermGoal(
 //   student,
 //   goalName,
@@ -524,7 +623,7 @@ export const alreadyAlloctedTarget = (
 //     .catch(error => {
 //       error.graphQLErrors.map(item => {
 //         return notification.error({
-//           message: 'Somthing want wrong',
+//           message: 'Somthing went wrong',
 //           description: item.message,
 //         })
 //       })
@@ -595,7 +694,7 @@ export async function createLongTermGoal(
     .catch(error => {
       error.graphQLErrors.map(item => {
         return notification.error({
-          message: 'Somthing want wrong',
+          message: 'Somthing went wrong',
           description: item.message,
         })
       })
@@ -718,7 +817,7 @@ export async function updateLongTermGoal(
     .catch(error => {
       error.graphQLErrors.map(item => {
         return notification.error({
-          message: 'Somthing want wrong',
+          message: 'Somthing went wrong',
           description: item.message,
         })
       })
@@ -797,7 +896,7 @@ export async function createShortTermGoal(
     .catch(error => {
       error.graphQLErrors.map(item => {
         return notification.error({
-          message: 'Somthing want wrong',
+          message: 'Somthing went wrong',
           description: item.message,
         })
       })
@@ -876,7 +975,7 @@ export async function updateShortTermGoal(
     .catch(error => {
       error.graphQLErrors.map(item => {
         return notification.error({
-          message: 'Somthing want wrong',
+          message: 'Somthing went wrong',
           description: item.message,
         })
       })
@@ -899,7 +998,8 @@ export async function createTargetAllocate(
   promptCodes = [],
   sd = [],
   steps = [],
-  video
+  video,
+  settingsDefault,
 ) {
   const Query1 = `mutation CreateTargetAllocate (
     $studentId: ID!
@@ -916,9 +1016,11 @@ export async function createTargetAllocate(
     $sd: [String]
     $steps: [String]
     $video: [String]
+    $default: Boolean
   ) 
   {
     createTargetAllocate(input:{
+      makeDefault: $default,
       targetData:{
         shortTerm: $shortTerm, 
         targetId: $targetId,
@@ -938,7 +1040,7 @@ export async function createTargetAllocate(
         promptCodes:[], 
         sd: $sd, 
         steps: $steps, 
-        videos: $video
+        videos: $video,
         }
       })
       {
@@ -1021,9 +1123,11 @@ export async function createTargetAllocate(
       $sd: [String]
       $steps: [String]
       $video: [String]
+      $default: Boolean
     ) 
     {
       createTargetAllocate(input:{
+        makeDefault: $default,
         targetData:{
           shortTerm: $shortTerm, 
           studentId: $studentId, 
@@ -1042,7 +1146,8 @@ export async function createTargetAllocate(
           promptCodes:[], 
           sd: $sd, 
           steps: $steps, 
-          videos: $video
+          videos: $video,
+          
           }
         })
         {
@@ -1139,7 +1244,8 @@ export async function createTargetAllocate(
         targetType: targetType,
         sd: sd,
         steps: steps,
-        video: video
+        video: video,
+        default: settingsDefault
       }
     })
     .then(result => result)
@@ -1147,7 +1253,7 @@ export async function createTargetAllocate(
       console.log('error==>', error)
       error.graphQLErrors.map(item => {
         return notification.error({
-          message: 'Somthing want wrong',
+          message: 'Somthing went wrong',
           description: item.message,
         })
       })
@@ -1281,7 +1387,7 @@ export async function updateAllocatedTarget(
     .catch(error => {
       error.graphQLErrors.map(item => {
         return notification.error({
-          message: 'Somthing want wrong',
+          message: 'Somthing went wrong',
           description: item.message,
         })
       })

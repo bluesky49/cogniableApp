@@ -215,7 +215,7 @@ const MasteryForm = ({ form, criteriaid, setOpen }) => {
         style={{ marginTop: 15, fontSize: 16, width: '100%', height: 40 }}
         loading={createChildMasteryLoading}
       >
-        Create Target
+        Create Mastery Criteria
       </Button>
     </Form>
   )

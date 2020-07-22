@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import Authorize from 'components/LayoutComponents/Authorize'
-import { Row, Col, Layout, Typography, Form, Input, Button, notification } from 'antd'
-import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
+import { Row, Col, Layout, Typography, Form, Input, Button, notification, Tooltip, Drawer } from 'antd'
+import { MinusOutlined, PlusOutlined, LineChartOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import { useQuery, useMutation } from 'react-apollo'
 import gql from 'graphql-tag'
 import Calendar from 'components/Calander'
 
 import './index.scss'
+
+import { ResponsiveLine } from '@nivo/line'
+import GraphComponent from './graphComponent'
 
 const { Content } = Layout
 const { Title, Text } = Typography
@@ -74,7 +77,13 @@ const STUDNET_INFO = gql`
   }
 `
 
+
 export default () => {
+
+  const [newGraphDrawer, setGraphDrawer] = useState(false)
+
+  const [activeMand, setActiveMand] = useState('')
+
   const [date, setDate] = useState(moment().format('YYYY-MM-DD'))
   const [newMandCreated, setNewMandCreated] = useState(false)
   const [mandTitle, setMandTitle] = useState('')
@@ -155,6 +164,32 @@ export default () => {
     createNewMand()
   }
 
+
+  const openGraphDrawer = values => {
+    setGraphDrawer(state => !state)
+    if(!newGraphDrawer){
+      setActiveMand(values.variables.mandId)
+    }
+    
+  }
+
+  // const [
+  //   getSelectedMand,
+  //   { data: selectedStaffData, error: selectedStaffError, loading: selectedStaffLoading },
+  // ] = useLazyQuery(MAND_INFO)
+
+  // useEffect(() => {
+  //   if(newGraphDrawer){
+  //     getSelectedMand({
+  //       variables: {
+  //         mandId: activeMand,
+  //         date: date
+  //       },
+  //     })
+  //     // alert('True');
+  //   }
+  // }, [newGraphDrawer, activeMand, date, getSelectedMand])
+
   return (
     <Authorize roles={['school_admin', 'therapist', 'parents']} redirect to="/dashboard/beta">
       <Helmet title="Dashboard Alpha" />
@@ -209,6 +244,7 @@ export default () => {
                           return (
                             <div
                               id={node.id}
+                              key={node.id}
                               style={{
                                 background: '#FFFFFF',
                                 border: '1px solid #E4E9F0',
@@ -279,6 +315,22 @@ export default () => {
                                 >
                                   <PlusOutlined />
                                 </Button>
+                                <Tooltip title="Mand Graph">
+                                  <Button
+                                    style={{
+                                      marginLeft: 9
+                                    }}
+                                    onClick={() => {
+                                      openGraphDrawer({
+                                        variables:{
+                                          mandId:node.id
+                                        }
+                                      })
+                                    }}
+                                  >
+                                    <LineChartOutlined />
+                                  </Button>
+                                </Tooltip>
                               </div>
                             </div>
                           )
@@ -336,6 +388,26 @@ export default () => {
               </div>
             </Col>
           </Row>
+          <Drawer
+            handler={false}
+            width="900px"
+            visible={newGraphDrawer}
+            placement="right"
+            onClose={openGraphDrawer}
+            title="Mand Graph"
+          >
+            <div
+              style={{
+                minHeight:400,
+                height:400,
+                background: '#fff',
+                padding: '30px 40px',
+                paddingTop: 0,
+              }}
+            >
+              <GraphComponent mandId={activeMand} studentId={studentId} date={date} />
+            </div>
+          </Drawer>
         </Content>
       </Layout>
     </Authorize>

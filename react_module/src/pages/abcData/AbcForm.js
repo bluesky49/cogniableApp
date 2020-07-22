@@ -33,7 +33,7 @@ const CREATE_ABC = gql`
     $behaviors: [ID!]!
     $consequences: [ID!]!
     $antecedents: [ID!]!
-    $locations: [ID!]!
+    $environment: ID
     $note: String
   ) {
     recordAbcdata(
@@ -52,7 +52,7 @@ const CREATE_ABC = gql`
           behaviors: $behaviors
           consequences: $consequences
           antecedents: $antecedents
-          locations: $locations
+          environments: $environment
         }
       }
     ) {
@@ -91,13 +91,9 @@ const CREATE_ABC = gql`
             }
           }
         }
-        location {
-          edges {
-            node {
-              id
-              behaviorLocation
-            }
-          }
+        environments {
+          id
+          name
         }
       }
     }
@@ -144,16 +140,12 @@ const GET_BEHAVIOR = gql`
   }
 `
 
-const GET_LOCATIONS = gql`
-  query getBehaviorLocation($studentId: ID!) {
-    getBehaviorLocation(studentId: $studentId) {
-      edges {
-        node {
-          id
-          behaviorLocation
-          status
-        }
-      }
+const GET_ENVIRONMENTS = gql`
+  query {
+    getEnvironment {
+      id
+      name
+      defination
     }
   }
 `
@@ -217,7 +209,7 @@ const MealForm = ({ style, form, setNewAbc }) => {
   const { data: antecedentData, loading: antecedentLoading } = useQuery(GET_ATTENDANCE, {
     variables: { studentId },
   })
-  const { data: locationData, loading: locationLoding } = useQuery(GET_LOCATIONS, {
+  const { data: environmentData, loading: locationLoding } = useQuery(GET_ENVIRONMENTS, {
     variables: {
       studentId,
     },
@@ -343,7 +335,7 @@ const MealForm = ({ style, form, setNewAbc }) => {
             behaviors: values.behaviors,
             consequences: values.consequences,
             antecedents: values.antecedents,
-            locations: values.locations,
+            environment: values.environment,
           },
         })
       }
@@ -559,30 +551,42 @@ const MealForm = ({ style, form, setNewAbc }) => {
         </Form.Item>
       </div>
 
-      <Form.Item label="Location">
-        {form.getFieldDecorator('locations', {
-          rules: [{ required: true, message: 'Please Select a Behaviour!' }],
-        })(
-          <Select
-            style={{}}
-            placeholder="Select a Location"
-            size="large"
-            allowclear
-            showSearch
-            optionFilterProp="name"
-            mode="multiple"
-            loading={locationLoding}
-          >
-            {locationData?.getBehaviorLocation.edges.map(({ node }) => {
-              return (
-                <Option value={node.id} key={node.id} name={node.behaviorLocation}>
-                  {node.behaviorLocation}
-                </Option>
-              )
-            })}
-          </Select>,
-        )}
-      </Form.Item>
+      
+      <div style={{ position: 'relative' }}>
+        {/* <Button
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            zIndex: 100,
+          }}
+          onClick={() => setConsequenceModel(true)}
+        >
+          <PlusOutlined />
+        </Button> */}
+
+        <Form.Item label="Environment">
+          {form.getFieldDecorator('environment')(
+            <Select
+              style={{}}
+              placeholder="Select a Environment"
+              size="large"
+              allowclear
+              showSearch
+              optionFilterProp="name"
+              loading={locationLoding}
+            >
+              {environmentData?.getEnvironment.map((item ) => {
+                return (
+                  <Option value={item.id} key={item.id} name={item.name}>
+                    {item.name}
+                  </Option>
+                )
+              })}
+            </Select>,
+          )}
+        </Form.Item>
+      </div>
 
       <Form.Item label="Intensity">
         {form.getFieldDecorator('intensity', {

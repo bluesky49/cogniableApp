@@ -5,7 +5,6 @@ import { Row, Col, Layout, Typography } from 'antd'
 import moment from 'moment'
 import { useQuery } from 'react-apollo'
 import gql from 'graphql-tag'
-import { useSelector } from 'react-redux'
 import Calendar from 'components/Calander'
 import MealCard from './ToiletCard'
 import MealForm from './Toiletform'
@@ -14,8 +13,8 @@ const { Content } = Layout
 const { Title } = Typography
 
 const TOILET_DATA = gql`
-  query getToiletData($date: Date!) {
-    getToiletData(student: "U3R1ZGVudFR5cGU6MTYz", date: $date, success: true) {
+  query getToiletData($date: Date!, $student: ID!) {
+    getToiletData(student: $student, date: $date, success: true) {
       edges {
         node {
           id
@@ -34,8 +33,8 @@ const TOILET_DATA = gql`
 `
 
 const STUDNET_INFO = gql`
-  query student($studentId: ID!) {
-    student(id: $studentId) {
+  query student($student: ID!) {
+    student(id: $student) {
       firstname
     }
   }
@@ -43,20 +42,19 @@ const STUDNET_INFO = gql`
 
 export default () => {
   const [date, setDate] = useState(moment().format('YYYY-MM-DD'))
-  const user = useSelector(state => state.user)
   const [newToiletDate, setNewToiletDate] = useState(date)
   const [newToiletDataCreated, setNewToiletDataCreated] = useState(false)
-
+  const studentId = localStorage.getItem('studentId')
   const { data, loading, error, refetch } = useQuery(TOILET_DATA, {
     variables: {
-      studentId: user.studentId,
+      student: studentId,
       date,
     },
   })
 
   const { data: studnetInfo } = useQuery(STUDNET_INFO, {
     variables: {
-      studentId: user.studentId,
+      student: studentId,
     },
   })
 

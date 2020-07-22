@@ -7,6 +7,8 @@ import Loader from 'components/LayoutComponents/Loader'
 import IndexLayout from 'layouts'
 import NotFoundPage from 'pages/404'
 
+import invCom from 'pages/Invoices'
+
 const loadable = loader =>
   Loadable({
     loader,
@@ -21,11 +23,11 @@ const routes = [
     component: loadable(() => import('pages/user/login')),
     exact: true,
   },
-  // {
-  //   path: '/user/forgot',
-  //   component: loadable(() => import('pages/user/forgot')),
-  //   exact: true,
-  // },
+  {
+    path: '/user/forgot',
+    component: loadable(() => import('pages/user/forgot')),
+    exact: true,
+  },
   {
     path: '/user/signup',
     component: loadable(() => import('pages/user/signup')),
@@ -36,11 +38,11 @@ const routes = [
     component: loadable(() => import('pages/user/phone')),
     exact: true,
   },
-  // {
-  //   path: '/user/forgotpass',
-  //   component: loadable(() => import('pages/user/forgot/changepass')),
-  //   exact: true,
-  // },
+  {
+    path: '/user/forgotpass',
+    component: loadable(() => import('pages/user/forgot/changepass')),
+    exact: true,
+  },
   {
     path: '/user/otpVerification',
     component: loadable(() => import('pages/user/otpVerification')),
@@ -88,11 +90,6 @@ const routes = [
 
   // targets
   {
-    path: '/targets/suggest_target',
-    component: loadable(() => import('pages/targets/TargetView')),
-    exact: true,
-  },
-  {
     path: '/targets/program',
     component: loadable(() => import('pages/program')),
     exact: true,
@@ -132,11 +129,11 @@ const routes = [
     component: loadable(() => import('pages/session_target')),
     exact: true,
   },
-  // {
-  //   path: '/analytics/report1',
-  //   component: loadable(() => import('pages/graphs/report1')),
-  //   exact: true,
-  // },
+  {
+    path: '/analytics/report1',
+    component: loadable(() => import('pages/graphs/report1')),
+    exact: true,
+  },
   {
     path: '/forms/intake',
     component: loadable(() => import('pages/intake')),
@@ -159,6 +156,11 @@ const routes = [
   {
     path: '/partners/editprofile',
     component: loadable(() => import('components/UserProfile/EditProfile')),
+    exact: true,
+  },
+  {
+    path: '/targets/program_pdf',
+    component: loadable(() => import('pages/program_pdf')),
     exact: true,
   },
   {
@@ -226,17 +228,82 @@ const routes = [
     exact: true,
   },
 
-  // Settings
+  // PEAK
+  {
+    path: '/peak',
+    component: loadable(() => import('pages/PEAK')),
+    exact: true,
+  },
+  {
+    path: '/peakAssign',
+    component: loadable(() => import('pages/PEAK/PeakAssign')),
+    exact: true,
+  },
+  {
+    path: '/peakResult/',
+    component: loadable(() => import('pages/PEAK/PeakResult')),
+    exact: true,
+  },
+
+  // Settings -- parent
   {
     path: '/profileSetting/',
     component: loadable(() => import('pages/ProfileSetting/index')),
     exact: true,
   },
+  // staff
+  {
+    path: '/staffProfile/',
+    component: loadable(() => import('pages/staffProfile')),
+    exact: true,
+  },
+  // clinic
+  {
+    path: '/clinicProfile',
+    component: loadable(() => import('pages/ClinicProfile')),
+    exact: true,
+  },
+
+  // Progress Graph
+  {
+    path: '/progressGraph',
+    component: loadable(() => import('pages/ProgressGraph')),
+    exact: true,
+  },
+  // Daily response rate graph
+  {
+    path: '/dailyResponseRate',
+    component: loadable(() => import('pages/DailyResponseRate')),
+    exact: true,
+  },
+  // Sessions Graph
+  {
+    path: '/sessions',
+    component: loadable(() => import('pages/Sessions')),
+    exact: true,
+  },
+  // Goals Graph
+  {
+    path: '/goals',
+    component: loadable(() => import('pages/Goals')),
+    exact: true,
+  },
+
 
   // community, doctors & commitments
   {
     path: '/parent/community',
     component: loadable(() => import('pages/community')),
+    exact: true,
+  },
+  {
+    path: '/chat',
+    component: loadable(() => import('pages/chat')),
+    exact: true,
+  },
+  {
+    path: '/doctor',
+    component: loadable(() => import('pages/doctor')),
     exact: true,
   },
 
@@ -246,18 +313,11 @@ const routes = [
     component: loadable(() => import('pages/cogniableAssessment')),
     exact: true,
   },
-
-  // clinic
   {
-    path: '/clinicprofile',
-    component: loadable(() => import('pages/clinicProfile')),
+    path: '/cliniccariculam',
+    component: loadable(() => import('pages/clinicCariculam')),
     exact: true,
   },
-  // {
-  //   path: '/cliniccariculam',
-  //   component: loadable(() => import('pages/clinicCariculam')),
-  //   exact: true,
-  // },
   {
     path: '/targetsAllocationToSession/',
     component: loadable(() => import('pages/target_allocation_to_session')),
@@ -286,21 +346,84 @@ const routes = [
 
   {
     path: '/invoices',
-    component: loadable(() => import('pages/Invoices')),
+    component: invCom,
     exact: true,
   },
 
 
-  // Therapist Urls
+  // Therapist Urls 
+  // Program
   {
     path: '/therapistStudent',
     component: loadable(() => import('pages/tharepist_students')),
+    exact: true,
+  },
+  // Program Daily Vitals
+  {
+    path: '/therapistStudentDailyVitals',
+    component: loadable(() => import('pages/tharepist_students/ProgramDailyVitals')),
+    exact: true,
+  },
+  // Program Sessions
+  {
+    path: '/therapistStudentSessions',
+    component: loadable(() => import('pages/tharepist_students/ProgramSession')),
+    exact: true,
+  },
+  // Program Graphs
+  {
+    path: '/therapistStudentGraphs',
+    component: loadable(() => import('pages/tharepist_students/ProgramGraphs')),
+    exact: true,
+  },
+  // Program Assessments
+  {
+    path: '/therapistStudentAssessments',
+    component: loadable(() => import('pages/tharepist_students/ProgramAssessments')),
     exact: true,
   },
   {
     path: '/workdone',
     component: loadable(() => import('pages/WorkDone/index')),
   },
+
+  // VB-MAPP urls
+  {
+    path: '/therapy/vbmapps/new',
+    component: loadable(() => import('pages/vbmapps/new')),
+    exact: true,
+  },
+  {
+    path: '/therapy/vbmapps/list',
+    component: loadable(() => import('pages/vbmapps/assessmentsList')),
+    exact: true,
+  },
+  {
+    path: '/therapy/vbmapps/milestonesGroups',
+    component: loadable(() => import('pages/vbmapps/milestonesGroups')),
+    exact: true,
+  },
+  {
+    path: '/therapy/vbmapps/barriersGroups',
+    component: loadable(() => import('pages/vbmapps/barriersGroups')),
+    exact: true,
+  },
+  {
+    path: '/therapy/vbmapps/eesaGroups',
+    component: loadable(() => import('pages/vbmapps/eesaGroups')),
+    exact: true,
+  },
+  {
+    path: '/therapy/vbmapps/taskGroups',
+    component: loadable(() => import('pages/vbmapps/taskGroups')),
+    exact: true,
+  },
+  {
+    path: '/therapy/vbmapps/transitionGroups',
+    component: loadable(() => import('pages/vbmapps/transitionGroups')),
+    exact: true,
+  },
+
 ]
 
 class Router extends React.Component {

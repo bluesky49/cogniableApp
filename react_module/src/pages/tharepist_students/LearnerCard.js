@@ -12,7 +12,7 @@ const LearnerCard = ({ style, node, name }) => {
   const selectStudent = () => {
     console.log('===> button clicked', node.id)
     localStorage.setItem('studentId', JSON.stringify(node.id))
-    window.location.href = '/#/therapistStudent'
+    // window.location.href = '/#/therapistStudent'
   }
 
   let backgroungColor = 'white'
@@ -56,7 +56,7 @@ const LearnerCard = ({ style, node, name }) => {
                 marginRight: 38,
               }}
             >
-              Student
+              Learner
             </span>
             <span style={{ color: '#FF5454' }}>{node.category.category}</span>
           </div>

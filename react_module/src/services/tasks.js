@@ -13,7 +13,65 @@ export async function getTasks() {
     .query({
       query: gql`
         query {
-          tasks {
+          tasks (status:"VGFza1N0YXR1c1R5cGU6MQ==", last:30){
+            edges {
+              node {
+                id
+                taskName
+                description
+                startDate
+                dueDate
+                status {
+                  id
+                  taskStatus
+                }
+                priority {
+                  id
+                  name
+                }
+                taskType {
+                  id
+                  taskType
+                }  
+                assignWork {
+                  edges {
+                    node {
+                      id
+                      name
+                    }
+                  }
+                }
+                students {
+                  edges {
+                    node {
+                      id
+                      firstname
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+    })
+    .then(result => result)
+    .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
+        })
+      })
+    })
+}
+
+export async function getClosedTasks() {
+  return apolloClient
+    .query({
+      query: gql`
+        query {
+          tasks (status:"VGFza1N0YXR1c1R5cGU6Mg==", last:30){
             edges {
               node {
                 id
@@ -288,6 +346,73 @@ export async function editTask(payload) {
         endDate: moment(payload.values.dueDate).format('YYYY-MM-DD'),
         therapist: payload.values.therapists ? payload.values.therapists : [],
         learners: payload.values.learners ? payload.values.learners : []
+      }
+    })
+    .then(result => result)
+    .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing want wrong',
+          description: item.message,
+        })
+      })
+    })
+}
+
+export async function updateTaskStatus(payload) {
+
+  return apolloClient
+    .mutate({
+      mutation: gql`mutation UpdateTask (
+        $id: ID!,
+        $status: ID!,
+       ) {
+        updateTask(input:{
+          task:{
+            pk: $id,
+            status: $status,
+          }}) {
+            task {
+              id
+              taskName
+              description
+              startDate
+              dueDate
+              status {
+                id
+                taskStatus
+              }
+              priority {
+                id
+                name
+              }
+              taskType {
+                id
+                taskType
+              } 
+              assignWork {
+                edges {
+                  node {
+                    id
+                    name
+                  }
+                }
+              }
+              students {
+                edges {
+                  node {
+                    id
+                    firstname
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        id: payload.id,
+        status: payload.status,
       }
     })
     .then(result => result)

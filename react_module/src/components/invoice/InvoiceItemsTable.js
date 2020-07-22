@@ -37,150 +37,149 @@ const EditableRow = ({ form, index, ...props }) => (
 
 const EditableFormRow = Form.create()(EditableRow)
 
-class EditableCell extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.state = {
-      editing: true,
-    }
-    // 1. constructor binding this
-    // this.toggleEdit.bind(this);
-  }
+// class EditableCell extends React.Component {
+//   constructor(props, context) {
+//     super(props, context)
+//     this.state = {
+//       editing: true,
+//     }
+//   }
 
-  componentDidMount() {
-    if (this.props.editable) {
-      document.addEventListener('click', this.handleClickOutside, true)
-    }
-  }
+//   componentDidMount() {
+//     if (this.props.editable) {
+//       document.addEventListener('click', this.handleClickOutside, true)
+//     }
+//   }
 
-  componentWillUnmount() {
-    if (this.props.editable) {
-      document.removeEventListener('click', this.handleClickOutside, true)
-    }
-  }
+//   componentWillUnmount() {
+//     if (this.props.editable) {
+//       document.removeEventListener('click', this.handleClickOutside, true)
+//     }
+//   }
 
-  // 2. ES6 auto binding this
-  toggleEdit = () => {
-    const editing = !this.state.editing
-    this.setState(
-      {
-        editing,
-      },
-      () => {
-        // callback
-        if (editing) {
-          this.input.focus()
-        }
-      },
-    )
-  }
+//   // 2. ES6 auto binding this
+//   toggleEdit = () => {
+//     const editing = !this.state.editing
+//     this.setState(
+//       {
+//         editing,
+//       },
+//       () => {
+//         // callback
+//         if (editing) {
+//           this.input.focus()
+//         }
+//       },
+//     )
+//   }
 
-  handleClickOutside = e => {
-    const { editing } = this.state
-    if (editing && this.cell !== e.target && !this.cell.contains(e.target)) {
-      this.save()
-    }
-  }
+//   handleClickOutside = e => {
+//     const { editing } = this.state
+//     if (editing && this.cell !== e.target && !this.cell.contains(e.target)) {
+//       this.save()
+//     }
+//   }
 
-  save = () => {
-    const { record, handleSave } = this.props
-    this.form.validateFields((error, values) => {
-      if (error) {
-        return
-      }
-      this.toggleEdit()
-      handleSave({
-        ...record,
-        ...values,
-      })
-    })
-  }
+//   save = () => {
+//     const { record, handleSave } = this.props
+//     this.form.validateFields((error, values) => {
+//       if (error) {
+//         return
+//       }
+//       this.toggleEdit()
+//       handleSave({
+//         ...record,
+//         ...values,
+//       })
+//     })
+//   }
 
-  render() {
-    const { editing } = this.state
-    const { editable, dataIndex, title, record, index, handleSave, ...restProps } = this.props
-    return (
+//   render() {
+//     const { editing } = this.state
+//     const { editable, dataIndex, title, record, index, handleSave, ...restProps } = this.props
+//     return (
 
-      <td ref={node => (this.cell = node)} {...restProps}>
-        {editable ? (
-          <EditableContext.Consumer>
-            {form => {
-              this.form = form
-              return editing ? (
-                <>
-                  {dataIndex !== 'service' ? (
-                    <FormItem style={{ margin: 0 }}>
-                      {form.getFieldDecorator(dataIndex, {
-                        rules: [
-                          {
-                            required: true,
-                            message: `${title} is required.`,
-                          },
-                        ],
-                        initialValue: record[dataIndex],
-                      })(
-                        <Input
-                          type="Number"
-                          placeholder={`Type the ${dataIndex}`}
-                          min={0}
-                          ref={node => (this.input = node)}
-                          onPressEnter={this.save}
-                        />,
-                      )}
-                    </FormItem>
-                  ) : (
-                    <Query query={PRODUCTS}>
-                      {({ loading, error, data }) => {
-                        if (error) return `Error! ${error}`
-                        return (
-                          <FormItem style={{ margin: 0 }}>
-                            {form.getFieldDecorator(dataIndex, {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: `${title} is required.`,
-                                },
-                              ],
-                            })(
-                              <Select
-                                loading={loading}
-                                placeholder="Select a Product"
-                                ref={node => (this.input = node)}
-                                onPressEnter={this.save}
-                              >
-                                {data?.invoiceProductsList.map(product => {
-                                  return (
-                                    <Option key={product.id} value={product.name}>
-                                      {product.name}
-                                    </Option>
-                                  )
-                                })}
-                              </Select>,
-                            )}
-                          </FormItem>
-                        )
-                      }}
-                    </Query>
-                  )}
-                </>
-              ) : (
-                <div
-                  className="editable-cell-value-wrap"
-                  style={{ paddingRight: 24, minHeight: 30 }}
-                  onClick={this.toggleEdit}
-                >
-                  {restProps.children}
-                </div>
-              )
-            }}
-          </EditableContext.Consumer>
-        ) : (
-          restProps.children
-        )}
-      </td>
-    )
-  }
-}
+//       <td ref={node => (this.cell = node)} {...restProps}>
+//         {editable ? (
+//           <EditableContext.Consumer>
+//             {form => {
+//               this.form = form
+//               return editing ? (
+//                 <>
+//                   {dataIndex !== 'service' ? (
+//                     <FormItem style={{ margin: 0 }}>
+//                       {form.getFieldDecorator(dataIndex, {
+//                         rules: [
+//                           {
+//                             required: true,
+//                             message: `${title} is required.`,
+//                           },
+//                         ],
+//                         initialValue: record[dataIndex],
+//                       })(
+//                         <Input
+//                           type="Number"
+//                           placeholder={`Type the ${dataIndex}`}
+//                           min={0}
+//                           ref={node => (this.input = node)}
+//                           onPressEnter={this.save}
+//                         />,
+//                       )}
+//                     </FormItem>
+//                   ) : (
+//                     <Query query={PRODUCTS}>
+//                       {({ loading, error, data }) => {
+//                         if (error) return `Error! ${error}`
+//                         return (
+//                           <FormItem style={{ margin: 0 }}>
+//                             {form.getFieldDecorator(dataIndex, {
+//                               rules: [
+//                                 {
+//                                   required: true,
+//                                   message: `${title} is required.`,
+//                                 },
+//                               ],
+//                             })(
+//                               <Select
+//                                 loading={loading}
+//                                 placeholder="Select a Product"
+//                                 ref={node => (this.input = node)}
+//                                 onPressEnter={this.save}
+//                               >
+//                                 {data?.invoiceProductsList.map(product => {
+//                                   return (
+//                                     <Option key={product.id} value={product.name}>
+//                                       {product.name}
+//                                     </Option>
+//                                   )
+//                                 })}
+//                               </Select>,
+//                             )}
+//                           </FormItem>
+//                         )
+//                       }}
+//                     </Query>
+//                   )}
+//                 </>
+//               ) : (
+//                 <div
+//                   className="editable-cell-value-wrap"
+//                   style={{ paddingRight: 24, minHeight: 30 }}
+//                   onClick={this.toggleEdit}
+//                 >
+//                   {restProps.children}
+//                 </div>
+//               )
+//             }}
+//           </EditableContext.Consumer>
+        
+//         ) : (
+//           restProps.children
+//         )}
+//       </td>
+//     )
+//   }
+// }
 
 class EditableTable extends React.Component {
   constructor(props) {
@@ -282,7 +281,7 @@ class EditableTable extends React.Component {
     const components = {
       body: {
         row: EditableFormRow,
-        cell: EditableCell,
+        // cell: EditableCell,
       },
     }
     const columns = this.columns.map(col => {

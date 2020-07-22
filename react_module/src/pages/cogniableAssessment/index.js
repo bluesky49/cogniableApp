@@ -14,7 +14,7 @@
 /* eslint-disable no-useless-concat */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/jsx-closing-tag-location */
-/* eslint-disable no-var */
+/* eslint-disable object-shorthand */
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable no-unused-expressions */
 
@@ -38,7 +38,7 @@ import LeftArea from './leftArea'
 const { Title, Text } = Typography
 const { Content } = Layout
 
-@connect(({ user }) => ({ user }))
+@connect(({ user, cogniableassessment }) => ({ user, cogniableassessment }))
 class Screeing extends React.Component {
     constructor(props) {
         super(props)
@@ -48,8 +48,26 @@ class Screeing extends React.Component {
         }
     }
 
+    componentDidMount(){
+        const {dispatch} = this.props
+        const studentId = JSON.parse(localStorage.getItem('studentId'))
+        dispatch({
+            type: 'cogniableassessment/LOAD_DATA',
+            payload: {
+                studentId: studentId
+            }
+        })
+
+    }
+
     render() {
-        const loading = false
+        const {cogniableassessment: {loading}} = this.props
+
+        const studId = localStorage.getItem('studentId')
+        if (!studId){
+            return <Redirect to="/" />
+        }
+
         if(loading){
             return "Loading..."
         }

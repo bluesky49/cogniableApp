@@ -2,6 +2,22 @@ import actions from './actions'
 
 const initialState = {
   loading: false,
+  createFormLoading: false,
+  AssessmentLoading: false,
+  responseLoading: false,
+  StudentsList: [],
+  AssessmentObject: null,
+  AssessmentList: [],
+  Question: null,
+  QuestionCounter: 0,
+  ResponseObject: {},
+  AssessmentStatus: 'QUESTIONCOMPLETED',
+  Areas: [],
+  AreasResponse: {},
+
+  isEdit: false,
+  cloneQuestion: null,
+
 }
 
 export default function userReducer(state = initialState, action) {

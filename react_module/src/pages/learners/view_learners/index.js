@@ -29,21 +29,16 @@ import {
 import Authorize from 'components/LayoutComponents/Authorize'
 import { Scrollbars } from 'react-custom-scrollbars'
 import {
-  ContactsOutlined,
-  FileDoneOutlined,
-  AuditOutlined,
-  UserOutlined,
   FilterOutlined,
   PlusOutlined,
-  FileExcelOutlined,
-  FilePdfOutlined,
-  PrinterOutlined,
 } from '@ant-design/icons'
 import { connect } from 'react-redux'
 import { gql } from 'apollo-boost'
 import EditBasicInformation from './EditBasicInformation'
 import CreateLearner from '../createLearner'
 import client from '../../../apollo/config'
+import './style.scss'
+
 
 const { Panel } = Collapse
 const { Meta } = Card
@@ -372,22 +367,29 @@ class LearnerTable extends React.Component {
         ),
       },
       {
-        title: 'Email',
-        dataIndex: 'email',
-        key: 'email',
-        width: 250,
-        ...this.getColumnSearchProps('email'),
-      },
-      {
         title: 'Date of Birth',
         dataIndex: 'dob',
         key: 'dob',
         width: 150,
       },
       {
+        title: 'Email',
+        dataIndex: 'email',
+        key: 'email',
+        width: 250,
+        ...this.getColumnSearchProps('email'),
+      },
+      
+      {
         title: 'Contact No',
         dataIndex: 'mobileno',
         key: 'ContactNo',
+        width: 150,
+      },
+      {
+        title: 'Case Manager',
+        dataIndex: 'caseManager.name',
+        key: 'CaseManager',
         width: 150,
       },
       {
@@ -449,6 +451,12 @@ class LearnerTable extends React.Component {
     const filterOptionStyle = { display: 'inline-block', marginRight: '10px' }
     const customSpanStyle = {
       backgroundColor: '#52c41a',
+      color: 'white',
+      borderRadius: '3px',
+      padding: '1px 5px',
+    }
+    const inActiveSpanStyle = {
+      backgroundColor: 'red',
       color: 'white',
       borderRadius: '3px',
       padding: '1px 5px',
@@ -537,7 +545,7 @@ class LearnerTable extends React.Component {
                       </Button>
                     </div>
                     <div>
-                      <p style={{ textAlign: 'center' }}>
+                      {/* <p style={{ textAlign: 'center' }}>
                         <span style={{ padding: '5px', color: '#0190fe' }}>
                           <ContactsOutlined />
                           <a> Appointment</a>
@@ -550,7 +558,7 @@ class LearnerTable extends React.Component {
                           <AuditOutlined />
                           <a> Attendence</a>
                         </span>
-                      </p>
+                      </p> */}
                       <Card style={{ marginTop: '26px', border: 'none' }}>
                         <Meta
                           avatar={
@@ -597,14 +605,14 @@ class LearnerTable extends React.Component {
                           description={
                             <div>
                               <p style={{ fontSize: '13px', marginBottom: '4px' }}>
-                                Authorization Status <span style={customSpanStyle}>Active</span>
+                                Enrollment Status &nbsp; {UserProfile.isActive ? <span style={customSpanStyle}>Active</span> : <span style={inActiveSpanStyle}>In-Active</span>}
                               </p>
-                              <p style={{ fontSize: '13px', marginBottom: '4px' }}>
+                              {/* <p style={{ fontSize: '13px', marginBottom: '4px' }}>
                                 Intake Form Status <span style={customSpanStyle}>Active</span>
                               </p>
                               <p style={{ fontSize: '13px', marginBottom: '0' }}>
                                 Date of Start 01/01/2020
-                              </p>
+                              </p> */}
                             </div>
                           }
                         />
@@ -638,13 +646,13 @@ class LearnerTable extends React.Component {
           </div>
           <Drawer
             title="CREATE LEARNER"
-            width="700px"
+            width="70%"
             placement="right"
             closable={false}
             onClose={this.onClose}
             visible={this.state.visible}
           >
-            <CreateLearner CloseDrawer={this.onClose}  />
+            <CreateLearner CloseDrawer={this.onClose} />
           </Drawer>
         </div>
       </Authorize>

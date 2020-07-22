@@ -7,15 +7,7 @@ import { MinusOutlined } from '@ant-design/icons'
 
 const { Option } = Select
 
-export default ({
-  reminder,
-  setRemainderTime,
-  setReminderRepetaion,
-  index,
-  setRemainderCount,
-  dispatch,
-  state,
-}) => {
+export default ({ reminder, index, setRemainderCount, dispatch, state }) => {
   return (
     <div
       style={{
@@ -66,10 +58,15 @@ export default ({
             width: 150,
           }}
           size="large"
+          mode="multiple"
         >
-          <Option value="Daily">Daily</Option>
-          <Option value="Weekly">Weekly</Option>
-          <Option value="Monthly">Monthly</Option>
+          <Option value="Saterday">Saterday</Option>
+          <Option value="Sunday">Sunday</Option>
+          <Option value="Monday">Monday</Option>
+          <Option value="Tuesday">Tuesday</Option>
+          <Option value="Thursday">Thursday</Option>
+          <Option value="Wednesday">Wednesday</Option>
+          <Option value="Friday">Friday</Option>
         </Select>
       </Form.Item>
     </div>

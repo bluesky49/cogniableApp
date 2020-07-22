@@ -17,8 +17,9 @@ const initialState = {
   Count: 1,
   CorrectCount: 0,
   IncorrectCount: 0,
-  // session id
+  // session id for starting session from different location
   SessionId: '',
+  SessionDate: null,
 
   PromptCodesList: [],
   // holding trial start time
@@ -27,6 +28,14 @@ const initialState = {
   Disabled: true,
   // for storing session clock time for api calls
   CurrentSessionTime: 0,
+  // edit after session completion
+  EditAfterSessionCompleted: true,
+  // current peak block items
+  CurrentPeakBlock: [], 
+
+  VideoAvailable: false,
+  VideoUrl: '',
+  VideoLoading: false,
 }
 
 export default function sessionrecordingReducer(state = initialState, action) {

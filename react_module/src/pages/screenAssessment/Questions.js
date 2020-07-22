@@ -106,34 +106,36 @@ class Questions extends React.Component {
     }
 
     recordResponse = id => {
-        const {dispatch, screening: {ActiveIndex, QuestionsList, QuestionsResponse}} = this.props
-        if(QuestionsResponse[QuestionsList[ActiveIndex].id].recorded){
-            // reseting previous button style
-            const x = document.getElementsByClassName("responseButtons")
-            for (let i=0;i < x.length; i++){
-                x[i].style.backgroundColor = 'white'
+        const {dispatch, screening: {ActiveIndex, QuestionsList, QuestionsResponse, RecordedObject}} = this.props
+        if (RecordedObject.status != 'COMPLETED'){
+            if(QuestionsResponse[QuestionsList[ActiveIndex].id].recorded){
+                // reseting previous button style
+                const x = document.getElementsByClassName("responseButtons")
+                for (let i=0;i < x.length; i++){
+                    x[i].style.backgroundColor = 'white'
+                }
+                // highliting clicked button
+                document.getElementById(id).style.backgroundColor = '#FF9C52'
+                dispatch({
+                    type: 'screening/UPDATE_RESPONSE',
+                    payload: {
+                        resultId: id,
+                        qusId: QuestionsList[ActiveIndex].id,
+                        resObjectId: QuestionsResponse[QuestionsList[ActiveIndex].id].response.id,
+                    }
+                })
             }
-            // highliting clicked button
-            document.getElementById(id).style.backgroundColor = '#FF9C52'
-            dispatch({
-                type: 'screening/UPDATE_RESPONSE',
-                payload: {
-                    resultId: id,
-                    qusId: QuestionsList[ActiveIndex].id,
-                    resObjectId: QuestionsResponse[QuestionsList[ActiveIndex].id].response.id,
-                }
-            })
-        }
-        else {
-            // highliting clicked button
-            document.getElementById(id).style.backgroundColor = '#FF9C52'
-            dispatch({
-                type: 'screening/RECORD_RESPONSE',
-                payload: {
-                    resultId: id,
-                    activeIndex: ActiveIndex,
-                }
-            })
+            else {
+                // highliting clicked button
+                document.getElementById(id).style.backgroundColor = '#FF9C52'
+                dispatch({
+                    type: 'screening/RECORD_RESPONSE',
+                    payload: {
+                        resultId: id,
+                        activeIndex: ActiveIndex,
+                    }
+                })
+            }
         }
     }
 

@@ -1,3 +1,15 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-closing-bracket-location */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable consistent-return */
+/* eslint-disable no-cond-assign */
 import React, { Component } from 'react'
 import { Form, Input, Button, notification } from 'antd'
 import { Helmet } from 'react-helmet'
@@ -5,6 +17,7 @@ import { Link, Redirect } from 'react-router-dom'
 import { MailOutlined, KeyOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import styles from '../style.module.scss'
 import client from '../../../../config'
+
 let token = null;
 
 @Form.create()

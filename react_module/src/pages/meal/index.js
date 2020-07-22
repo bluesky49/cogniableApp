@@ -9,6 +9,7 @@ import filterIcon from 'icons/filter.png'
 import Calendar from 'components/Calander'
 import MealCard from './MealCard'
 import MealForm from './Mealform'
+import UpdateMealForm from './UpdateForm'
 import FilterCard from './FilterCard'
 
 const { Content } = Layout
@@ -55,15 +56,20 @@ const STUDNET_INFO = gql`
   }
 `
 
+// note: need to refector. This page code coppy from meal form so their are many unnassary code. I am on time limite now
+
 export default () => {
   const [filter, setFilter] = useState(false)
   const [date, setDate] = useState(moment().format('YYYY-MM-DD'))
   const [mealType, setMealType] = useState('All')
   const [mealNameSearchContent, setMealNameSerchContent] = useState('')
   const [newMealDate, setNewMealDate] = useState(date)
-  const [newMealCreated, setNewMealCreated] = useState(false)
+  const [newMeal, setNewMeal] = useState(false)
   const [mealDeleted, setMealDeleted] = useState(false)
   const [updateMealId, setUpdateMealId] = useState()
+  const [mealList, setMealList] = useState()
+  const [updateMeal, setUpdateMeal] = useState()
+  const [updateMealForm, setUpdateMealForm] = useState()
 
   const studentId = localStorage.getItem('studentId')
 
@@ -84,11 +90,44 @@ export default () => {
   })
 
   useEffect(() => {
-    if (newMealDate === date && newMealCreated) {
-      mealQuery.refetch()
-      setNewMealCreated(false)
+    if (mealQuery.data) {
+      setMealList([...mealQuery.data.getFood.edges])
     }
-  }, [newMealDate, mealQuery, date, newMealCreated])
+  }, [mealQuery.data])
+
+  useEffect(() => {
+    if (updateMealId) {
+      setUpdateMealForm(true)
+    } else {
+      setUpdateMealForm(false)
+    }
+  }, [updateMealId])
+
+  useEffect(() => {
+    if (newMealDate === date && newMeal) {
+      setMealList(state => {
+        if (state) {
+          setMealList([{ node: newMeal }, ...state])
+        }
+        return [{ node: newMeal }]
+      })
+      setNewMeal(null)
+    }
+  }, [newMealDate, mealQuery, date, newMeal])
+
+  useEffect(() => {
+    if (updateMeal) {
+      setMealList(state => {
+        return state.map(item => {
+          if (item.id === updateMeal.id) {
+            item.node = updateMeal
+          }
+          return item
+        })
+      })
+      setUpdateMealId(null)
+    }
+  }, [updateMeal])
 
   useEffect(() => {
     if (mealDeleted) {
@@ -114,10 +153,17 @@ export default () => {
   }
 
   return (
-    <Authorize roles={['school_admin', 'parents', 'therapist']} redirect to="/dashboard/beta">
+    <Authorize roles={['school_admin', 'parents']} redirect to="/dashboard/beta">
       <Helmet title="Dashboard Alpha" />
       <Layout style={{ padding: '0px' }}>
-        <Content style={{ padding: '0px 20px', maxWidth: 1300, width: '100%', margin: '0px auto' }}>
+        <Content
+          style={{
+            padding: '0px 20px',
+            maxWidth: 1300,
+            width: '100%',
+            margin: '0px auto',
+          }}
+        >
           {studnetInfo && (
             <Title
               style={{
@@ -169,24 +215,23 @@ export default () => {
                     'Loading...'
                   ) : (
                     <>
-                      {mealQuery.error && 'Something went wrong!'}
-                      {mealQuery.data &&
-                        mealQuery.data.getFood.edges.map(({ node }, index) => {
-                          return (
-                            <MealCard
-                              key={node.id}
-                              id={node.id}
-                              mealName={node.mealType}
-                              time={node.mealTime}
-                              foodType={node.foodType.name}
-                              mealContent={node.mealName}
-                              waterValue={node.waterIntake}
-                              style={{ marginTop: index === 0 ? 0 : 20 }}
-                              setMealDeleted={setMealDeleted}
-                              setUpdateMealId={setUpdateMealId}
-                            />
-                          )
-                        })}
+                      {mealQuery.error && 'Opps their something wrong'}
+                      {mealList?.map(({ node }, index) => {
+                        return (
+                          <MealCard
+                            key={node.id}
+                            id={node.id}
+                            mealName={node.mealType}
+                            time={node.mealTime}
+                            foodType={node.foodType.name}
+                            mealContent={node.mealName}
+                            waterValue={node.waterIntake}
+                            style={{ marginTop: index === 0 ? 0 : 20 }}
+                            setMealDeleted={setMealDeleted}
+                            setUpdateMealId={setUpdateMealId}
+                          />
+                        )
+                      })}
                     </>
                   )}
                 </div>
@@ -209,14 +254,24 @@ export default () => {
                   padding: '30px',
                 }}
               >
-                <MealForm
-                  handleNewMealDate={newDate => { 
-                    setNewMealDate(newDate)
-                  }}
-                  setNewMealCreated={setNewMealCreated}
-                  updateMealId={updateMealId}
-                  setUpdateMealId={setUpdateMealId}
-                />
+                {updateMealForm ? (
+                  <UpdateMealForm
+                    handleNewMealDate={newDate => {
+                      setNewMealDate(newDate)
+                    }}
+                    setNewMeal={setNewMeal}
+                    updateMealId={updateMealId}
+                    setUpdateMealId={setUpdateMealId}
+                    setUpdateMeal={setUpdateMeal}
+                  />
+                ) : (
+                  <MealForm
+                    handleNewMealDate={newDate => {
+                      setNewMealDate(newDate)
+                    }}
+                    setNewMeal={setNewMeal}
+                  />
+                )}
               </div>
             </Col>
           </Row>

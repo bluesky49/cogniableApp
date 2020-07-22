@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Select, notification, DatePicker } from 'antd'
 import gql from 'graphql-tag'
+import { useSelector } from 'react-redux'
 import { useMutation, useQuery } from 'react-apollo'
 import moment from 'moment'
 import './appiorMentForm.scss'
@@ -81,6 +82,10 @@ const ALL_LOCATION = gql`
 `
 
 export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
+
+  const userRole = useSelector(state => state.user.role)
+  const therapistReduxId = useSelector(state => state.user.staffId)
+
   const [location, setLocalions] = useState()
   const [purposeAssignment, setPurposeAssignment] = useState()
   const [note, setNote] = useState()
@@ -104,8 +109,8 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
   useEffect(() => {
     if (createAppiormentsData) {
       notification.success({
-        message: 'Clinic Dashboard',
-        description: 'Appointment created Successfully',
+        message: 'Dashboard',
+        description: 'Appiorment create Successfully',
       })
       setNewAppiormentCreated(true)
       handelNewAppiormentDrawer()
@@ -116,7 +121,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
   useEffect(() => {
     if (createAppiormentsError) {
       notification.error({
-        message: 'Something went wrong!',
+        message: 'Somthing want wrong',
         description: createAppiormentsError,
       })
     }
@@ -125,7 +130,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
   const handleSubmit = () => {
     createAppiorments({
       variables: {
-        therapistId: therapist,
+        therapistId: userRole === 'therapist' ? therapistReduxId : therapist,
         studentId: student,
         title,
         locationId: location,
@@ -180,16 +185,16 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
         </Form.Item>
 
         <Form.Item
-          label="Appointment reason"
+          label="Purpose of Assignment"
           rules={[
             {
               required: true,
-              message: 'Please type the Appointment reason',
+              message: 'Please type the purpose of assignment',
             },
           ]}
         >
           <Input
-            placeholder="Appointment reason"
+            placeholder="Purpose of Assignment"
             value={purposeAssignment}
             size="large"
             onChange={e => setPurposeAssignment(e.target.value)}
@@ -255,26 +260,31 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
           />
         </Form.Item>
 
-        <Form.Item
-          label="Select Therapist"
-          rules={[{ required: true, message: 'Please select a therapist!' }]}
-        >
-          <Select
-            placeholder="Select Therefist"
-            size="large"
-            onChange={value => setTherapist(value)}
-            loading={allTherapistLoading}
-            showSearch
-            optionFilterProp="name"
+        {userRole === 'therapist' ?
+          ''
+        :
+          <Form.Item
+            label="Select Therapist"
+            rules={[{ required: true, message: 'Please select a therapist!' }]}
           >
-            {allTherapist &&
-              allTherapist.staffs.edges.map(({ node }) => (
-                <Option key={node.id} name={node.name}>
-                  {node.name}
-                </Option>
-              ))}
-          </Select>
-        </Form.Item>
+            <Select
+              placeholder="Select Therefist"
+              size="large"
+              onChange={value => setTherapist(value)}
+              loading={allTherapistLoading}
+              showSearch
+              optionFilterProp="name"
+            >
+              {allTherapist &&
+                allTherapist.staffs.edges.map(({ node }) => (
+                  <Option key={node.id} name={node.name}>
+                    {node.name}
+                  </Option>
+                ))}
+            </Select>
+          </Form.Item>
+
+        }
 
         <Form.Item label="Note">
           <TextArea
@@ -300,7 +310,7 @@ export default ({ setNewAppiormentCreated, handelNewAppiormentDrawer }) => {
               marginBottom: 20,
             }}
           >
-            Create Appointment
+            Create Appiorment
           </Button>
         </Form.Item>
       </Form>

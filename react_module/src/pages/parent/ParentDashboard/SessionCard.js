@@ -5,6 +5,7 @@ import { Typography, Card, Button, Drawer } from 'antd'
 import gql from 'graphql-tag'
 import { useQuery } from 'react-apollo'
 import { useDispatch } from 'react-redux'
+import moment from 'moment'
 import taskCardHeroImg from './images/taskCardHero.jpg'
 import SessionInstructionDrawer from './SessionInstructionDrawer'
 
@@ -52,6 +53,7 @@ const TaskCard = ({ style, id, sessionName, duration, hostList, session }) => {
       type: 'sessionrecording/SET_STATE',
       payload: {
         SessionId: id,
+        SessionDate: moment().format('YYYY-MM-DD')
       },
     })
     setVisible(true)

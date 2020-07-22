@@ -1,9 +1,18 @@
+/* eslint-disable import/newline-after-import */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-props-no-multi-spaces */
+/* eslint-disable eqeqeq */
+/* eslint-disable eqeqeq */
+/* eslint-disable eqeqeq */
+/* eslint-disable eqeqeq */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Menu } from 'antd'
+import { Menu, Button, Badge, Dropdown, Avatar, Comment, Tooltip } from 'antd'
 import { Link, withRouter } from 'react-router-dom'
+import Moment from 'react-moment';
 import store from 'store'
 import _ from 'lodash'
+import {BellOutlined} from '@ant-design/icons'
 import styles from './style.module.scss'
 import ProfileMenu from './ProfileMenu'
 
@@ -14,6 +23,7 @@ const mapStateToProps = ({ menu, settings }) => ({
   isLightTheme: settings.isLightTheme,
   isSettingsOpen: settings.isSettingsOpen,
 })
+ 
 
 @withRouter
 @connect(mapStateToProps)
@@ -71,7 +81,7 @@ class MenuTop extends React.Component {
     const { menuData = [] } = this.props
     const generateItem = item => {
       const { key, title, url, icon, pro, disabled } = item
-      console.log(item)
+
       if (item.divider) {
         return <Divider key={Math.random()} />
       }
@@ -139,7 +149,51 @@ class MenuTop extends React.Component {
 
   render() {
     const { selectedKeys } = this.state
-    const { isLightTheme, history : {goBack} } = this.props
+    const { isLightTheme, history : {goBack} } = this.props;
+    const menu = (
+        <Menu style={{width:300}}>
+          <Menu.Item key="1" style={{width:300, textOverflow: "inherit", wordWrap:"break-word", whiteSpace:"normal"}}>
+          <Comment
+            author={<a>New Task</a>}
+            avatar={
+              <Avatar
+                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                alt="Han Solo"
+              />
+            }
+            content={
+              <p>
+                You have assigned a new task.....
+              </p>
+            }
+            datetime={
+                <Moment fromNow>2020-07-17T11:17-0500</Moment>
+            }
+          />
+          </Menu.Item>
+        <Menu.Divider />
+          <Menu.Item key="2"  style={{width:300, textOverflow: "inherit", wordWrap:"break-word", whiteSpace:"normal"}}>
+          <Comment
+            author={<a>New Task</a>}
+            avatar={
+              <Avatar
+                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                alt="Han Solo"
+              />
+            }
+            content={
+              <p>
+                You have assigned a new task.....
+              </p>
+            }
+            datetime={
+                <Moment fromNow>2020-07-16T12:10-0500</Moment>
+            }
+          />
+          </Menu.Item>
+        </Menu>
+      );
+
     return (
       <div>
         <div className={styles.logo}>
@@ -154,6 +208,7 @@ class MenuTop extends React.Component {
             />
           </div>
         </div>
+
         <Menu
           theme={isLightTheme ? 'light' : 'dark'}
           onClick={this.handleClick}
@@ -167,8 +222,17 @@ class MenuTop extends React.Component {
           <Menu.Item style={{float:'right'}} onClick={goBack}>
             <span className={styles.title}>Go Back</span>
           </Menu.Item>
+          <Menu.Item style={{float:'right'}}>
+            <Dropdown overlay={menu} trigger={['click']} placement="topRight">
+              <div className={styles.dropdown}>
+                <Badge count={2}>
+                  <BellOutlined />
+                </Badge>
+              </div>
+            </Dropdown>
+          </Menu.Item>
         </Menu>
-        
+
       </div>
     )
   }

@@ -10,6 +10,7 @@ const GoalCard = ({
   selectShortTermGoal,
   selected,
   editAble,
+  status
 }) => {
   let headingStyle = {}
   let selectedCardStyle = {}
@@ -26,6 +27,7 @@ const GoalCard = ({
     <Button className={styles.card} style={selectedCardStyle} onClick={selectShortTermGoal}>
       {editAble ? (
         <div className={styles.longTermGoalEditBn}>
+          <span style={{marginRight: '20px'}}>{status}</span>
           <Button onClick={onEdit}><EditOutlined /> ST Goal</Button>
         </div>
       ) : (

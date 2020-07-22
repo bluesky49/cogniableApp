@@ -51,13 +51,9 @@ const ABC = gql`
               }
             }
           }
-          location {
-            edges {
-              node {
-                id
-                behaviorLocation
-              }
-            }
+          environments {
+            id
+            name
           }
         }
       }
@@ -110,7 +106,7 @@ export default () => {
   }
 
   return (
-    <Authorize roles={['school_admin', 'parents']} redirect to="/dashboard/beta">
+    <Authorize roles={['school_admin', 'parents', 'therapist']} redirect to="/dashboard/beta">
       <Helmet title="Dashboard Alpha" />
       <Layout style={{ padding: '0px' }}>
         <Content
@@ -157,7 +153,9 @@ export default () => {
                             style={{ marginTop: 20 }}
                             time={node.time}
                             behavior={node.behavior.edges}
-                            location={node.location.edges}
+                            // location={node.location.edges}
+                            environment={node.environments}
+
                           />
                         )
                       })}

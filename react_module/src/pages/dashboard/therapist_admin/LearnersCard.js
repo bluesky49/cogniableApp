@@ -76,8 +76,8 @@ const LearnersCard = () => {
                   size="large"
                   placeholder="Select Learner"
                   showSearch
-                  onSelect={onStudentSelect}
                   optionFilterProp="name"
+                  onSelect={onStudentSelect}
                 >
                   {data.students.edges.map(({ node }) => {
                     return (

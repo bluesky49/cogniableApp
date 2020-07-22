@@ -1,12 +1,16 @@
 import React from 'react'
 import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons'
+import { Button, Drawer, Input, Select, Typography, Popconfirm } from 'antd'
+import { useDispatch } from 'react-redux'
 import style from './style.module.scss'
 
-const TargetCard = ({ id = '', text = '', showDelete = false, onDelete, srNo, node }) => {
+const {Text, Title} = Typography
+
+const TargetCard = ({ id = '', text = '', showDelete = false, onDelete, srNo, node, sessionId = '' }) => {
   const cardStyle = {
     backgroundColor: 'white',
     borderRadius: '10px',
-    // boxShadow: '0 3px 5px rgba(22, 22, 53, 0.16)',
+    boxShadow: '0 3px 5px rgba(22, 22, 53, 0.16)',
     marginBottom: 15,
     padding: 5,
     minHeight: 40,
@@ -19,41 +23,60 @@ const TargetCard = ({ id = '', text = '', showDelete = false, onDelete, srNo, no
     position: 'absolute',
     right: '10px',
     top: '5px',
+    // cursor: 'pointer',
+    zIndex: '999',
+  }
+  const closeBtnStyle2 = {
+    position: 'absolute',
+    right: '10px',
+    bottom: '5px',
     cursor: 'pointer',
     zIndex: '999',
   }
 
-  console.log(node)
+  const dispatch = useDispatch()
+
+  const deleteTargetFromSession = targetId => {
+    console.log('Close button clicked ===>', targetId, 'sessionId ==> ', sessionId)
+
+    dispatch({
+      type: 'sessiontargetallocation/DELETE_TARGET',
+      payload: {
+        session: sessionId,
+        id: targetId
+      }
+    })
+
+  }
 
   return (
     <div className={id} id={id} style={cardStyle} key={id}>
       {showDelete ? (
         <div style={closeBtnStyle}>
-          {/* <CloseOutlined /> */}
+          {/* {node.targetStatus.statusName} &nbsp;  */}
+          <Popconfirm title="Are you sure?" onConfirm={() => deleteTargetFromSession(node.id)}>
+            <Button style={{padding:0}} type="link"><CloseOutlined /></Button>
+          </Popconfirm>
+          
           {/* <CloseCircleOutlined onClick={onDelete} /> */}
-          {srNo}
+          {/* {srNo} */}
         </div>
       ) : (
         <></>
       )}
 
       <div className={style.content}>
-        {/* <div className={`${style.flag} bg-primary`} /> */}
         <div className="d-flex flex-wrap align-items-center">
           <h5 className="text-dark font-size-18 mt-2 mr-auto">{text}</h5>
-          <i className="fe fe-arrow-right-circle text-danger font-size-30 flex-shrink-0" />
           <br />
-          <span
-            style={{
-              color: '#0B35B3',
-              marginRight: 38,
-            }}
-          >
-            Status: {node.targetStatus.statusName}
-          </span>
-          
         </div>
       </div>
+      
+      <div style={closeBtnStyle2}>
+        {node.targetStatus.statusName} &nbsp;
+        #{srNo}
+      </div>
+      
     </div>
   )
 }

@@ -32,15 +32,32 @@ import AssessmentForm from './AssessmentForm'
 
 const { Title, Text } = Typography
 
-@connect(({ user }) => ({ user }))
+@connect(({ user, cogniableassessment }) => ({ user, cogniableassessment }))
 class RightArea
  extends React.Component {
     constructor(props) {
         super(props)
 
         this.state = {
+            newAssessment: false,
 
         }
+    }
+
+    closeForm = (val) => {
+        this.setState({
+            newAssessment: val
+        })
+    }
+
+    loadAssessment = id => {
+        const {dispatch} = this.props
+        dispatch({
+            type: 'cogniableassessment/LOAD_ASSESSMENT_OBJECT',
+            payload: {
+                objectId: id
+            }
+        })
     }
 
 render() {
@@ -99,6 +116,9 @@ render() {
         color: '#fff'
     }
 
+    const {newAssessment} = this.state
+    const {cogniableassessment:{ AssessmentList, AssessmentObject}} = this.props
+
     return (
         <>
             <div
@@ -111,13 +131,54 @@ render() {
                     minHeight: '650px',
                 }}
             >
-                <div
-                    style={cardStyle}
-                >
-                    <Text style={textStyle}>Start New Assessment</Text>
-                </div>
+                
+                {newAssessment ? 
+                    <AssessmentForm closeAssessmentForm={this.closeForm} />    
+                
+                :
+                    <>
+                        <div
+                            style={{marginBottom: '20px'}}
+                        >
+                            <Button 
+                                type="primary"
+                                onClick={() => this.setState({newAssessment: true})}
+                                style={{
+                                    width: '100%',
+                                    height: 40,
+                                    background: '#0B35B3',
+                                    boxShadow: '0px 2px 4px rgba(96, 97, 112, 0.16), 0px 0px 1px rgba(40, 41, 61, 0.04) !importent',
+                                    borderRadius: 8,
+                                    fontSize: 17,
+                                    fontWeight: 'bold',
+                                    marginTop: 10,
+                                }}
+                            >
+                                Start New Assessment
+                            </Button>
 
-                <AssessmentForm />
+                        </div>
+                        {AssessmentList.map((item) => 
+                            <div
+                                style={AssessmentObject?.id === item.node.id ? selectedCardStyle : cardStyle}
+                            >
+                                <Button type="link" onClick={() => this.loadAssessment(item.node.id)}><Text style={textStyle}>{item.node.name ? item.node.name : item.node.id}</Text></Button>
+                            </div>
+                        )}
+
+                        {/* <div
+                            style={cardStyle}
+                        >
+                            <Button 
+                                type="link" 
+                                onClick={() => this.loadAssessment('Q29nbmlhYmxlQXNzZXNzbWVudFR5cGU6NTc=')} 
+                            >
+                                <Text style={textStyle}>Demo Assessment</Text>
+                            </Button>
+                        </div> */}
+                    </>
+                }
+                
                 
             </div>
         </>

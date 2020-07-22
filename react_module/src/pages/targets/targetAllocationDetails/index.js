@@ -1,5 +1,6 @@
+/* eslint-disable prefer-destructuring */
 import React, { useEffect, useState } from 'react'
-import { Avatar, Button, Col, Form, Icon, Input, Select, Typography, notification } from 'antd'
+import { Avatar, Button, Col, Form, Icon, Input, Select, Typography, notification, Checkbox } from 'antd'
 import moment from 'moment'
 import CKEditor from "react-ckeditor-component";
 import styles from './style.module.scss'
@@ -11,6 +12,7 @@ import {
   getSearchSd,
   getSearchSteps,
   getTargetDetailsOptions,
+  getStudentSettings,
 } from '../targetAlocation/TargetAllocation.query'
 
 const { Text } = Typography
@@ -46,6 +48,8 @@ const TargetAllocationDetails = ({
   const [promptCodes, setPromptCodes] = useState([])
   const [targetStatus, setTargetStatus] = useState([])
   const [types, setTypes] = useState([])
+  // makeDefault
+  const [makeDefault, setMakeDefault] = useState(false)
 
   const [selectedTargetType, setSelectedTargetType] = useState('')
 
@@ -66,9 +70,12 @@ const TargetAllocationDetails = ({
 
   useEffect(() => {
     if (activeSessionDetails) {
-      console.log(activeSessionDetails)
+      // get new studnet setting object
+      getStudentSettingsQuery()
+
       const { targetName } = activeSessionDetails.node.targetMain
       setInputTargetName(targetName)
+      setInputTargetVideo(activeSessionDetails.node.video)
       setTargetInstructions(activeSessionDetails.node.targetInstr)
 
     }
@@ -116,7 +123,8 @@ const TargetAllocationDetails = ({
       '',
       sdList,
       stepsListSelected,
-      inputTargetVideo
+      inputTargetVideo,
+      makeDefault
     )
 
     setLoading(false)
@@ -140,8 +148,28 @@ const TargetAllocationDetails = ({
     }
   }
 
+  // api call for studnet default settings 
+  const getStudentSettingsQuery = async () => {
+    const settingResponse = await getStudentSettings()
+    if (settingResponse) {
+      // console.log(" student settings =====> ", settingResponse)
+      const edges = settingResponse.data.getAllocateTargetSettings.edges
+      // setStudentSettings(settingResponse.data.getAllocateTargetSettings)
+
+      if(edges.length > 0){
+        setSelectedTargetType(edges[0].node.targetType.id)
+        setStatus(edges[0].node.status.id)
+        setSessionConsecutiveDays(edges[0].node.consecutiveDays)
+        setDailyTrials(edges[0].node.dailyTrials)
+        setSelectedMasteryCriteria(edges[0].node.masteryCriteria.id)
+        // console.log(edges[0].node)
+      }
+    }
+  }
+
   useEffect(() => {
     getTargetDetailsOptionsQuery()
+    getStudentSettingsQuery()
 
     getSearchStepQuery('as')
     getSearchSdQuery('as')
@@ -172,6 +200,11 @@ const TargetAllocationDetails = ({
   const handleChangeSelectText = (text, type) => {
     if (type === 'step') getSearchStepQuery(text)
     else if (type === 'sd') getSearchSdQuery(text)
+  }
+
+  const onSettingChange = (e) => {
+    setMakeDefault(e.target.checked)
+    console.log(`checked = ${e.target.checked}`);
   }
 
   return (
@@ -335,6 +368,9 @@ const TargetAllocationDetails = ({
           name="Target Video"
         >
           <Input name="targetVideo" value={inputTargetVideo} onChange={handleOnChange} />
+        </Form.Item>
+        <Form.Item>
+          <Checkbox onChange={onSettingChange}>Make values default</Checkbox>
         </Form.Item>
         <Form.Item>
           <Button

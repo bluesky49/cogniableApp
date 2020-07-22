@@ -26,6 +26,8 @@ const TargetAreaContent = ({ targetArea, setUpdateTarArea, domainId }) => {
             targetMain {
               targetName
             }
+            video
+            
           }
         }
       }

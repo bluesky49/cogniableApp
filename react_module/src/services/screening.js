@@ -73,6 +73,7 @@ export async function checkAssessmentObject(payload) {
             id,
             date,
             name,
+            score,
             age,
             sex,
             phone,
@@ -155,11 +156,13 @@ export async function createAssessment(payload) {
             details{
               id,
               name,
+              score,
               age,
               sex,
               phone,
               email,
               address,
+              status,
               assessmentQuestions {
                 edges {
                   node {
@@ -220,11 +223,13 @@ export async function recordResponse(payload) {
           details {
             id,
             name,
+            score,
             age,
             sex,
             phone,
             email,
             address,
+            status,
             assessmentQuestions {
               edges {
                 node {
@@ -322,7 +327,7 @@ export async function updateStatus(payload) {
           details{
             id,
             score,
-            status
+            status,
             name,
             age,
             sex,
@@ -458,6 +463,67 @@ export async function recordVideo(payload) {
           objectId: payload.objectId,
           url: payload.url
         }
+    })
+    .then(result => result)
+    .catch(error => {
+      error.graphQLErrors.map(item => {
+        return notification.error({
+          message: 'Somthing went wrong',
+          description: item.message,
+        })
+      })
+    })
+}
+
+export async function endAssessment(payload) {
+  return apolloClient
+    .mutate({
+      mutation: gql`mutation EndAssessment (
+        $id: ID!,
+        $score: Int!
+        $status: String!
+      ) 
+      {
+        updateAssessment(input:{
+          pk: $id
+          score: $score
+          status: $status
+        })
+        { 
+          details{
+            id,
+            score,
+            status
+            name,
+            age,
+            sex,
+            phone,
+            email,
+            address,
+            assessmentQuestions {
+              edges {
+                node {
+                  id,
+                  question {
+                    id,
+                    question
+                  },
+                  answer {
+                    id,
+                    name,
+                    description
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`,
+      variables: {
+        id: payload.objectId,
+        status: payload.status,
+        score: payload.score
+      }
     })
     .then(result => result)
     .catch(error => {

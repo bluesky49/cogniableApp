@@ -13,6 +13,7 @@ import {
   getAreas,
   recordAreaResponse,
   recordVideo,
+  endAssessment,
 } from 'services/screening'
 import actions from './actions'
 
@@ -24,7 +25,7 @@ export function* GET_DATA() {
       QuestionsList: [],
       StepsList: [],
       isFormLoading: false,
-      showQuestions: true,
+      showQuestions: false,
       ActiveIndex: 0,
       RecordedObject: null,
       QuestionsResponse: {},
@@ -47,6 +48,7 @@ export function* GET_DATA() {
     const ques = response.data.preAssessQuestions
     const steps = response.data.autismSteps
     const areas = response.data.preAssessAreas
+    let showQus = false
     // recorded object
     const object = assResponse.data.getScreeningAssessStatus
     if(ques.length > 0){
@@ -70,6 +72,12 @@ export function* GET_DATA() {
       }
       else if(object.details.status === 'VIDEOSUPLOADED' ){
         step = 'step4'
+      }
+      else if(object.details.status === 'COMPLETED' ){
+        step = 'step4'
+      }
+      else if(object.details.status === 'PROGRESS' ){
+        showQus = true
       }
 
       // updating questions responses
@@ -96,6 +104,7 @@ export function* GET_DATA() {
         RecordedObject: object.status ? object.details : null,
         SelectedStep: step,
         InstructionVideos: response.data.getPreAssessVideos,
+        showQuestions: showQus,
       }
     })
   }
@@ -277,6 +286,23 @@ export function* RECORD_VIDEO({payload}){
 
 }
 
+export function* END_ASSESSMENT({payload}){
+  // api call for End assessment
+  const response = yield call(endAssessment, {objectId: payload.objectId, score: payload.score, status: 'Completed'})
+  if(response?.data){
+    const object = response.data.updateAssessment.details
+
+    yield put({
+      type: 'screening/SET_STATE',
+      payload: {
+        RecordedObject: object,
+        // AssessmentStatus: object.status
+      }
+    })
+  }
+
+}
+
 export function* START_NEW_ASSESSMENT(){
 
     const qusResponse = {}
@@ -322,6 +348,8 @@ export default function* rootSaga() {
     takeEvery(actions.GET_AREAS, GET_AREAS),
     takeEvery(actions.RECORD_AREA_RESPONSE, RECORD_AREA_RESPONSE),
     takeEvery(actions.RECORD_VIDEO, RECORD_VIDEO),
+    takeEvery(actions.END_ASSESSMENT, END_ASSESSMENT),
     takeEvery(actions.START_NEW_ASSESSMENT, START_NEW_ASSESSMENT),
+    
   ])
 }

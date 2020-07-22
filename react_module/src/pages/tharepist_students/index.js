@@ -2,6 +2,8 @@
 /* eslint-disable react/jsx-tag-spacing */
 /* eslint-disable react/jsx-closing-tag-location */
 /* eslint-disable array-callback-return */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable react/jsx-boolean-value */
 import React, { PureComponent } from 'react'
 import {
   Menu,
@@ -23,23 +25,43 @@ import {
   notification,
   Empty,
 } from 'antd'
-import { DownOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import { Helmet } from 'react-helmet'
 import Authorize from 'components/LayoutComponents/Authorize'
 import { gql } from 'apollo-boost'
 import { connect } from 'react-redux'
 import apolloClient from '../../apollo/config'
 import styles from './style.module.scss'
-import studentImg from '../../images/student.jpg'
 import StudentDrawer from './StudentDrawer'
 import LearnerCard from './LearnerCard'
 import LearnerDetailsCard from './LearnerDetailsCard'
-import DailyVitalsCard from './DailyVitalsCard'
-import DataRecordingCards from './DataRecordingCards'
 
 const { Content } = Layout
 const { Title, Text } = Typography
 const { Search } = Input
+
+const targetMappingStyle = {
+  background: '#FFFFFF',
+  border: '1px solid #E4E9F0',
+  boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
+  borderRadius: 10,
+  padding: '16px 12px',
+  // display: 'flex',
+  alignItems: 'center',
+  marginBottom: '10px'
+}
+
+const programAreaStyle = {
+  background: '#FFFFFF',
+  border: '1px solid #E4E9F0',
+  boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
+  borderRadius: 10,
+  width: '100%',
+  // marginRight: '20px',
+  marginBottom: '10px',
+  padding: '12px 12px',
+  alignItems: 'center',
+  display: 'inline-block',
+}
 
 @connect(({ student }) => ({ student }))
 class TharepistStudents extends PureComponent {
@@ -55,6 +77,8 @@ class TharepistStudents extends PureComponent {
       programAreaStatus: [],
       selectedArea: '',
       isPresent: false,
+      loading: true,
+      showBuildGoalsCard: false
     }
     this.closeDrawer = this.closeDrawer.bind(this)
   }
@@ -64,7 +88,7 @@ class TharepistStudents extends PureComponent {
       .query({
         query: gql`
           query {
-            students {
+            students (isActive: true) {
               edges {
                 node {
                   id
@@ -72,12 +96,11 @@ class TharepistStudents extends PureComponent {
                   internalNo
                   mobileno
                   email
-                  parent {
+                  caseManager {
                     id
-                    username
-                  }
-                  school {
-                    id
+                    name
+                    email
+                    contactNo
                   }
                   category {
                     id
@@ -97,6 +120,7 @@ class TharepistStudents extends PureComponent {
             }
           }
         `,
+        fetchPolicy: 'no-cache'
       })
       .then(qresult => {
         const storage = localStorage.getItem('studentId')
@@ -117,7 +141,9 @@ class TharepistStudents extends PureComponent {
                         }
                       }
                     }
+                    
                   `,
+                  fetchPolicy: 'no-cache'
             })
             .then(iniResult => {
               const result = storage.substring(1, storage.length - 1)
@@ -130,6 +156,7 @@ class TharepistStudents extends PureComponent {
                 programArea: qresult.data.programArea.edges,
                 isPresent: true,
                 selectedNode: refinedArray[0].node,
+                loading: false
               })
             })
             .catch(error => {
@@ -137,6 +164,7 @@ class TharepistStudents extends PureComponent {
             })
         } else {
           this.setState({
+            loading: false,
             students: qresult.data.students.edges,
             prevData: qresult.data.students.edges,
             programArea: qresult.data.programArea.edges,
@@ -147,19 +175,6 @@ class TharepistStudents extends PureComponent {
         console.log(error)
       })
   }
-
-  // renderStudents = () => {
-  //   const students = []
-  //   for (let i = 0; i < 6; i += 1) {
-  //     students.push(
-  //       <div className={styles.stuImg} key={i}>
-  //         <img src={studentImg} alt="not_found" />
-  //         <p>Elliot Alderson</p>
-  //       </div>,
-  //     )
-  //   }
-  //   return students
-  // }
 
   setClickHandler = node => {
     // console.log('===> cliked', node.id)
@@ -187,8 +202,9 @@ class TharepistStudents extends PureComponent {
           isDrawer: false,
           selectedNode: node,
           isPresent: false,
+          showBuildGoalsCard: false
         })
-        
+
       })
       .catch(error => {
         console.log(error)
@@ -196,7 +212,7 @@ class TharepistStudents extends PureComponent {
   }
 
   move = (data, storageData) => {
-    data.forEach(function(item, i) {
+    data.forEach(function (item, i) {
       if (item.node.id.toUpperCase() === storageData.toUpperCase()) {
         data.splice(i, 1)
         data.unshift(item)
@@ -206,7 +222,7 @@ class TharepistStudents extends PureComponent {
   }
 
   filter = (data, name) => {
-    return data.filter(function(el) {
+    return data.filter(function (el) {
       return (
         el.node.firstname !== null && el.node.firstname.toUpperCase().includes(name.toUpperCase())
       )
@@ -280,27 +296,6 @@ class TharepistStudents extends PureComponent {
         `,
       })
       .then(presult => {
-      //   apolloClient
-      //   .query({
-      //     query: gql`{
-      //       studentProgramArea(studentId:"${stateData.selectedNode.id}") 
-      //       {
-      //           id
-      //           name
-      //           description
-      //           percentageLong
-               
-      //   }
-      // }`,
-      //   })
-      //   .then(rrrr => {
-      //     console.log("hellodajskdasjda" ,rrrr)
-      //   })
-      //   .catch(error => {
-      //     console.log(error)
-      //   })
-        
-
         if (checked) {
           notification.success({
             message: 'Success',
@@ -376,7 +371,7 @@ class TharepistStudents extends PureComponent {
     if (stateData.programArea !== undefined) {
       for (let i = 0; i < stateData.programArea.length; i += 1) {
         const checked = this.renderSwitch(stateData.programArea[i].node.name)
-        console.log('====> checked', checked)
+        // console.log('====> checked', checked)
         program.push(
           <div
             role="presentation"
@@ -384,25 +379,17 @@ class TharepistStudents extends PureComponent {
             onClick={
               checked
                 ? () => {
-                    this.showDrawr(stateData.programArea[i].node)
-                  }
+                  this.showDrawr(stateData.programArea[i].node)
+                }
                 : () => {
-                    this.showModal()
-                  }
+                  this.showModal()
+                }
             }
-            style={{
-              background: '#FFFFFF',
-              border: '1px solid #E4E9F0',
-              boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
-              borderRadius: 10,
-              padding: '16px 12px',
-              alignItems: 'center',
-              display: 'inline-block',
-            }}
+            style={programAreaStyle}
           >
-            <div className={styles.detailcardHeading}>
-              <p>{stateData.programArea[i].node.name}</p>
-              <div className={styles.toggle}>
+            <div>
+              <Title style={{ fontSize: '20px', lineHeight: '27px' }}>{stateData.programArea[i].node.name}</Title>
+              <div>
                 <Switch
                   checkedChildren={<Icon type="check" />}
                   unCheckedChildren={<Icon type="close" />}
@@ -412,6 +399,7 @@ class TharepistStudents extends PureComponent {
                   }}
                 />
               </div>
+              <p style={{ display: 'block', marginTop: '5px', marginBottom: '-5px' }}><i>Click here to build your LTG & STG </i></p>
             </div>
           </div>,
         )
@@ -422,18 +410,19 @@ class TharepistStudents extends PureComponent {
 
   renderDetail = () => {
     const data = this.state
-    // const refinedArray = this.move(data.students, storageData)
+    const {showBuildGoalsCard, selectedArea} = this.state
 
     const cardStyle = {
       background: '#F9F9F9',
+      height: 500,
+      overflow: 'auto',
+    }
+
+    const parentCardStyle = {
+      background: '#F9F9F9',
       borderRadius: 10,
-      padding: '28px 27px 20px',
-      marginTop: '2%',
-      marginBottom: '2%',
-      display: 'flex',
-      flexWrap: 'nowrap',
-      overflowX: 'auto',
-      width: '100%',
+      padding: '20px',
+      margin: '20px 10px 20px 10px',
     }
 
     if (data.isPresent && data.students[0] !== undefined) {
@@ -441,13 +430,50 @@ class TharepistStudents extends PureComponent {
         <>
           <LearnerDetailsCard node={data.students[0].node} style={{ marginTop: 1 }} />
 
-          <div style={cardStyle}>{this.renderProgramArea()}</div>
           <Row>
             <Col span={12}>
-              <DailyVitalsCard />
+              <div style={parentCardStyle}>
+                <div style={cardStyle}>
+                  <Title style={{ fontSize: 20, lineHeight: '27px' }}>Program</Title>
+                  {data.loading === true ?
+                    <>
+                      <p style={{ marginTop: '20px' }}>loading...</p>
+                    </>
+                    :
+                    <>
+                      {this.renderProgramArea()}
+                    </>
+                  }
+                </div>
+              </div>
             </Col>
             <Col span={12}>
-              <DataRecordingCards />
+              <div style={parentCardStyle}>
+              
+                <div style={cardStyle}>
+                  {showBuildGoalsCard && (
+                    <>
+                      <Title style={{ fontSize: 20, lineHeight: '27px' }}>Build Goals</Title>
+                      <a href="/#/target/allocation">
+                        <div style={targetMappingStyle}>
+                          <Title style={{ fontSize: '20px', lineHeight: '27px' }}>{selectedArea}</Title>
+                          <p style={{marginTop: '5px', marginBottom: '-5px' }}><i>Click card to build learner goals </i></p>
+                        </div>
+                      </a>
+                    </>
+                  )}
+                  
+
+                  <Title style={{ fontSize: 20, lineHeight: '27px' }}>Target Mapping</Title>
+                  <a href="/#/targetsAllocationToSession/">
+                    <div style={targetMappingStyle}>
+                      <Title style={{ fontSize: '20px', lineHeight: '27px' }}>Target Allocation to Session</Title>
+                      <p style={{marginTop: '5px', marginBottom: '-5px' }}><i>Click card to allocation targets in Sessions </i></p>
+                    </div>
+                  </a>
+                </div>
+
+              </div>
             </Col>
           </Row>
         </>
@@ -460,52 +486,86 @@ class TharepistStudents extends PureComponent {
           {localStorage.getItem('studentId') !== '' ? (
             <>
               <LearnerDetailsCard node={data.selectedNode} style={{ marginTop: 1 }} />
-              <div style={cardStyle}>{this.renderProgramArea()}</div>
               <Row>
                 <Col span={12}>
-                  <DailyVitalsCard />
+                  <div style={parentCardStyle}>
+
+                    <div style={cardStyle}>
+                      <Title style={{ fontSize: 20, lineHeight: '27px' }}>Program</Title>
+                      {data.loading === true ?
+                        <>
+                          <p style={{ marginTop: '20px' }}>loading...</p>
+                        </>
+                        :
+                        <>
+                          {this.renderProgramArea()}
+                        </>
+                      }
+
+                    </div>
+                  </div>
                 </Col>
                 <Col span={12}>
-                  <DataRecordingCards />
+                  <div style={parentCardStyle}>
+
+
+                    <div style={cardStyle}>
+                      {showBuildGoalsCard && (
+                        <>
+                          <Title style={{ fontSize: 20, lineHeight: '27px' }}>Build Goals</Title>
+                          <a href="/#/target/allocation">
+                            <div style={targetMappingStyle}>
+                              <Title style={{ fontSize: '20px', lineHeight: '27px' }}>{selectedArea}</Title>
+                              <p style={{marginTop: '5px', marginBottom: '-5px' }}><i>Click card to build learner goals </i></p>
+                            </div>
+                          </a>
+                        </>
+                      )}
+                      
+
+                      <Title style={{ fontSize: 20, lineHeight: '27px' }}>Target Mapping</Title>
+                      <a href="/#/targetsAllocationToSession/">
+                        <div style={targetMappingStyle}>
+                          <Title style={{ fontSize: '20px', lineHeight: '27px' }}>Target Allocation to Session</Title>
+                          <p style={{marginTop: '5px', marginBottom: '-5px' }}><i>Click card to allocation targets in Sessions </i></p>
+                        </div>
+                      </a>
+                    </div>
+
+                  </div>
                 </Col>
               </Row>
             </>
           ) : (
-            ''
-          )}
+              ''
+            )}
         </>
       )
     }
-    if (data.isDrawer) {
-      return (
-        <Drawer
-          placement="right"
-          closable={false}
-          // onClose={this.onClose}
-          visible={data.visible}
-          width="100%"
-          key={Math.random()}
-        >
-          <StudentDrawer
-            key={Math.random()}
-            programs={data.programArea}
-            closeDrawer={() => {
-              this.closeDrawer()
-            }}
-            student={data.selectedNode}
-            selectedArea={data.selectedArea}
-            areas={data.programAreaStatus}
-          />
-        </Drawer>
-      )
-    }
+    // if (data.isDrawer) {
+    //   return (
+    //     <Drawer
+    //       placement="right"
+    //       closable={true}
+    //       onClose={this.closeDrawer}
+    //       visible={data.visible}
+    //       width="100%"
+    //       key={Math.random()}
+    //     >
+    //       <StudentDrawer
+    //         key={Math.random()}
+    //         programs={data.programArea}
+    //         closeDrawer={() => {
+    //           this.closeDrawer()
+    //         }}
+    //         student={data.selectedNode}
+    //         selectedArea={data.selectedArea}
+    //         areas={data.programAreaStatus}
+    //       />
+    //     </Drawer>
+    //   )
+    // }
     return null
-  }
-
-  showDrawer = () => {
-    this.setState({
-      visible: true,
-    })
   }
 
   closeDrawer = val => {
@@ -528,9 +588,7 @@ class TharepistStudents extends PureComponent {
     })
 
     this.setState({
-      isDrawer: true,
-      visible: true,
-      isPresent: false,
+      showBuildGoalsCard: true,
       selectedArea: node.name,
     })
   }
@@ -581,10 +639,21 @@ class TharepistStudents extends PureComponent {
                   }}
                   style={{ width: '100%' }}
                 />
-                <div style={{ height: '660px', overflow: 'auto' }}>{this.renderStudentCards()}</div>
+                <div style={{ height: '660px', overflow: 'auto' }}>
+                  {stateData.loading === true ?
+                    <>
+                      <p style={{ marginTop: '20px' }}>loading studnets...</p>
+                    </>
+                    :
+                    <>
+                      {this.renderStudentCards()}
+                    </>
+                  }
+
+                </div>
               </Col>
               <Col span={16} style={{ paddingRight: 0 }}>
-                {checkStudnetOnLocalStorage ? 
+                {checkStudnetOnLocalStorage ?
                   this.renderDetail()
                   :
                   <Empty />

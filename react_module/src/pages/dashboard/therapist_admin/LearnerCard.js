@@ -51,7 +51,7 @@ const LearnerCard = ({ style, node, name }) => {
                 marginRight: 38,
               }}
             >
-              Student
+              Learner
             </span>
             <span style={{ color: '#FF5454' }}>{node.category.category}</span>
           </div>

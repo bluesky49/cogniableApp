@@ -4,7 +4,7 @@ import { ClockCircleOutlined } from '@ant-design/icons'
 
 const { Title, Text } = Typography
 
-const ABCCard = ({ style, time, location, behavior }) => {
+const ABCCard = ({ style, time, environment, behavior }) => {
   return (
     <div
       style={{
@@ -56,10 +56,8 @@ const ABCCard = ({ style, time, location, behavior }) => {
           margin: 0,
         }}
       >
-        Locations:{' '}
-        {location?.map(({ node }) => (
-          <Tag>{node.behaviorLocation}</Tag>
-        ))}
+        Evironment:{' '}
+        <Tag>{environment?.name}</Tag>
       </Title>
     </div>
   )

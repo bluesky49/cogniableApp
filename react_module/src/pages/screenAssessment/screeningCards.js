@@ -46,7 +46,7 @@ class ScreeingCards extends React.Component {
         const {dispatch, screening: {SelectedStep, RecordedObject}} = this.props
 
         if(step === 'step2'){
-            if(RecordedObject && RecordedObject.status === 'PROGRESS'){
+            if(RecordedObject){
                 dispatch({
                     type: 'screening/SET_STATE',
                     payload: {
@@ -66,7 +66,7 @@ class ScreeingCards extends React.Component {
             }
         }
         else if(step === 'step4'){
-            if(RecordedObject && RecordedObject.status === 'VIDEOSUPLOADED'){
+            if(RecordedObject && RecordedObject.status === 'VIDEOSUPLOADED' || RecordedObject.status === 'COMPLETED'){
                 dispatch({
                     type: 'screening/SET_STATE',
                     payload: {

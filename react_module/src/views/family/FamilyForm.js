@@ -561,7 +561,7 @@ class FamilyBasicForm extends React.Component {
           }}
         >
           <Col>
-            <Text className="time-spend">How much time do you spend with {studentName}?</Text>
+            <Text className="time-spend">How much time do you spent with {studentName}?</Text>
             {/* <Paragraph type="secondary" className="how-much-time">
 
             </Paragraph> */}

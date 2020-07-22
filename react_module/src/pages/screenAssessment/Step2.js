@@ -45,7 +45,7 @@ class Step2 extends React.Component {
         }
     }
 
-    componentDidMount(){
+    componentWillMount(){
         const {screening: {InstructionVideos}} = this.props
         let eng = null
         let hindi = null
@@ -54,9 +54,14 @@ class Step2 extends React.Component {
                 InstructionVideos.edges.map((item) => {
                     if(item.node.language === 'ENGLISH'){
                         eng = item.node
+                        eng.videoUrl = eng.videoUrl.replace("static", "dj_static");
+                        eng.audioUrl = eng.audioUrl.replace("static", "dj_static");
+
                     }
                     else if (item.node.language === 'HINDI'){
                         hindi = item.node
+                        hindi.videoUrl = hindi.videoUrl.replace("static", "dj_static");
+                        hindi.audioUrl = hindi.audioUrl.replace("static", "dj_static");
                     }
                 })
             }
@@ -121,7 +126,7 @@ class Step2 extends React.Component {
                     {selectedObject === 'ENGLISH' ?
                         <>
                             <ReactPlayer
-                                url="http://techslides.com/demos/sample-videos/small.mp4"
+                                url={englishObject?.videoUrl}
                                 className="react-player"
                                 playing={false}
                                 width="100%"
@@ -131,7 +136,7 @@ class Step2 extends React.Component {
 
                             <Title style={{fontSize: '18px', lineHeight: '27px', marginTop: '20px'}}>English Audio</Title>
                             <div style={{width: '100%', }}>
-                                <audio controls src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" style={{width: '100%'}}>
+                                <audio controls src={englishObject?.audioUrl} style={{width: '100%'}}>
                                     <track src="captions_en.vtt" kind="captions" srcLang="en" label="english_captions" />
                                 </audio>
                             </div>
@@ -140,7 +145,7 @@ class Step2 extends React.Component {
                     :
                         <>
                             <ReactPlayer
-                                url="http://techslides.com/demos/sample-videos/small.mp4"
+                                url={hindiObject?.videoUrl}
                                 className="react-player"
                                 playing={false}
                                 width="100%"
@@ -150,7 +155,7 @@ class Step2 extends React.Component {
 
                             <Title style={{fontSize: '18px', lineHeight: '27px', marginTop: '20px'}}>Hindi Audio</Title>
                             <div style={{width: '100%', }}>
-                                <audio controls src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" style={{width: '100%'}}>
+                                <audio controls src={hindiObject?.audioUrl} style={{width: '100%'}}>
                                     <track src="captions_en.vtt" kind="captions" srcLang="en" label="english_captions" />
                                 </audio>
                             </div>

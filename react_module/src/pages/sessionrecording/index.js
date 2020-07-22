@@ -17,9 +17,11 @@
 /* eslint-disable no-var */
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable no-unused-expressions */
+/* eslint-disable react/no-did-update-set-state */
 
 import React from 'react'
 import { Helmet } from 'react-helmet'
+import ReactPlayer from 'react-player'
 import {
   Row,
   Col,
@@ -34,16 +36,23 @@ import {
   notification,
   Empty,
   Button,
+  Typography,
 } from 'antd'
 import { Redirect } from 'react-router-dom'
 import Authorize from 'components/LayoutComponents/Authorize'
 import { connect } from 'react-redux'
+import moment from 'moment'
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
 import TargetListBlock from '../../components/sessionRecording/targetListBlock'
 import SessionClock from '../../components/sessionRecording/sessionClock'
 import TrialsList from '../../components/sessionRecording/trialsList'
 import DataRecordingBlock from './dataRecordingBlock'
+import PeakRecordingBlock from './peakRecordingBlock'
+import PeakTrialBoxes from './trialsBoxes'
 import SessionSummary from '../session_summary/index'
+import RecordView from './RecordView'
+
+const { Title, Text } = Typography
 
 @connect(({ sessionrecording }) => ({ sessionrecording }))
 class DataRecording extends React.Component {
@@ -57,13 +66,16 @@ class DataRecording extends React.Component {
       targetVisible: false,
       // redirecting sessionId does not exist
       redirect: false,
+
+      videoLoading: false,
+      videoUrl: null
     }
   }
 
   componentDidMount() {
     const {
       dispatch,
-      sessionrecording: { SessionId },
+      sessionrecording: { SessionId, SessionDate },
     } = this.props
 
     if (SessionId === '') {
@@ -75,10 +87,80 @@ class DataRecording extends React.Component {
         type: 'sessionrecording/LOAD_SESSION',
         payload: {
           masterSessionId: SessionId,
+          date: SessionDate !== null ? SessionDate : moment().format('YYYY-MM-DD')
+          // masterSessionId: 'U2Vzc2lvblR5cGU6MTI3Nw==',
         },
       })
     }
   }
+
+  getVideoUrl(index){
+    console.log('video function ')
+    const {dispatch, sessionrecording: {MasterSession, TargetActiveIndex}} = this.props
+    dispatch({
+      type: 'sessionrecording/SET_STATE',
+      payload: {
+        VideoUrl: '',
+        VideoLoading: true
+      }
+    })
+    if (MasterSession.targets.edges[index].node.videos.edges.length > 0) {
+      const videoNode = MasterSession.targets.edges[index].node.videos.edges[0];
+      const targetVideoUrl = videoNode.node.url;
+      console.log(targetVideoUrl)
+      // const isVideoAvailable = true;
+      // let res = targetVideoUrl.substring(18);
+      // const videoId = targetVideoUrl.substring(targetVideoUrl.lastIndexOf('/') + 1);
+      const videoId = targetVideoUrl.split('/')[3];
+      
+      // return videoId
+      console.log(videoId)
+
+      dispatch({
+        type: 'sessionrecording/SET_STATE',
+        payload: {
+          VideoUrl: `https://player.vimeo.com/video/${videoId}/`,
+          VideoAvailable: true,
+          VideoLoading: false
+        }
+      })
+
+      // fetch(`https://player.vimeo.com/video/${videoId}/config`,{
+      //   headers: {
+      //     'Access-Control-Allow-Origin': '*',
+      //     'Access-Control-Allow-Methods': '*',
+      //   },
+      // })
+      //   .then(res => res.json())
+      //   .then(res => {
+      //     // this.setState({
+      //     //   videoUrl: res.request.files.hls.cdns[res.request.files.hls.default_cdn].url,
+      //     //   videoLoading: false
+      //     // });
+
+      //     dispatch({
+      //       type: 'sessionrecording/SET_STATE',
+      //       payload: {
+      //         VideoUrl: res.request.files.hls.cdns[res.request.files.hls.default_cdn].url,
+      //         VideoAvailable: true
+      //       }
+      //     })
+
+      //   })
+      //   .catch(err => {
+      //     console.log(JSON.stringify(err))
+      //   });
+    } else {
+      dispatch({
+        type: 'sessionrecording/SET_STATE',
+        payload: {
+          VideoAvailable: false,
+          VideoLoading: false
+        }
+      })
+    }
+  }
+
 
   showDrawer = () => {
     this.setState({
@@ -176,7 +258,11 @@ class DataRecording extends React.Component {
         targetIndex: TargetActiveIndex + 1,
       },
     })
+
+    // load video
+    this.getVideoUrl(TargetActiveIndex + 1)
   }
+  
 
   moveToPreviousTarget = () => {
     const {
@@ -225,12 +311,18 @@ class DataRecording extends React.Component {
         targetId: MasterSession.targets.edges[TargetActiveIndex - 1].node.id,
       },
     })
+
+    // load video
+    this.getVideoUrl(TargetActiveIndex - 1)
   }
+
 
   render() {
     const {
-      sessionrecording: { loading, Disabled, MasterSession, TargetActiveIndex, ChildSession },
+      sessionrecording: { loading, Disabled, MasterSession, TargetActiveIndex, ChildSession, VideoAvailable, VideoLoading, VideoUrl },
     } = this.props
+
+    // const dis = false
 
     const style2 = Disabled
       ? {
@@ -267,9 +359,11 @@ class DataRecording extends React.Component {
       return 'Loading session data...'
     }
 
-    if (!loading && ChildSession && ChildSession.id && ChildSession.status === 'COMPLETED') {
-      return <SessionSummary />
-    }
+    // if (!loading && ChildSession && ChildSession.id && ChildSession.status === 'COMPLETED') {
+    //   return <SessionSummary />
+    // }
+
+    const peakId = 'VGFyZ2V0RGV0YWlsVHlwZTo4'
 
     return (
       <Authorize roles={['school_admin', 'therapist', 'parents']} redirect to="/dashboard/beta">
@@ -281,13 +375,13 @@ class DataRecording extends React.Component {
             <Card bodyStyle={{ padding: '5px' }}>
               {MasterSession.targets.edges.length > 0 ? (
                 <>
-                  <h5 style={{ display: 'inline-block', width: '85%' }}>
+                  <Title level={3} style={{ display: 'inline-block', width: '85%' }}>
                     Target :{' '}
                     {
                       MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails
                         .targetName
                     }
-                  </h5>
+                  </Title>
                   <span style={{ float: 'right', display: 'inline-block' }}>
                     Target {TargetActiveIndex + 1} / {MasterSession.targets.edgeCount}
                   </span>
@@ -317,32 +411,59 @@ class DataRecording extends React.Component {
               {/* Target video section */}
               <Col xs={24} sm={24} md={12} lg={12} xl={12} style={borderOnePixel}>
                 <Card bodyStyle={{ padding: '5px', border: 'none' }} style={{ border: 'none' }}>
-                  {/* <img
-                    alt="example"
-                    src="https://www.familyeducation.com/sites/default/files/2019-03/traits-babies-inherit-from-their-father_feature.jpg"
-                    style={{ maxHeight: '250px', width: '100%' }}
-                  /> */}
-                  {/* <iframe width="100%" height="250px" title="0" src="https://www.youtube.com/watch?v=x2hWVgZ8J4A" /> */}
-                  <iframe
-                    width="100%"
-                    height="250px"
-                    title="0"
-                    src="https://www.youtube.com/embed/x2hWVgZ8J4A"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                  />
+                  {MasterSession.targets.edges[TargetActiveIndex].node.videos.edges.length > 0 ? (
+                    <>
+                      {/* <iframe
+                        width="100%"
+                        height="250px"
+                        title="0"
+                        src={MasterSession.targets.edges[TargetActiveIndex].node.videos.edges[0].node.url}
+                        frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                      /> */}
+                      {VideoLoading === true ? 
+                        <p>Loading video...</p>
+                      :
+                        <>
+                          {VideoAvailable === true ?
+
+                            <ReactPlayer url={VideoUrl} controls height="250px" width="100%" />
+                            :
+                            <Empty />
+                          }
+                        </>
+                      }
+                      
+                      
+                    </>
+                    )
+                  :
+                    <Empty style={{height: '250px'}} />
+                  }
                 </Card>
               </Col>
               {/* End of target video section */}
               {/* Target recording section */}
               <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-                <DataRecordingBlock />
+                {MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails.targetType.id === peakId ?
+                  <PeakRecordingBlock />
+                :
+                  <DataRecordingBlock />
+                }
               </Col>
               {/* End of Target recording section */}
             </Row>
             {/* Trials list section */}
             <Card bodyStyle={{ padding: '5px', border: 'none' }} style={{ border: 'none' }}>
+            {MasterSession.targets.edges[TargetActiveIndex].node.targetAllcatedDetails.targetType.id === peakId ?
+              <PeakTrialBoxes
+                trails={10}
+                boxWidth='65px'
+                boxHeight='20px'
+              />
+              :
+              <>
               {MasterSession.targets.edges[TargetActiveIndex].node.sd.edges.length > 0 ? (
                 <>
                   {MasterSession.targets.edges[TargetActiveIndex].node.sd.edges.map(item2 => (
@@ -398,6 +519,8 @@ class DataRecording extends React.Component {
                   boxWidth="35px"
                 />
               )}
+              </>
+              }
 
               {/* <TrialsList 
                 key={MasterSession.targets.edges[TargetActiveIndex].node.id}
@@ -448,9 +571,21 @@ class DataRecording extends React.Component {
               )}
             </Card>
             {/* End of Trials list section */}
+            {this.state.visible && (
+              <Drawer
+                height="90%"
+                placement="bottom"
+                closable={false}
+                onClose={this.onClose}
+                visible={this.state.visible}
+                getContainer={false}
+                style={{ position: 'absolute' }}
+              >
+                <RecordView />
+              </Drawer>
+            )}
             <Drawer
-              title="Behavior Recording"
-              height="70%"
+              height="90%"
               placement="bottom"
               closable={false}
               onClose={this.onClose}
@@ -458,7 +593,7 @@ class DataRecording extends React.Component {
               getContainer={false}
               style={{ position: 'absolute' }}
             >
-              <p>Some contents...</p>
+              <RecordView />
             </Drawer>
             <Drawer
               title="Target Instruction"

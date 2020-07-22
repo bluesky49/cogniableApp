@@ -151,7 +151,7 @@ class BasicInformationForm extends React.Component {
             Submit
           </Button>
 
-          <Button htmlType="primary" onClick={this.onReset} className="ml-4">
+          <Button onClick={this.onReset} className="ml-4">
             cancel
           </Button>
         </Form.Item>

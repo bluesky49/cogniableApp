@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React, { useState, useEffect } from 'react'
 import { Layout, Tabs, Button, Row, Col, Modal, Input, notification, Tooltip } from 'antd'
 import { PlusOutlined, SyncOutlined } from '@ant-design/icons'

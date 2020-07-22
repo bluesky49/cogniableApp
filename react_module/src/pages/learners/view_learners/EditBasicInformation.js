@@ -52,6 +52,7 @@ class EditBasicInformation extends React.Component {
       ssnCard: UserProfile.ssnAadhar,
       mobileNo: UserProfile.mobileno,
       address: UserProfile.currentAddress,
+      caseManager: UserProfile.caseManager?.id
     })
   }
 
@@ -75,9 +76,9 @@ class EditBasicInformation extends React.Component {
     })
   }
 
-  onReset = () => {
-    this.formRef.current.resetFields()
-  }
+  // onReset = () => {
+  //   this.formRef.current.resetFields()
+  // }
 
   render() {
     const itemStyle = { marginBottom: '0' }
@@ -115,7 +116,7 @@ class EditBasicInformation extends React.Component {
           {form.getFieldDecorator('authStaff')(
             <Select mode="multiple" placeholder="Select Therapist" allowClear maxTagCount="4">
               {staffDropdownList.map(item => (
-                <Option value={item.node.id}>{item.node.name}</Option>
+                <Option value={item.node.id}>{item.node.name} {item.node.surname}</Option>
               ))}
             </Select>,
           )}
@@ -129,6 +130,16 @@ class EditBasicInformation extends React.Component {
           {form.getFieldDecorator('dob', {
             rules: [{ required: true, message: 'Please provide Date of Birth!' }],
           })(<DatePicker />)}
+        </Form.Item>
+
+        <Form.Item label="Case Manager" style={itemStyle}>
+          {form.getFieldDecorator('caseManager')(
+            <Select placeholder="Select Therapist" allowClear>
+              {staffDropdownList.map(item => (
+                <Option value={item.node.id}>{item.node.name} {item.node.surname}</Option>
+              ))}
+            </Select>,
+          )}
         </Form.Item>
 
         <Form.Item label="Gender" style={itemStyle}>
@@ -181,13 +192,13 @@ class EditBasicInformation extends React.Component {
             </Select>,
           )}
         </Form.Item>
-        <Form.Item {...tailLayout}>
-          <Button type="submit" htmlType="submit">
-            Submit
+        <Form.Item>
+          <Button style={{width: '100%'}} type="primary" htmlType="submit">
+            Save
           </Button>
-          <Button htmlType="primary" onClick={this.onReset} className="ml-4">
+          {/* <Button htmlType="primary" onClick={this.onReset} className="ml-4">
             cancel
-          </Button>
+          </Button> */}
         </Form.Item>
       </Form>
     )

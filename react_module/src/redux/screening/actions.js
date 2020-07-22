@@ -9,6 +9,7 @@ const actions = {
   RECORD_AREA_RESPONSE: 'screening/RECORD_AREA_RESPONSE',
   RECORD_VIDEO: 'screening/RECORD_VIDEO',
   START_NEW_ASSESSMENT: 'screening/START_NEW_ASSESSMENT',
+  END_ASSESSMENT: 'screening/END_ASSESSMENT',
 }
 
 export default actions

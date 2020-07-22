@@ -40,7 +40,27 @@ const LearnerDetailsCard = ({ style, node }) => {
                     marginLeft: 22,
                 }}
             >
-                <Title style={{ fontSize: 18, lineHeight: '25px' }}>{node.firstname}</Title>
+                <Title style={{ fontSize: 18, lineHeight: '25px' }}>
+                    {node.firstname} ({node.category && node.category.category})
+                    <span style={{marginLeft: 38, fontSize: '14px', fontWeight: '1px', color: '#222'}}>
+                        Email : {node.email && node.email}
+                    </span>
+                    <span style={{marginLeft: 38, fontSize: '14px', fontWeight: '1px', color: '#222'}}>
+                        Phone : {node.mobileno && node.mobileno}
+                    </span>
+                </Title>
+                <div>
+                    {/* <span
+                        style={{
+                            color: '#0B35B3',
+                            marginRight: 38,
+                        }}
+                    >
+                        Learner
+                        </span>
+                    <span style={{ color: '#FF5454', marginRight: 38 }}>{node.category && node.category.category}</span> */}
+                    
+                </div>
                 <div>
                     <span
                         style={{
@@ -48,18 +68,17 @@ const LearnerDetailsCard = ({ style, node }) => {
                             marginRight: 38,
                         }}
                     >
-                        Student
+                        Case Manager
                         </span>
-                    <span style={{ color: '#FF5454' }}>{node.category && node.category.category}</span>
-                </div>
-                <div>
+                    <span style={{ color: '#FF5454', marginRight: 38 }}>{node.caseManager?.name}</span>
                     <span style={{marginRight: 38}}>
-                        Email : {node.email && node.email}
+                        Email : {node.caseManager?.email}
                     </span>
                     <span style={{marginRight: 38}}>
-                        Phone : {node.mobileno && node.mobileno}
+                        Phone : {node.caseManager?.contactNo}
                     </span>
                 </div>
+                
             </div>
         </div>
     )

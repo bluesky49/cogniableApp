@@ -37,11 +37,16 @@ export async function getClinicLearners() {
                   id
                   location
                 }
+                caseManager {
+                  id
+                  name
+                }
                 authStaff {
                   edges {
                     node {
                       id
                       name
+                      surname
                     }
                   }
                 }
@@ -80,11 +85,12 @@ export async function getLearnersDropdown() {
               }
             }
           }
-          staffs {
+          staffs (isActive: true) {
             edges {
               node {
                 id
                 name
+                surname
               }
             }
           }
@@ -118,6 +124,8 @@ export async function updateLearner(payload) {
       mutation: gql`mutation UpdateStudent (
         $date: Date
         $number: String
+        $location: ID
+        $caseManager: ID
       ) {
             updateStudent(input:{
                 studentData:{
@@ -128,7 +136,8 @@ export async function updateLearner(payload) {
                     gender:"${payload.values.gender}",
                     dob:"${payload.values.dob._d.toISOString().slice(0, 10)}",
                     dateOfDiagnosis: $date,
-                    clinicLocation:"${payload.values.clinicLocation}",
+                    clinicLocation: $location,
+                    caseManager: $caseManager,
                     firstname:"${payload.values.firstName}",
                     lastname:"${payload.values.lastName}",
                     authStaff:[${authStaffList}],
@@ -162,6 +171,10 @@ export async function updateLearner(payload) {
                         id,
                         location
                     },
+                    caseManager {
+                      id
+                      name
+                    }
                     authStaff{
                         edges {
                             node {
@@ -177,7 +190,9 @@ export async function updateLearner(payload) {
         }`,
         variables: {
           date: payload.values.dateOfDiagnosis ?  moment(payload.values.dateOfDiagnosis).format('YYYY-MM-DD') : null,
-          number: payload.values.mobileNo
+          number: payload.values.mobileNo,
+          location: payload.values.clinicLocation,
+          caseManager: payload.values.caseManager ? payload.values.caseManager : ""
         }
     })
     .then(result => result)
@@ -217,28 +232,32 @@ export async function createLearner(payload) {
         $parentMobileNumber: String,
         $ssnCard: String,
         $mobileNo: String,
-        $address: String
+        $address: String,
+        $caseManager: ID,
+        $defaultProgram: Boolean
       ) {
             createStudent(input:{
                 studentData:{
-                    clientId: $clientId, 
-                    category: $category, 
-                    email: $email, 
-                    gender: $gender, 
+                    clientId: $clientId,
+                    category: $category,
+                    email: $email,
+                    gender: $gender,
                     dob: $dob,
-                    dateOfDiagnosis: $dateOfDiagnosis, 
-                    clinicLocation: $clinicLocation, 
-                    firstname: $firstName, 
-                    lastname: $lastName, 
+                    dateOfDiagnosis: $dateOfDiagnosis,
+                    clinicLocation: $clinicLocation,
+                    firstname: $firstName,
+                    lastname: $lastName,
                     authStaff: $authStaffList,
                     parentName: $parentFirstName,
                     parentMobile: $parentMobileNumber,
                     ssnAadhar: $ssnCard,
                     mobileno:  $mobileNo,
                     address:  $address,
+                    caseManager: $caseManager,
+                    defaultProgram:$defaultProgram
                 }
             })
-            { 
+            {
                 student {
                     id,
                     firstname,
@@ -261,6 +280,10 @@ export async function createLearner(payload) {
                         id,
                         location
                     },
+                    caseManager {
+                      id
+                      name
+                    }
                     authStaff{
                         edges {
                             node {
@@ -270,7 +293,7 @@ export async function createLearner(payload) {
                         }
                     },
                     isActive
-                    
+
                 }
             }
         }`,
@@ -289,7 +312,8 @@ export async function createLearner(payload) {
           parentMobileNumber: payload.values.parentMobileNumber,
           ssnCard: payload.values.ssnCard,
           mobileNo: payload.values.mobileNo,
-          address: payload.values.address
+          address: payload.values.address,
+          caseManager: payload.values.caseManager
         }
     })
     .then(result => result)
@@ -304,6 +328,7 @@ export async function createLearner(payload) {
 }
 
 export async function learnerActiveInactive(payload) {
+  console.log(payload)
   return apolloClient
     .mutate({
       mutation: gql`mutation {

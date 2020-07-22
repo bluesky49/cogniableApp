@@ -21,7 +21,7 @@
 
 import React from 'react'
 import { Helmet } from 'react-helmet'
-import { Button, Drawer, Input } from 'antd'
+import { Button, Drawer, Input, Select, Checkbox } from 'antd'
 import Sortable from 'react-sortablejs'
 import { connect } from 'react-redux'
 import { PlusOutlined } from '@ant-design/icons'
@@ -32,7 +32,7 @@ import TargetCard from './TargetCard'
 import DeleteACard from './DeleteACard'
 
 @connect(({ user, sessiontargetallocation }) => ({ user, sessiontargetallocation }))
-class ExtraAppsJiraAgileBoard extends React.Component {
+class TargetAllocationToSession extends React.Component {
   state = {
     visible: false,
     searchTargetText: '',
@@ -58,7 +58,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
   }
 
   clearAll = session => {
-    console.log('session==>', session)
+    // console.log('session==>', session)
   }
 
   showDrawer = session => {
@@ -119,20 +119,83 @@ class ExtraAppsJiraAgileBoard extends React.Component {
     })
   }
 
-  printDetails = () => {
-    const { morningSession, afternoonSession, eveningSession, a_s } = this.state
-    console.log(morningSession, afternoonSession, eveningSession, a_s)
-  }
-
   handleChangeSearchText = ({ target: { value } }) => {
     this.setState({
       searchTargetText: value,
     })
   }
 
+  filterAllocatedTarget = value => {
+    const {
+      dispatch,
+    } = this.props
+
+    dispatch({
+      type: 'sessiontargetallocation/FILTER_TARGETS',
+      payload: {
+        statusId: value,
+        studentId: JSON.parse(localStorage.getItem('studentId')),
+      },
+    })
+
+  }
+
   searchTarget = value => {
     console.log('searchTarget==>', value)
   }
+
+  sortTargetInDesiredFormat = targetList => {
+    const baseline = 'U3RhdHVzVHlwZTox'
+    const intherapy = 'U3RhdHVzVHlwZToz'
+    const mastered = 'U3RhdHVzVHlwZTo0'
+    const inmaintainence = 'U3RhdHVzVHlwZTo1'
+    const onhold = 'U3RhdHVzVHlwZTo2'
+    const deleted = 'U3RhdHVzVHlwZTo3'
+    const desiredListOrder = [mastered, inmaintainence, intherapy, baseline, deleted]
+    const newList = []
+    for (let i=0; i<desiredListOrder.length; i++){
+      for (let j=0; j<targetList.length; j++){
+        if (desiredListOrder[i] === targetList[j].node.targetStatus.id){
+          newList.push(targetList[j])
+        }
+      }
+    }
+
+    return newList
+  }
+
+  sortSession = (sessionName, isChecked) => {
+    const {dispatch} = this.props
+    if (sessionName === 'Morning'){
+      dispatch({
+        type: 'sessiontargetallocation/SET_STATE',
+        payload: {
+          MorningSortTargetTrue: isChecked,
+          MorningSessionRandomKey: Math.random(),
+        },
+      })
+    }
+    else if(sessionName === 'Afternoon'){
+      dispatch({
+        type: 'sessiontargetallocation/SET_STATE',
+        payload: {
+          AfternoonSortTargetTrue: isChecked,
+          AfternoonSessionRandomKey: Math.random(),
+        },
+      })
+    }
+    else if(sessionName === 'Evening'){
+      dispatch({
+        type: 'sessiontargetallocation/SET_STATE',
+        payload: {
+          EveningSortTargetTrue: isChecked,
+          EveningSessionRandomKey: Math.random(),
+        },
+      })
+    }
+  }
+
+
 
   render() {
     const {
@@ -143,6 +206,15 @@ class ExtraAppsJiraAgileBoard extends React.Component {
         AfternoonSession,
         EveningSession,
         CurrentSession,
+        TargetStatusList,
+        randomKey,
+        MorningSessionRandomKey,
+        AfternoonSessionRandomKey,
+        EveningSessionRandomKey,
+        MorningSortTargetTrue,
+        AfternoonSortTargetTrue,
+        EveningSortTargetTrue
+
       },
       user: { studentName },
     } = this.props
@@ -169,44 +241,102 @@ class ExtraAppsJiraAgileBoard extends React.Component {
     })
 
     if (MorningSession && MorningSession.targets.edges.length > 0) {
-      MorningSession.targets.edges.map(item => {
-        morningSessionDiv.push(
-          <TargetCard
-            key={item.node.id}
-            id={item.node.id}
-            node={item.node}
-            text={item.node.targetAllcatedDetails.targetName}
-          />,
-        )
-      })
+      if(MorningSortTargetTrue){
+        const sortedList = this.sortTargetInDesiredFormat(MorningSession.targets.edges)
+        sortedList.map((item, index) => {
+          morningSessionDiv.push(
+            <TargetCard
+              showDelete
+              sessionId="Morning"
+              key={item.node.id}
+              id={item.node.id}
+              node={item.node}
+              srNo={index + 1}
+              text={item.node.targetAllcatedDetails.targetName}
+            />,
+          )
+        })
+      }
+      else{
+        MorningSession.targets.edges.map((item, index) => {
+          morningSessionDiv.push(
+            <TargetCard
+              key={item.node.id}
+              id={item.node.id}
+              node={item.node}
+              srNo={index + 1}
+              text={item.node.targetAllcatedDetails.targetName}
+            />,
+          )
+        })
+
+      }
     }
 
     if (AfternoonSession && AfternoonSession.targets.edges.length > 0) {
-      AfternoonSession.targets.edges.map((item, index) => {
-        afternoonSessionDiv.push(
-          <TargetCard
-            // showDelete
-            // srNo={index + 1}
-            key={item.node.id}
-            id={item.node.id}
-            node={item.node}
-            text={item.node.targetAllcatedDetails.targetName}
-          />,
-        )
-      })
+      if(AfternoonSortTargetTrue){
+
+        const sortedList = this.sortTargetInDesiredFormat(AfternoonSession.targets.edges)
+        sortedList.map((item, index) => {
+          afternoonSessionDiv.push(
+            <TargetCard
+              showDelete
+              sessionId="Afternoon"
+              srNo={index + 1}
+              key={item.node.id}
+              id={item.node.id}
+              node={item.node}
+              text={item.node.targetAllcatedDetails.targetName}
+            />,
+          )
+        })
+      }
+      else{
+        AfternoonSession.targets.edges.map((item, index) => {
+          afternoonSessionDiv.push(
+            <TargetCard
+              // showDelete
+              srNo={index + 1}
+              key={item.node.id}
+              id={item.node.id}
+              node={item.node}
+              text={item.node.targetAllcatedDetails.targetName}
+            />,
+          )
+        })
+      }
     }
 
     if (EveningSession && EveningSession.targets.edges.length > 0) {
-      EveningSession.targets.edges.map(item => {
-        eveningSessionDiv.push(
-          <TargetCard
-            key={item.node.id}
-            id={item.node.id}
-            node={item.node}
-            text={item.node.targetAllcatedDetails.targetName}
-          />,
-        )
-      })
+      if(EveningSortTargetTrue){
+        const sortedList = this.sortTargetInDesiredFormat(EveningSession.targets.edges)
+        sortedList.map((item, index) => {
+          eveningSessionDiv.push(
+            <TargetCard
+              showDelete
+              sessionId="Evening"
+              srNo={index + 1}
+              key={item.node.id}
+              id={item.node.id}
+              node={item.node}
+              text={item.node.targetAllcatedDetails.targetName}
+            />,
+          )
+        })
+      }
+      else{
+        EveningSession.targets.edges.map((item, index) => {
+          eveningSessionDiv.push(
+            <TargetCard
+              key={item.node.id}
+              id={item.node.id}
+              node={item.node}
+              srNo={index + 1}
+              text={item.node.targetAllcatedDetails.targetName}
+            />,
+          )
+        })
+      }
     }
 
     const targetSortableStyle = { height: 640, overflow: 'auto' }
@@ -215,28 +345,27 @@ class ExtraAppsJiraAgileBoard extends React.Component {
     return (
       <Authorize roles={['school_admin', 'therapist']} redirect to="/dashboard/beta">
         <div className={style.targetAllocation}>
-          <Helmet title="Jira Agile Board" />
+          <Helmet title="Target Allocation To Sessions" />
+          
           <div className={style.heading}>
             <span>{studentName}&apos;s Target List</span>
           </div>
 
+
           <div className="row">
             <div className="col-lg-3 col-md-6">
-              {/* <button onClick={this.printDetails}>Print</button> */}
-
-              {/* <div className={style.targetListHeding}>
-                <Search
-                  className={style.search}
-                  placeholder="Search Targets"
-                  onSearch={this.searchTarget}
-                  onChange={this.handleChangeSearchText}
-                  style={{ width: '100%' }}
-                />
-              </div> */}
-
+            <div className={style.heading}>
+              
+              <Select style={{width: '100%', marginTop: '2px'}} placeholder="Select Target Status" onSelect={e => this.filterAllocatedTarget(e)}>
+                {TargetStatusList.reverse().map(item => {
+                  return <Select.Option value={item.id}>{item.statusName}</Select.Option>  
+                })}
+              </Select>
+            </div>
               <div className="card bg-light">
                 {/* <h3 className="font-weight-bold text-dark font-size-18 mb-3">Targets</h3> */}
                 <Sortable
+                  key={randomKey}
                   className="py-4 px-4"
                   options={{
                     group: {
@@ -276,13 +405,14 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                   <h3 className="font-weight-bold text-dark font-size-20">
                     Morning Session{' '}
                     <span style={{ float: 'right' }}>
-                      <Button onClick={() => this.saveSessionTargets('Morning')} type="link">
+                      <Button disabled={MorningSortTargetTrue} onClick={() => this.saveSessionTargets('Morning')} type="link">
                         Save
                       </Button>
                     </span>{' '}
                   </h3>
+                  <Checkbox onChange={(e) => this.sortSession('Morning', e.target.checked)}>Sort</Checkbox>
                 </div>
-                <div className="card py-3 px-2" style={{ border: '1px solid #f4f6f8' }}>
+                <div className="card py-3 px-2" style={{ border: '2px solid #f4f6f8' }}>
                   <Button
                     type="dashed"
                     className={style.detailsButton}
@@ -292,8 +422,9 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                     {' '}
                     <PlusOutlined /> Add Details & Hosts
                   </Button>
-                  <DeleteACard />
+                  {MorningSortTargetTrue ? '' : <DeleteACard />}
                   <Sortable
+                    key={MorningSessionRandomKey}
                     options={{
                       group: {
                         name: 'shared',
@@ -306,34 +437,12 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                               }
                             }
                           }
-                          // console.log(to.el.children.each(function(index, value) {console.log(index, value)}), el, node)
-                          // to.el.children.map(item => console.log(item))
                           return check
                           // return to.el.children.some(item => item.id === node.item.id)
                         },
                       },
-                      // onRemove: (node) => {
-                      //     console.log(node.type)
-                      //     console.log(node.item.id)
-                      //     console.log(node.item.innerText)
-                      //     console.log(node)
-
-                      //     const newItems = this.state.morningSession.filter(item => item.key !== node.item.id);
-                      //     this.setState({ morningSession: newItems })
-                      // },
-                      // onAdd: (node) => {
-                      //     console.log(node.type)
-                      //     console.log(node.item.id)
-                      //     console.log(node.item.innerText)
-                      //     console.log(node)
-                      //     this.setState({ morningSession: [...this.state.morningSession, { key: node.item.id, text: node.item.innerText }] });
-                      // },
                       store: {
-                        // Get the order of elements. Called once during initialization.
-                        // @param   {Sortable}  sortable
-                        // @returns {Array}
                         get: function(sortable) {
-                          console.log(sortable.el.childNodes)
                           let i = 0
                           const list = []
                           for (i = 0; i < sortable.el.childNodes.length; i++) {
@@ -349,10 +458,7 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                           for (i = 0; i < sortable.el.childNodes.length; i++) {
                             list.push(`"${sortable.el.childNodes[i].id}"`)
                           }
-                          // this.printDetails()
                           localStorage.setItem('Morning', list.join('|'))
-                          // var order = sortable.toArray();
-                          // localStorage.setItem(sortable.options.group.name, order.join('|'));
                         },
                       },
                     }}
@@ -361,16 +467,6 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                   >
                     {morningSessionDiv}
                   </Sortable>
-                  {/* <div>
-                    <Button
-                      type="dashed"
-                      className={style.clearAllButton}
-                      onClick={() => this.clearAll('Morning')}
-                      block
-                    >
-                      Clear All
-                    </Button>
-                  </div> */}
                 </div>
               </div>
             ) : (
@@ -382,13 +478,14 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                   <h3 className="font-weight-bold text-dark font-size-20">
                     Afternoon Session{' '}
                     <span style={{ float: 'right' }}>
-                      <Button onClick={() => this.saveSessionTargets('Afternoon')} type="link">
+                      <Button disabled={AfternoonSortTargetTrue} onClick={() => this.saveSessionTargets('Afternoon')} type="link">
                         Save
                       </Button>
                     </span>{' '}
                   </h3>
+                  <Checkbox onChange={(e) => this.sortSession('Afternoon', e.target.checked)}>Sort</Checkbox>
                 </div>
-                <div className="card py-3 px-2" style={{ border: '1px solid #f4f6f8' }}>
+                <div className="card py-3 px-2" style={{ border: '2px solid #f4f6f8' }}>
                   <Button
                     type="dashed"
                     className={style.detailsButton}
@@ -398,8 +495,9 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                     {' '}
                     <PlusOutlined /> Add Details & Hosts
                   </Button>
-                  <DeleteACard />
+                  {AfternoonSortTargetTrue ? '' : <DeleteACard />}
                   <Sortable
+                    key={AfternoonSessionRandomKey}
                     options={{
                       group: {
                         name: 'shared',
@@ -415,18 +513,6 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                           return check
                         },
                       },
-                      // onRemove: (node) => {
-
-                      //     const newItems = this.state.afternoonSession.filter(item => item.key !== node.item.id);
-                      //     this.setState({ afternoonSession: newItems })
-                      // },
-                      // onAdd: (node) => {
-                      //     console.log(node.type)
-                      //     console.log(node.item.id)
-                      //     console.log(node.item.innerText)
-                      //     console.log(node)
-                      //     this.setState({ afternoonSession: [...this.state.afternoonSession, { key: node.item.id, text: node.item.innerText }] });
-                      // },
                       store: {
                         // Get the order of elements. Called once during initialization.
                         // @param   {Sortable}  sortable
@@ -448,43 +534,15 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                           for (i = 0; i < sortable.el.childNodes.length; i++) {
                             list.push(`"${sortable.el.childNodes[i].id}"`)
                           }
-                          // this.printDetails()
                           localStorage.setItem('Afternoon', list.join('|'))
-                          // var order = sortable.toArray();
-                          // localStorage.setItem(sortable.options.group.name, order.join('|'));
                         },
                       },
-                      // onSort: function (evt, a , b,) {
-                      //     var itemEl = evt.item;  // dragged HTMLElement
-                      //     evt.to;    // target list
-                      //     evt.from;  // previous list
-                      //     evt.oldIndex;  // element's old index within old parent
-                      //     evt.newIndex;  // element's new index within new parent
-                      //     evt.oldDraggableIndex; // element's old index within old parent, only counting draggable elements
-                      //     evt.newDraggableIndex; // element's new index within new parent, only counting draggable elements
-                      //     evt.clone // the clone element
-                      //     evt.pullMode;
-                      //     console.log(a, b, evt)
-                      // },
                     }}
-                    // onChange={(order, sortable, evt) => {
-                    //     console.log(order, sortable, evt)
-                    // }}
                     tag="div"
                     style={sessionsSortableStyle}
                   >
                     {afternoonSessionDiv}
                   </Sortable>
-                  {/* <div>
-                    <Button
-                      type="dashed"
-                      className={style.clearAllButton}
-                      onClick={() => this.clearAll('Afternoon')}
-                      block
-                    >
-                      Clear All
-                    </Button>
-                  </div> */}
                 </div>
               </div>
             ) : (
@@ -496,13 +554,14 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                   <h3 className="font-weight-bold text-dark font-size-20">
                     Evening Session{' '}
                     <span style={{ float: 'right' }}>
-                      <Button onClick={() => this.saveSessionTargets('Evening')} type="link">
+                      <Button disabled={EveningSortTargetTrue} onClick={() => this.saveSessionTargets('Evening')} type="link">
                         Save
                       </Button>
                     </span>{' '}
                   </h3>
+                  <Checkbox onChange={(e) => this.sortSession('Evening', e.target.checked)}>Sort</Checkbox>
                 </div>
-                <div className="card py-3 px-2" style={{ border: '1px solid #f4f6f8' }}>
+                <div className="card py-3 px-2" style={{ border: '2px solid #f4f6f8' }}>
                   <Button
                     type="dashed"
                     className={style.detailsButton}
@@ -512,8 +571,9 @@ class ExtraAppsJiraAgileBoard extends React.Component {
                     {' '}
                     <PlusOutlined /> Add Details & Hosts
                   </Button>
-                  <DeleteACard />
+                  {EveningSortTargetTrue ? '' : <DeleteACard />}
                   <Sortable
+                    key={EveningSessionRandomKey}
                     options={{
                       group: {
                         name: 'shared',
@@ -611,4 +671,4 @@ class ExtraAppsJiraAgileBoard extends React.Component {
   }
 }
 
-export default ExtraAppsJiraAgileBoard
+export default TargetAllocationToSession

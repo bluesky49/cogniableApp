@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Typography, Upload, message, Button } from 'antd'
 import { LinkOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
@@ -15,31 +15,40 @@ const LOGO = gql`
   }
 `
 
-const props = {
-  name: 'file',
-  multiple: false,
-  action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-  headers: {
-    authorization: 'authorization-text',
-  },
-  onChange(info) {
-    if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList)
-    }
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`)
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`)
-    }
-  },
-  style: {
-    width: '100%',
-  },
-  className: 'hello',
-}
-
 export default () => {
   const { data, error, loading } = useQuery(LOGO, { fetchPolicy: 'no-cache' })
+  const [logo, setLogo] = useState()
+
+  const props = {
+    name: 'file',
+    multiple: false,
+    action: 'https://development.cogniable.us/apis/school/fileupload',
+    headers: {
+      authorization: 'authorization-text',
+    },
+    onChange(info) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList)
+      }
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully`)
+        console.log(info)
+        setLogo(info.file.response.file_path)
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`)
+      }
+    },
+    style: {
+      width: '100%',
+    },
+    className: 'hello',
+  }
+
+  useEffect(() => {
+    if (data) {
+      setLogo(data.schoolDetail.logo)
+    }
+  }, [data, error])
 
   return (
     <div style={{ marginTop: 45 }}>
@@ -55,7 +64,7 @@ export default () => {
               display: 'block',
               border: '1px solid gray',
             }}
-            src={`https://development.cogniable.us/media/${data.schoolDetail.logo}`}
+            src={`${logo}`}
             alt="logo"
           />
 

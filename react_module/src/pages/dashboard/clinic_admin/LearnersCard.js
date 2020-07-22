@@ -1,5 +1,5 @@
 import React from 'react'
-import { Select, Typography, Button, Tooltip } from 'antd'
+import { Select, Typography, Button } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import gql from 'graphql-tag'
 import { useQuery } from 'react-apollo'
@@ -63,23 +63,21 @@ const LearnersCard = () => {
         >
           Learners
         </Title>
-        <Tooltip placement="topRight" title="Click to select learner">
-          <Select
-            style={{
-              width: 200,
-              height: 40,
-            }}
-            size="large"
-            showSearch
-            optionFilterProp="name"
-            onSelect={onSelectStudent}
-            placeholder="Select Learner"
-          >
-            {data.students.edges.map(({ node }) => {
-              return <Option key={node.id} name={node.firstname}>{node.firstname}</Option>
-            })}
-          </Select>
-        </Tooltip>
+        <Select
+          style={{
+            width: 200,
+            height: 40,
+          }}
+          size="large"
+          showSearch
+          optionFilterProp="name"
+          onSelect={onSelectStudent}
+          placeholder="Select Learner"
+        >
+          {data.students.edges.map(({ node }) => {
+            return <Option key={node.id} name={node.firstname}>{node.firstname}</Option>
+          })}
+        </Select>
       </div>
 
       <div>

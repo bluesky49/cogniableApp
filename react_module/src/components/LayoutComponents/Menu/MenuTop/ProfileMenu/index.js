@@ -21,7 +21,8 @@ class ProfileMenu extends React.Component {
       <Menu selectable={false}>
         <Menu.Item>
           <strong>
-            <FormattedMessage id="topBar.profileMenu.hello" />, {user.role === 'parents' ? user.parentName : user.role === 'therapist' ? user.staffName : 'Anonymous'}
+            <FormattedMessage id="topBar.profileMenu.hello" />, 
+            {user.role === 'parents' ? user.parentName : user.role === 'therapist' ? user.staffName : 'Anonymous'}
           </strong>
           <div>
             <strong className="mr-1">
@@ -51,7 +52,7 @@ class ProfileMenu extends React.Component {
         }
         {user.role === 'therapist' ? 
           <Menu.Item>
-            <a href="javascript: void(0);">
+            <a href="/#/staffProfile">
               <i className={`${styles.menuIcon} icmn-user`} />
               <FormattedMessage id="topBar.profileMenu.editProfile" />
             </a>

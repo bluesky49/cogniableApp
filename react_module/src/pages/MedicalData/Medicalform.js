@@ -122,7 +122,7 @@ const remainderReducer = (state, action) => {
         ...state,
         {
           time: moment(),
-          frequency: 'Daily',
+          frequency: [],
         },
       ]
 
@@ -134,7 +134,7 @@ const remainderReducer = (state, action) => {
     case 'UPDATE_FREQUENCY':
       return update(action.index, { ...state[action.index], frequency: action.frequency }, state)
     case 'RESET':
-      return [{ time: moment(), frequency: 'Daily' }]
+      return [{ time: moment(), frequency: [] }]
     default:
       return state
   }
@@ -150,10 +150,10 @@ const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
   ])
 
   const [remainderState, remainderDispatch] = useReducer(remainderReducer, [
-    { time: moment(), frequency: 'Daily' },
+    { time: moment(), frequency: [] },
   ])
 
-  const studentId = localStorage.getItem('studentId') 
+  const studentId = localStorage.getItem('studentId')
 
   const { data: severityType, loading: severityTypeLoading, error: severityTypeError } = useQuery(
     SEVERITY_TYPE,
@@ -196,8 +196,8 @@ const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
   useEffect(() => {
     if (data) {
       notification.success({
-        message: 'Medical Data',
-        description: 'Medical Data Added Successfully',
+        message: 'Meal Data',
+        description: 'Meal Data Added Successfully',
       })
       handleNewMediDate(data.createMedical.details.date)
       form.resetFields()
@@ -213,7 +213,7 @@ const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
   useEffect(() => {
     if (error) {
       notification.error({
-        message: 'Somthing went wrong',
+        message: 'Somthing want wrong',
         description: error,
       })
     }
@@ -225,8 +225,8 @@ const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
 
   return (
     <Form onSubmit={e => SubmitForm(e)} name="control-ref" style={{ marginLeft: 0 }}>
-      <Form.Item label="Medical Condition" style={{ marginBottom: 0 }}>    
-        {form.getFieldDecorator('condition', {    
+      <Form.Item label="Madical Condition" style={{ marginBottom: 0 }}>
+        {form.getFieldDecorator('condition', {
           rules: [{ required: true, message: 'Please give the condition name' }],
         })(<Input size="large" placeholder="Type the condition" />)}
       </Form.Item>
@@ -266,7 +266,7 @@ const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
             marginTop: 30,
           }}
         >
-          <Title style={{ fontSize: 18 }}>Prescription Drugs</Title>
+          <Title style={{ fontSize: 18 }}>Preseption Drugs</Title>
           <Button
             style={{
               height: 40,
@@ -307,7 +307,7 @@ const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
                 fontSize: 18,
               }}
             >
-              Medicine Reminders
+              Medical Reminders
             </Title>
             <Text>Remind me for medicine dosage</Text>
           </div>
@@ -339,7 +339,7 @@ const MedicalForm = ({ style, handleNewMediDate, setNewMediCreated, form }) => {
             marginTop: 10,
           }}
         >
-          <Text style={{ color: '#000', fontSize: 16 }}>Add Another Reminder</Text>
+          <Text style={{ color: '#000', fontSize: 16 }}>Add Another Remainder</Text>
           <Button
             style={{
               height: 40,

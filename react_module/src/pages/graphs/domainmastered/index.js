@@ -17,6 +17,7 @@
 /* eslint-disable vars-on-top */
 /* eslint-disable block-scoped-var */
 /* eslint-disable react/jsx-no-undef */
+/* eslint-disable dot-notation */
 
 
 import React from 'react';
@@ -62,7 +63,7 @@ class Orders extends React.Component {
     client
       .query({
         query: gql`{
-    domainMastered(studentId:"U3R1ZGVudFR5cGU6MTYz")
+    domainMastered(studentId:"U3R1ZGVudFR5cGU6NjEx")
     {
 
         id
@@ -93,7 +94,12 @@ class Orders extends React.Component {
 
           for(var i in resData)
           {
-            chartDataDict[resData[i].targetId.domain.domain] = 0
+            try {
+              chartDataDict[resData[i].targetId.domain.domain] = 0
+            }
+            catch {
+              chartDataDict["Manual"] = 0
+            }
           }
 
           for(var i in resData)
@@ -102,8 +108,14 @@ class Orders extends React.Component {
             const dateBaseline = new Date(resData[i].targetAllcatedDetails.dateBaseline);
             const diffTime = Math.abs(dateBaseline - tarTime);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            try {
+              chartDataDict[resData[i].targetId.domain.domain] += diffDays
+            }
+            catch {
+              chartDataDict["Manual"] += diffDays
+            }
 
-            chartDataDict[resData[i].targetId.domain.domain] += diffDays
+
           }
 
           for(var key in chartDataDict)

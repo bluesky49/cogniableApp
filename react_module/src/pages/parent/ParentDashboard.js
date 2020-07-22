@@ -123,7 +123,7 @@ const PERFORMENCE = gql`
     }
     mastered_targets: targetAllocates(
       studentId: $studentId
-      targetStatus: "U3RhdHVzVHlwZTox"
+      targetStatus: "U3RhdHVzVHlwZTo0"
       targetStatus_Date_Gte: $date
     ) {
       edgeCount

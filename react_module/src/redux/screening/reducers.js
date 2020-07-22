@@ -6,7 +6,7 @@ const initialState = {
   QuestionsList: [],
   StepsList: [],
   isFormLoading: false,
-  showQuestions: true,
+  showQuestions: false,
   ActiveIndex: 0,
   RecordedObject: null,
   QuestionsResponse: {},

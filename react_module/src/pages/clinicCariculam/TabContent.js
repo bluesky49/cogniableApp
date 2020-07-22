@@ -1,3 +1,4 @@
+/* eslint-disable object-shorthand */
 import React, { useState, useEffect } from 'react'
 import { Row, Col } from 'antd'
 import gql from 'graphql-tag'

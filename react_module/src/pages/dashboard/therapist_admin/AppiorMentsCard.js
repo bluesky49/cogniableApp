@@ -13,7 +13,7 @@ const { Title, Text } = Typography
 
 const APPIORMENTS = gql`
   query {
-    upcoming_appointment: appointments(last: 3) {
+    upcoming_appointment: appointments(first: 3) {
       edges {
         node {
           id
@@ -207,7 +207,7 @@ const AppiorMentsCard = ({ style }) => {
         visible={createNewAppiormentDrawer}
         placement="right"
         onClose={handelNewAppiormentDrawer}
-        title="New Appiorment"
+        title="New Appointment"
       >
         <div
           style={{

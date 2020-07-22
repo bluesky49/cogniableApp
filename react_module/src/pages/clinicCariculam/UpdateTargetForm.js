@@ -1,4 +1,15 @@
 /* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-closing-bracket-location */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable prefer-const */
+/* eslint-disable object-shorthand */
 import React, { useEffect, useState } from 'react'
 import { Form, Input, Button, notification } from 'antd'
 import gql from 'graphql-tag'
@@ -15,6 +26,7 @@ query targetGet($id: ID!) {
       targetMain {
         targetName
       }
+      video
     }
 }
 `
@@ -26,6 +38,7 @@ const UPDATE_TARGET = gql`
     $targetAreaId: ID!
     $targetName: String!
     $targetInstr: String!
+    $video: String
   ) {
     updateMasterTarget(
       input: {
@@ -34,11 +47,13 @@ const UPDATE_TARGET = gql`
         targetAreaId: $targetAreaId
         targetName: $targetName
         targetInstr: $targetInstr
+        video: $video
       }
     ) {
       details {
         id
         targetInstr
+        video
         domain {
           id
           domain
@@ -93,20 +108,17 @@ const TargetForm = ({ targetId, form, targetAreaId, handleUpdateTargetDrawer, do
 
   const [instrvalue, setValue] = useState('');
 
- useEffect(() => {
-   if(data)
-   {
-     try
-     {
-       setValue(JSON.parse(data.targetGet.targetInstr))
-     }
-     catch(err)
-       {
-          setValue(data.targetGet.targetInstr)
-       }
-   }
+  useEffect(() => {
+    if (data) {
+      try {
+        setValue(JSON.parse(data.targetGet.targetInstr))
+      }
+      catch (err) {
+        setValue(data.targetGet.targetInstr)
+      }
+    }
 
-   }, [data])
+  }, [data])
 
 
   function onEditorChange(evt) {
@@ -125,6 +137,7 @@ const TargetForm = ({ targetId, form, targetAreaId, handleUpdateTargetDrawer, do
             targetAreaId,
             targetName: value.targetname,
             targetInstr: instrvalue,
+            video: value.videolink
           },
         })
       }
@@ -136,47 +149,52 @@ const TargetForm = ({ targetId, form, targetAreaId, handleUpdateTargetDrawer, do
       {loading ? (
         'Loading...'
       ) : (
-        <div>
-          {error && 'Something went wrong!'}
-          {data && (
-            <Form name="targetForm" onSubmit={handleSubmit}>
-              <Form.Item label="Target Name">
-                {form.getFieldDecorator('targetname', {
-                  initialValue: data.targetGet.targetMain.targetName,
-                  rules: [{ required: true, message: 'Please enter Target Name' }],
-                })(<Input placeholder="Target Name" size="large" />)}
-              </Form.Item>
+          <div>
+            {error && 'Something went wrong!'}
+            {data && (
+              <Form name="targetForm" onSubmit={handleSubmit}>
+                <Form.Item label="Target Name">
+                  {form.getFieldDecorator('targetname', {
+                    initialValue: data.targetGet.targetMain.targetName,
+                    rules: [{ required: true, message: 'Please enter Target Name' }],
+                  })(<Input placeholder="Target Name" size="large" />)}
+                </Form.Item>
 
-              <Form.Item label="Target Instructions">
-              <CKEditor
+                <Form.Item label="Target Instructions">
+                  <CKEditor
                     activeClass="p10"
                     content={instrvalue}
                     events={{
-                        "change":onEditorChange
-                      }}
+                      "change": onEditorChange
+                    }}
                     config={{
-                        height:450
-                      }}
-                   />
-              </Form.Item>
+                      height: 450
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item label="Target Video Link">
+                  {form.getFieldDecorator('videolink', {
+                    initialValue: data.targetGet.video,
+                  })(<Input placeholder="Target Video Link" size="large" />)}
+                </Form.Item>
 
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={updateTargetLoading}
-                style={{
-                  marginTop: 15,
-                  fontSize: 16,
-                  width: '100%',
-                  height: 40,
-                }}
-              >
-                Update Target
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={updateTargetLoading}
+                  style={{
+                    marginTop: 15,
+                    fontSize: 16,
+                    width: '100%',
+                    height: 40,
+                  }}
+                >
+                  Update Target
               </Button>
-            </Form>
-          )}
-        </div>
-      )}
+              </Form>
+            )}
+          </div>
+        )}
     </div>
   )
 }

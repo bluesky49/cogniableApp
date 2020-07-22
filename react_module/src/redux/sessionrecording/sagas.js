@@ -7,6 +7,8 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable prefer-const */
 /* eslint-disable no-lonely-if */
+/* eslint-disable one-var */
+/* eslint-disable yoda */
 import { all, takeEvery, put, call, select } from 'redux-saga/effects'
 import {
   getTargets,
@@ -25,6 +27,57 @@ import {
 import actions from './actions'
 
 const debug = true
+const peakId = 'VGFyZ2V0RGV0YWlsVHlwZTo4'
+
+// shuffle peak stimulus block
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+// create peak stimulus block
+function createStimulusList(list){
+  const len = list.length
+  let k = 0
+  const newList = []
+  if (len > 0){
+    for (let i=0; i<10; i++){
+      if(k < len){
+        newList.push({sd: list[k].node, sdIndex: k, position: i, recordedData: false, response: {}})
+        k += 1
+      }
+      else{
+        k = 0 
+        newList.push({sd: list[k].node, sdIndex: k, position: i, recordedData: false, response: {}})
+        k += 1
+      }
+    }
+  }
+  return shuffle(newList)
+}
+
+// create video url by video id
+function getVideoUrl(url){
+    // const videoId = url.substring(url.lastIndexOf('/') + 1);
+    const videoId = url.split('/')[3];
+    if(debug){
+      console.log(videoId)
+    }
+    // return videoId
+    return `https://player.vimeo.com/video/${videoId}/`
+    
+}
 
 export function* UpdateDuration() {
   // selecting child session id for creating child session
@@ -64,6 +117,8 @@ export function* GET_DATA({ payload }) {
   })
 
   const response = yield call(getTargets, payload)
+  let videoAvailable = false
+  let videoUrl = ''
 
   if (response && response.data) {
     const targetResponse = {}
@@ -71,9 +126,20 @@ export function* GET_DATA({ payload }) {
     let stimulusId = ''
     let stepId = ''
     let i = 0
+
     if (response.data.getsession.targets.edgeCount > 0) {
       const targets = response.data.getsession.targets
       targetId = targets.edges[0].node.id
+
+      // Load first video url
+      if(targets.edges[0].node.videos.edges.length > 0){
+        if (debug) {
+          console.log('====> video exists')
+        }
+        videoUrl = getVideoUrl(targets.edges[0].node.videos.edges[0].node.url)
+        videoAvailable = true
+      }
+      // End video url
 
       if (targets.edges[0].node.sd && targets.edges[0].node.sd.edges.length > 0) {
         stimulusId = targets.edges[0].node.sd.edges[0].node.id
@@ -103,6 +169,13 @@ export function* GET_DATA({ payload }) {
             ] = []
           }
         }
+        
+        // start of peak 
+        if (targets.edges[i].node.steps && targets.edges[i].node.targetAllcatedDetails.targetType.id === peakId) {
+          targetResponse[targets.edges[i].node.id]['peak'] = createStimulusList(targets.edges[i].node.sd.edges)
+
+        }
+        // end of peak
       }
     }
 
@@ -115,20 +188,27 @@ export function* GET_DATA({ payload }) {
         TargetActiveId: targetId,
         StimulusActiveId: stimulusId,
         StepActiveId: stepId,
+        VideoAvailable: videoAvailable,
+        VideoUrl: videoUrl,
       },
     })
+
+    let sessionEditAble = true
 
     // if child session exist
     if (response.data.getChildSession && response.data.getChildSession.edges.length > 0) {
       let sessionStatus = 'Paused'
       if (response.data.getChildSession.edges[0].node.status === 'COMPLETED') {
         sessionStatus = 'Completed'
+        sessionEditAble = false
       }
       yield put({
         type: 'sessionrecording/SET_STATE',
         payload: {
           ChildSession: response.data.getChildSession.edges[0].node,
           SessionStatus: sessionStatus,
+          EditAfterSessionCompleted: sessionEditAble,
+          Disabled: sessionEditAble,
           TrialStartTime: response.data.getChildSession.edges[0].node.duration,
         },
       })
@@ -139,6 +219,7 @@ export function* GET_DATA({ payload }) {
       // if data recording present
       const childResponse = yield call(getChildSessionData, {
         id: response.data.getChildSession.edges[0].node.id,
+        date: response.data.getChildSession.edges[0].node.sessionDate
       })
 
       if (childResponse && childResponse.data) {
@@ -209,6 +290,16 @@ export function* GET_DATA({ payload }) {
                 } else {
                   stepId = ''
                 }
+
+                // Load last recorded target video url
+                if(response.data.getsession.targets.edges[targetIndex].node.videos.edges.length > 0){
+                  if (debug) {
+                    console.log('====> video exists')
+                  }
+                  videoUrl = getVideoUrl(response.data.getsession.targets.edges[targetIndex].node.videos.edges[0].node.url)
+                  videoAvailable = true
+                }
+                // End video url
 
                 const lastObjectEdgeCount = lastObject.sessionRecord.edges.length
                 // updating stimulus or step index and id to store
@@ -313,6 +404,8 @@ export function* GET_DATA({ payload }) {
             StepActiveId: stepId,
             StimulusActiveIndex: stimulusIndex,
             StimulusActiveId: stimulusId,
+            VideoAvailable: videoAvailable,
+            VideoUrl: videoUrl,
           },
         })
       }

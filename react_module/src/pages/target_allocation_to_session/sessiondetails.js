@@ -20,7 +20,7 @@
 /* eslint-disable no-nested-ternary */
 
 import React from 'react'
-import { Form, Input, Select, Button, Icon } from 'antd'
+import { Form, Input, Select, Button, Icon, Checkbox } from 'antd'
 import { connect } from 'react-redux'
 import style from './style.module.scss'
 
@@ -31,7 +31,9 @@ let id = 0
 
 @connect(({ user, sessiontargetallocation }) => ({ user, sessiontargetallocation }))
 class SessionDetailsForm extends React.Component {
-  state = {}
+  state = {
+    isParent: false
+  }
 
   componentDidMount() {
     const {
@@ -68,6 +70,8 @@ class SessionDetailsForm extends React.Component {
 
     id = instructionList.length
 
+    console.log(sessionObject.parentView)
+
     form.setFieldsValue({
       items: sessionObject.itemRequired,
       hosts: hostList,
@@ -76,6 +80,12 @@ class SessionDetailsForm extends React.Component {
       therapist: therapistHost,
       duration: sessionObject.duration,
     })
+
+    this.setState({isParent: sessionObject.parentView})
+  }
+
+  onParentView = isChecked => {
+    this.setState({isParent: isChecked})
   }
 
   onReset = () => {
@@ -123,6 +133,7 @@ class SessionDetailsForm extends React.Component {
         //   keys.map(key => names[key]),
         // )
 
+        // console.log(values)
         dispatch({
           type: 'sessiontargetallocation/UPDATE_SESSION_DETAILS',
           payload: {
@@ -147,6 +158,7 @@ class SessionDetailsForm extends React.Component {
       },
     } = this.props
 
+    const {isParent} = this.state
     // console.log(FamilyMemberList)
 
     let familyList = []
@@ -261,6 +273,11 @@ class SessionDetailsForm extends React.Component {
             <Button type="dashed" onClick={this.add} style={{ width: '80%' }}>
               <Icon type="plus" /> Add New Instruction
             </Button>
+          </Form.Item>
+          <Form.Item style={itemStyle}>
+            {form.getFieldDecorator('isParentView')(
+              <Checkbox checked={isParent} onChange={e => this.onParentView(e.target.checked)}>Visible for Parent </Checkbox> 
+            )}
           </Form.Item>
           <Form.Item style={itemStyle}>
             <Button type="primary" htmlType="submit">

@@ -18,98 +18,118 @@ const { Title, Text } = Typography
 
 const DailyVitalsCard = () => {
 
+    // const cardStyle = {
+    //     background: '#FFFFFF',
+    //     border: '1px solid #E4E9F0',
+    //     boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
+    //     borderRadius: 10,
+    //     padding: '16px 12px',
+    //     display: 'flex',
+    //     alignItems: 'center',
+    //     marginBottom: '10px',
+    // }
+
     const cardStyle = {
+        background: '#F9F9F9',
+        height: 500,
+        overflow: 'auto',
+    }
+    const parentCardStyle = {
+        background: '#F9F9F9',
+        borderRadius: 10,
+        padding: '20px',
+        margin: '20px 10px 20px 10px',
+    }
+    const targetMappingStyle = {
         background: '#FFFFFF',
         border: '1px solid #E4E9F0',
         boxShadow: '0px 0px 4px rgba(53, 53, 53, 0.1)',
         borderRadius: 10,
         padding: '16px 12px',
-        display: 'flex',
+        // display: 'flex',
         alignItems: 'center',
         marginBottom: '10px'
     }
 
     return (
         <div
-            style={{
-                background: '#F9F9F9',
-                borderRadius: 10,
-                padding: '28px 27px 20px',
-            }}
+            style={parentCardStyle}
         >
-            <Title
-                style={{
-                    fontSize: 20,
-                    lineHeight: '27px',
-                }}
-            >
-                Daily Vitals
-            </Title>
-            <a href="/#/mealData/">
-                <div style={cardStyle}>
-                    <img 
-                        style={{
-                            marginRight: '10px',
-                            height: '40px'
-                        }}
-                        src={mealImg}
-                        alt=""
-                    />
-                    <Text style={{ fontSize: 20, lineHeight: '27px', }}>Meal Data</Text>
-                </div>
-            </a>
-            <a href="/#/decel/">
-                <div style={cardStyle}>
-                    <img 
-                        style={{
-                            marginRight: '10px',
-                            height: '40px'
-                        }}
-                        src={brainImg}
-                        alt=""
-                    />
-                    <Text style={{ fontSize: 20, lineHeight: '27px', }}>Behavior Data</Text>
-                </div>
-            </a>
-            <a href="/#/medicalData/">
-                <div style={cardStyle}>
-                    <img 
-                        style={{
-                            marginRight: '10px',
-                            height: '40px'
-                        }}
-                        src={medicalImg}
-                        alt=""
-                    />
-                    <Text style={{ fontSize: 20, lineHeight: '27px', }}>Medical Data</Text>
-                </div>
-            </a>
-            <a href="/#/mand/">
-                <div style={cardStyle}>
-                    <img 
-                        style={{
-                            marginRight: '10px',
-                            height: '40px'
-                        }}
-                        src={mandImg}
-                        alt=""
-                    />
-                    <Text style={{ fontSize: 20, lineHeight: '27px', }}>Mand Data</Text>
-                </div>
-            </a>
-            <a href="/#/toilet/">
-                <div style={cardStyle}>
-                    <img 
-                        style={{
-                            marginRight: '10px',
-                            height: '40px'
-                        }}
-                        src={toiletImg}
-                        alt=""
-                    />
-                    <Text style={{ fontSize: 20, lineHeight: '27px', }}>Toilet Data</Text>
-                </div>
-            </a>
+            <div style={cardStyle}>
+                <Title
+                    style={{
+                        fontSize: 20,
+                        lineHeight: '27px',
+                    }}
+                >
+                    Daily Vitals
+                </Title>
+                <a href="/#/mealData/">
+                    <div style={targetMappingStyle}>
+                        <img 
+                            style={{
+                                marginRight: '10px',
+                                height: '40px'
+                            }}
+                            src={mealImg}
+                            alt=""
+                        />
+                        <Text style={{ fontSize: 20, lineHeight: '27px', }}>Meal Data</Text>
+                    </div>
+                </a>
+                <a href="/#/mand/">
+                    <div style={targetMappingStyle}>
+                        <img 
+                            style={{
+                                marginRight: '10px',
+                                height: '40px'
+                            }}
+                            src={mandImg}
+                            alt=""
+                        />
+                        <Text style={{ fontSize: 20, lineHeight: '27px', }}>Mand Data</Text>
+                    </div>
+                </a>
+                <a href="/#/medicalData/">
+                    <div style={targetMappingStyle}>
+                        <img 
+                            style={{
+                                marginRight: '10px',
+                                height: '40px'
+                            }}
+                            src={medicalImg}
+                            alt=""
+                        />
+                        <Text style={{ fontSize: 20, lineHeight: '27px', }}>Medical Data</Text>
+                    </div>
+                </a>
+                <a href="/#/toilet/">
+                    <div style={targetMappingStyle}>
+                        <img 
+                            style={{
+                                marginRight: '10px',
+                                height: '40px'
+                            }}
+                            src={toiletImg}
+                            alt=""
+                        />
+                        <Text style={{ fontSize: 20, lineHeight: '27px', }}>Toilet Data</Text>
+                    </div>
+                </a>
+                {/* <a href="/#/decel/">
+                    <div style={targetMappingStyle}>
+                        <img 
+                            style={{
+                                marginRight: '10px',
+                                height: '40px'
+                            }}
+                            src={brainImg}
+                            alt=""
+                        />
+                        <Text style={{ fontSize: 20, lineHeight: '27px', }}>Behavior Data</Text>
+                    </div>
+                </a> */}
+            </div>
         </div>
     )
 }

@@ -1,3 +1,14 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-closing-bracket-location */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable consistent-return */
+/* eslint-disable object-shorthand */
 import React, { Component } from 'react'
 import { Form, Input, Button, notification } from 'antd'
 import { Helmet } from 'react-helmet'

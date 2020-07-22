@@ -52,7 +52,7 @@ const LearnerCard = ({ style, key, name, node, leaveRequest, profileImg }) => {
                 marginRight: 38,
               }}
             >
-              Student
+              Learner
             </span>
             {leaveRequest && <span style={{ color: '#FF5454' }}>Pending leave request</span>}
           </div>

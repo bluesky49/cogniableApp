@@ -12,6 +12,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable no-useless-concat */
+/* eslint-disable array-callback-return */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/jsx-closing-tag-location */
 /* eslint-disable react/no-unescaped-entities */
@@ -24,7 +25,11 @@ import {
     Col,
     Card,
     Button,
+    Form,
+    notification,
+    Input,
     Select,
+    Modal,
     Typography,
     Progress,
 } from 'antd'
@@ -41,6 +46,8 @@ class Step4 extends React.Component {
         super(props)
 
         this.state = {
+            score: 0,
+            visible: false,
         }
     }
 
@@ -81,6 +88,65 @@ class Step4 extends React.Component {
         // }
     }
 
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    };
+
+    handleOk = e => {
+
+        const {dispatch, screening: {RecordedObject}} = this.props
+        dispatch({
+            type: 'screening/END_ASSESSMENT',
+            payload: {
+                objectId: RecordedObject.id,
+                score: this.state.score ? this.state.score : 0 
+            }
+        })
+
+        this.setState({
+            visible: false,
+        });
+    };
+
+    handleCancel = e => {
+        this.setState({
+            visible: false,
+        });
+    }
+
+    handelChange = (val) => {
+        // console.log(val)
+        this.setState({
+            score: val
+        })
+    }
+
+    endAssessment = () => {
+        console.log('result Entered')
+        const { dispatch, screening: { Areas, RecordedObject, AreasResponse } } = this.props
+        const { score } = this.state
+        let end = true
+        Areas.map((item) => {
+            if (AreasResponse[item.id].recorded === false) {
+                end = false
+            }
+        })
+
+        if (end === false) {
+            notification.warning({
+                message: 'Warning!!',
+                description: "Record response for all the areas before submitting assessment!!",
+            })
+        }
+        else {
+            this.showModal()
+        }
+    }
+
+    
+
     render() {
         const textStyle = {
             fontSize: '18px',
@@ -109,6 +175,16 @@ class Step4 extends React.Component {
 
         return (
             <>
+                <Modal
+                    title="Basic Modal"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                >
+                    <Form.Item label="Final Assessment Score">
+                        <Input type="number" onChange={e => this.handelChange(e.target.value)} />
+                    </Form.Item>
+                </Modal>
                 <Text style={textStyle}>Screening Result</Text>
                 <br />
                 <div
@@ -128,7 +204,7 @@ class Step4 extends React.Component {
                     }}
                 >   
                     <div style={{width: '25%', display: 'inline-block'}}>
-                        <Progress style={{marginLeft: '30px'}} type="dashboard" percent={75} />
+                        <Progress style={{marginLeft: '30px'}} type="dashboard" percent={RecordedObject.score ? RecordedObject.score : 0} />
                     </div>
                     <div style={{width: '75%', display: 'inline-block'}}>
                         <Title style={titleStyle}>{RecordedObject?.name}&apos;s Screening Result </Title>
@@ -207,6 +283,11 @@ class Step4 extends React.Component {
                     }
                     
                 </Row>
+                {role !== 'parents' && RecordedObject.status === 'VIDEOSUPLOADED' ?
+                    <Button onClick={() => this.endAssessment()}>Submit</Button>
+                :
+                    ''    
+                }
                 
             </>
         )
